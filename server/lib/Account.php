@@ -131,6 +131,26 @@ class Account
     }
 
     /**
+     * Return all account transactions.
+     *
+     * @return array All account transactions
+     */
+    public function getTransactions()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT * FROM `transaction` WHERE `aid` = :aid ORDER BY `datePosted` DESC;');
+        $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
+        if ($query->execute()) {
+            //return array of transactions
+            return $query->fetchAll(PDO::FETCH_CLASS, 'Transaction');
+        }
+        //indicate there is a problem during querying
+        return false;
+    }
+
+    /**
      * Delete an account from database.
      *
      * @return bool True on success or false on failure
