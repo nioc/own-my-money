@@ -1,0 +1,171 @@
+<?php
+
+/**
+ * Account definition.
+ *
+ * @version 1.0.0
+ *
+ * @internal
+ */
+class Account
+{
+    /**
+     * @var int Internal account identifier
+     */
+    public $id;
+    /**
+     * @var int Identifier of the user who owns the account
+     */
+    public $user;
+    /**
+     * @var string Bank identifier
+     */
+    public $bankId;
+    /**
+     * @var string Branch identifier
+     */
+    public $branchId;
+    /**
+     * @var string Account identifier
+     */
+    public $accountId;
+    /**
+     * @var int Current account balance
+     */
+    public $balance;
+    /**
+     * @var string Timestamp representing the last update
+     */
+    public $lastUpdate;
+
+    /**
+     * Initializes an Account  object with his identifier.
+     *
+     * @param int $id Internal account identifier
+     */
+    public function __construct($id = null)
+    {
+        if ($id !== null) {
+            $this->id = intval($id);
+        }
+    }
+
+    /**
+     * Inserts an account in database.
+     *
+     * @return bool True on success or false on failure
+     */
+    public function insert()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('INSERT INTO `account` (`user`, `bankId`, `branchId`, `accountId`, `balance`, `lastUpdate`) VALUES ( :user, :bankId, :branchId, :accountId, :balance, :lastUpdate);');
+        $query->bindValue(':user', $this->user, PDO::PARAM_INT);
+        $query->bindValue(':bankId', $this->bankId, PDO::PARAM_STR);
+        $query->bindValue(':branchId', $this->branchId, PDO::PARAM_STR);
+        $query->bindValue(':accountId', $this->accountId, PDO::PARAM_STR);
+        $query->bindValue(':balance', $this->balance, PDO::PARAM_INT);
+        $query->bindValue(':lastUpdate', $this->lastUpdate, PDO::PARAM_INT);
+        if ($query->execute()) {
+            $this->id = $connection->lastInsertId();
+            //returns insertion was successfully processed
+            return true;
+        }
+        //returns insertion has encountered an error
+        return false;
+    }
+
+    /**
+     * Populates an account.
+     *
+     * @return bool True on success or false on failure
+     */
+    public function get()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT * FROM `account` WHERE `id`=:id LIMIT 1;');
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        $query->setFetchMode(PDO::FETCH_INTO, $this);
+        if ($query->execute() && $query->fetch()) {
+            $this->id = intval($this->id);
+            $this->user = intval($this->user);
+            //returns the account object was successfully fetched
+            return true;
+        }
+        //returns the account is not known or database was not reachable
+        return false;
+    }
+
+    /**
+     * Search and populates an account by public keys
+     *
+     * @param string $userId Owner
+     * @param string $bankId
+     * @param string $branchId
+     * @param string $accountId
+     * @return boolean Account identifier or false on failure
+     */
+    public function getByPublicId($userId, $bankId, $branchId, $accountId)
+    {
+        if (!isset($userId, $bankId, $branchId, $accountId)) {
+            //returns public keys are not set
+            return false;
+        }
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT * FROM `account` WHERE `user`=:user AND `bankId`=:bankId AND `branchId`=:branchId AND `accountId`=:accountId LIMIT 1;');
+        $query->bindValue(':user', $userId, PDO::PARAM_INT);
+        $query->bindValue(':bankId', $bankId, PDO::PARAM_STR);
+        $query->bindValue(':branchId', $branchId, PDO::PARAM_STR);
+        $query->bindValue(':accountId', $accountId, PDO::PARAM_STR);
+        $query->setFetchMode(PDO::FETCH_INTO, $this);
+        if ($query->execute() && $query->fetch()) {
+            $this->id = intval($this->id);
+            $this->user = intval($this->user);
+            //returns the account object was successfully fetched
+            return true;
+        }
+        //returns the account is not known or database was not reachable
+        return false;
+    }
+
+    /**
+     * Delete an account from database.
+     *
+     * @return bool True on success or false on failure
+     */
+    public function delete()
+    {
+        if (is_int($this->id)) {
+            require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+            $connection = new DatabaseConnection();
+            $query = $connection->prepare('DELETE FROM `account` WHERE `id` = :id;');
+            $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+            //returns deletion result
+            return $query->execute();
+        }
+        //returns an error if no identifier was provided
+        return false;
+    }
+
+    /**
+     * Return structured account.
+     *
+     * @return object A public version of account
+     */
+    public function structureData()
+    {
+        //create account structure
+        $account = $this;
+        $account->id = (int) $account->id;
+        if (isset($account->balance)) {
+            $account->balance = (int) $account->balance;
+        }
+        if (isset($account->lastUpdate)) {
+            $account->lastUpdate= date('c', $account->lastUpdate);
+        }
+        //return structured account
+        return $account;
+    }
+}
