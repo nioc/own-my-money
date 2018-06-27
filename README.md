@@ -54,6 +54,8 @@ A little how-to for github:
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/dcddd6d1c1284ea496b9a1015e775b2d)](https://www.codacy.com/app/nioc/own-my-money)
+
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE.md) file for details

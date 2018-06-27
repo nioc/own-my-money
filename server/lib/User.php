@@ -124,7 +124,7 @@ class User
     public function update(&$error)
     {
         $error = '';
-        if (is_int($user->id)) {
+        if (is_int($this->id)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
             $connection = new DatabaseConnection();
             $query = $connection->prepare('UPDATE `user` SET `login`=:login, `password`=:password WHERE `id`=:id;');
