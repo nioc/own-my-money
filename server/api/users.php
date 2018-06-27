@@ -22,7 +22,7 @@ switch ($api->method) {
         $user = new User();
         if (!$api->checkParameterExists('id', $user->id) || $user->id == '') {
             $api->output(400, 'PUT method must be called on a specific resource');
-            //indicate the request is not valid, login must be provided
+            //indicate the request is not valid, id must be provided in query path
             return;
         }
         $user->id = intval($user->id);
