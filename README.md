@@ -36,6 +36,8 @@ Our aim is to provide a self-hosted manager for personal finances.
 
 The project is open and any contribution is welcome!
 
+#### Backend part (PHP)
+
 To keep the code clean, we use [php-cs-fixer](http://cs.sensiolabs.org/), before commit launch this on each edited files:
 
 ```` bash
@@ -46,7 +48,21 @@ You can handle all edited files with this single line:
 cd /var/www/money/server; for file in $(git diff-index --name-only HEAD); do php /usr/local/bin/php-cs-fixer fix "$file" -v; done
 ````
 
-A little how-to for github:
+#### Frontend part (VueJS)
+
+In order to contribute to the VueJS frontend:
+
+0. Install prerequise:
+  - [Node.js](https://nodejs.org/)
+  - npm `npm install npm@latest -g`
+  - Vue.js `npm install -g vue,`
+  - Vue-cli `npm install -g vue-cli,`
+1. Access the frontend folder in a shell `cd /var/www/money/money-front-vue`
+2. Build the project `npm install` and wait for the downloads
+3. Start the node server `npm run dev`
+4. Edit the code!
+
+#### A little how-to for Github
 
 1. [Fork it](https://help.github.com/articles/fork-a-repo/)
 2. Create your feature branch: `git checkout -b my-new-feature`
@@ -64,12 +80,5 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 This project includes the following:
 - [VueJS](https://vuejs.org/)
-- [Bootstrap](https://getbootstrap.com/)
-- [Bootstrap Vue](https://bootstrap-vue.js.org/)
-- [Vue-moment](https://github.com/brockpetrie/vue-moment)
-- [Vue-resource](https://github.com/pagekit/vue-resource)
-- [Datepicker](https://github.com/charliekassel/vuejs-datepicker)
-- [vue-chartjs](https://vue-chartjs.org/)
-- [Chart.js](https://www.chartjs.org/)
-- [accounting.js](https://github.com/openexchangerates/accounting.js)
+- [Bulma](https://bulma.io/)
 - [Font Awesome](https://github.com/FortAwesome/Font-Awesome/)
