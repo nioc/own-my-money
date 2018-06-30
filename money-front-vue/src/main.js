@@ -26,6 +26,15 @@ router.beforeEach((to, from, next) => {
     next('/login?redirect=' + to.fullPath)
     return
   }
+  // change title attribute
+  if (to.meta.title) {
+    let title = to.meta.title
+    let params = to.params
+    for (var property in params) {
+      title = title.replace(':' + property, params[property])
+    }
+    document.title = title + ' | OwnMyMoney'
+  }
   next()
 })
 
