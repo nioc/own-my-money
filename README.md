@@ -82,3 +82,5 @@ This project includes the following:
 - [VueJS](https://vuejs.org/)
 - [Bulma](https://bulma.io/)
 - [Font Awesome](https://github.com/FortAwesome/Font-Awesome/)
+- [Vue-resource](https://github.com/pagekit/vue-resource)
+- [VeeValidate](https://github.com/logaretm/vee-validate)
