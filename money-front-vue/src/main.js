@@ -4,6 +4,7 @@ import router from './router'
 import Auth from './services/Auth'
 import VueResource from 'vue-resource'
 import VeeValidate from 'vee-validate'
+import Bus from './services/Bus.js'
 import 'font-awesome/css/font-awesome.min.css'
 import 'bulma/css/bulma.css'
 
@@ -20,9 +21,11 @@ if (authHeader) {
 // check auth before changing page
 router.beforeEach((to, from, next) => {
   // check if user is authenticated before each page (except login page)
-  Auth.checkAuth()
+  Auth.getToken()
   if (!Auth.user.authenticated && to.name !== 'login') {
     // user not authenticated, redirect to login page
+    Auth.logout()
+    Bus.$emit('user-logged', {})
     next('/login?redirect=' + to.fullPath)
     return
   }
@@ -43,6 +46,8 @@ Vue.http.interceptors.push((request, next) => {
   next((response) => {
     if (response.status === 401 && router.currentRoute.fullPath.search(/^\/login/) === -1) {
       // redirect only if page is not already login page (multiples 401 in same time)
+      Auth.logout()
+      Bus.$emit('user-logged', {})
       router.replace({name: 'login', query: { redirect: router.currentRoute.fullPath }})
     }
     return response

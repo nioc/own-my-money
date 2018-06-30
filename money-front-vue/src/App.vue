@@ -39,7 +39,8 @@ export default {
   },
   methods: {
     logout () {
-      this.user = Auth.logout(this)
+      this.user = Auth.logout()
+      this.$router.replace({name: 'login'})
     }
   },
   mounted: function () {

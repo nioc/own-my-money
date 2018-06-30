@@ -36,24 +36,13 @@ export default {
       })
   },
 
-  // remove the token and redirect to login page
-  logout (context) {
+  // remove the token
+  logout () {
     localStorage.removeItem('user')
     this.user.authenticated = false
     delete Vue.http.headers.common['Authorization']
-    context.$router.replace({name: 'login'})
     this.user = {}
     return this.user
-  },
-
-  // check if user is authenticated with a token
-  checkAuth () {
-    let token = this.getToken()
-    if (token) {
-      this.user.authenticated = true
-    } else {
-      this.user.authenticated = false
-    }
   },
 
   // return the object to be passed as a header for authenticated requests
@@ -73,7 +62,8 @@ export default {
       this.user.login = payload.login
       this.user.scope = payload.scope
       this.user.exp = payload.exp
-      this.user.authenticated = true
+      // check if token is not expired
+      this.user.authenticated = (payload.exp > Math.floor(Date.now() / 1000))
     }
   },
 
