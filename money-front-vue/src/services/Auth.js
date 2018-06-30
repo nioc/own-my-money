@@ -58,7 +58,6 @@ export default {
 
   // return the object to be passed as a header for authenticated requests
   getAuthHeader () {
-    // let token = localStorage.getItem('token')
     let token = this.getToken()
     if (token) {
       return 'Bearer ' + token
