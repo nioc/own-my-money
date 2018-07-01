@@ -15,7 +15,7 @@
           <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link"><i class="fa fa-user fa-fw"/>&nbsp;{{ this.user.login }}</a>
             <div class="navbar-dropdown is-right">
-              <a class="navbar-item"><i class="fa fa-user-circle fa-fw"/>&nbsp;Profile</a>
+              <router-link class="navbar-item" to="/profile"><i class="fa fa-user-circle fa-fw"/>&nbsp;Profile</router-link>
               <hr class="navbar-divider">
               <a class="navbar-item" @click="logout()"><i class="fa fa-sign-out fa-fw"/>&nbsp;Logout</a>
             </div>
