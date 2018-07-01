@@ -32,10 +32,9 @@
                   </div>
               </div>
               <div class="field">
-                <button class="button is-block is-link is-medium is-fullwidth" @click="submit"><span class="fa fa-sign-in fa-fw" aria-hidden="true"></span>&nbsp;Login</button>
+                <button class="button is-block is-primary is-medium is-fullwidth" @click="submit"><span class="fa fa-sign-in fa-fw" aria-hidden="true"></span>&nbsp;Login</button>
               </div>
               <div class="message is-danger" v-if="error">
-                <div class="message-header has-text-centered">Error<button class="delete" aria-label="delete"></button></div>
                 <div class="message-body">
                   {{ error }}
                 </div>

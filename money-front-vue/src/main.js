@@ -6,7 +6,7 @@ import VueResource from 'vue-resource'
 import VeeValidate from 'vee-validate'
 import Bus from './services/Bus.js'
 import 'font-awesome/css/font-awesome.min.css'
-import 'bulma/css/bulma.css'
+import './assets/styles.scss'
 
 Vue.config.productionTip = false
 Vue.use(VueResource)

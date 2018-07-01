@@ -1,0 +1,20 @@
+@charset "utf-8";
+
+@import "~bulma/sass/utilities/initial-variables";
+
+$primary: #42b983;
+$message-body-padding: 0.75em 1.25em;
+$breadcrumb-item-color: $primary;
+html {
+  background-color: $white-ter !important;
+}
+a {
+  color: $primary;
+}
+
+@import "~bulma/sass/utilities/_all";
+@import "~bulma/sass/base/_all";
+@import "~bulma/sass/elements/_all";
+@import "~bulma/sass/components/_all";
+@import "~bulma/sass/grid/_all";
+@import "~bulma/sass/layout/_all";
