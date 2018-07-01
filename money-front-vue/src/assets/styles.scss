@@ -5,11 +5,16 @@
 $primary: #42b983;
 $message-body-padding: 0.75em 1.25em;
 $breadcrumb-item-color: $primary;
+.navbar-burger span {
+  color: $white-ter;
+}
+$link: $primary;
+$navbar-item-hover-color: $primary;
+.navbar .router-link-exact-active {
+  color: $grey-light !important
+}
 html {
   background-color: $white-ter !important;
-}
-a {
-  color: $primary;
 }
 
 @import "~bulma/sass/utilities/_all";
