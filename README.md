@@ -84,3 +84,5 @@ This project includes the following:
 - [Font Awesome](https://github.com/FortAwesome/Font-Awesome/)
 - [Vue-resource](https://github.com/pagekit/vue-resource)
 - [VeeValidate](https://github.com/logaretm/vee-validate)
+- [Vue-moment](https://github.com/brockpetrie/vue-moment)
+- [accounting.js](https://github.com/openexchangerates/accounting.js)

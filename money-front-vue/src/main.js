@@ -2,15 +2,18 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Auth from './services/Auth'
+import VueMoment from 'vue-moment'
 import VueResource from 'vue-resource'
 import VeeValidate from 'vee-validate'
 import Bus from './services/Bus.js'
+import Accounting from 'accounting'
 import 'font-awesome/css/font-awesome.min.css'
 import './assets/styles.scss'
 
 Vue.config.productionTip = false
 Vue.use(VueResource)
 Vue.use(VeeValidate)
+Vue.use(VueMoment)
 // set header at init
 delete Vue.http.headers.common['Authorization']
 let authHeader = Auth.getAuthHeader()
@@ -51,6 +54,17 @@ Vue.http.interceptors.push((request, next) => {
       router.replace({name: 'login', query: { redirect: router.currentRoute.fullPath }})
     }
     return response
+  })
+})
+
+// add currency filter for formatting with accounting.js
+Vue.filter('currency', function (value) {
+  return Accounting.formatMoney(value, {
+    symbol: '€',
+    decimal: ',',
+    thousand: ' ',
+    precision: 2,
+    format: '%v %s'
   })
 })
 

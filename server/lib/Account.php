@@ -30,7 +30,7 @@ class Account
      */
     public $accountId;
     /**
-     * @var int Current account balance
+     * @var float Current account balance
      */
     public $balance;
     /**
@@ -180,7 +180,7 @@ class Account
         $account = $this;
         $account->id = (int) $account->id;
         if (isset($account->balance)) {
-            $account->balance = (int) $account->balance;
+            $account->balance = (float) $account->balance;
         }
         if (isset($account->lastUpdate)) {
             $account->lastUpdate= date('c', $account->lastUpdate);

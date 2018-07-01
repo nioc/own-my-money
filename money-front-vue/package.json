@@ -11,11 +11,13 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "accounting": "^0.4.1",
     "bulma": "^0.7.1",
     "font-awesome": "^4.7.0",
     "vue-router": "^3.0.1",
     "vue-resource": "^1.5.1",
     "vee-validate": "^2.1.0-beta.5",
+    "vue-moment": "^4.0.0",
     "vue": "^2.5.2"
   },
   "devDependencies": {
