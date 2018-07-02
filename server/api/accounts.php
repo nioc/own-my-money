@@ -12,7 +12,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Api.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Account.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
-$api = new Api('json', ['GET', 'POST', 'DELETE']);
+$api = new Api('json', ['GET', 'POST', 'DELETE', 'PUT']);
 switch ($api->method) {
     case 'GET':
         //returns the account
@@ -63,6 +63,43 @@ switch ($api->method) {
         }
         if ($account->insert()) {
             $api->output(201, $account->structureData());
+            return;
+        }
+        $api->output(500, 'Something went wrong');
+        break;
+    case 'PUT':
+        //returns the account
+        if (!$api->checkAuth()) {
+            //User not authentified/authorized
+            return;
+        }
+        if (!$api->checkParameterExists('id', $id)) {
+            $api->output(400, 'Account id must be provided');
+            //indicate the request is not valid
+            return;
+        }
+        $account = new Account($id);
+        if (!$account->get()) {
+            $api->output(404, 'Account not found');
+            //indicate the account was not found
+            return;
+        }
+        if ($account->user !== $api->requesterId) {
+            $api->output(403, 'Account can be updated by owner only');
+            //indicate the requester is not the account owner and is not allowed to update it
+            return;
+        }
+        if ($api->checkParameterExists('bankId', $bankId)) {
+            $account->bankId = $bankId;
+        }
+        if ($api->checkParameterExists('branchId', $branchId)) {
+            $account->branchId = $branchId;
+        }
+        if ($api->checkParameterExists('accountId', $accountId)) {
+            $account->accountId = $accountId;
+        }
+        if ($account->update()) {
+            $api->output(200, $account->structureData());
             return;
         }
         $api->output(500, 'Something went wrong');

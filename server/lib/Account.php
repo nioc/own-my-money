@@ -76,6 +76,29 @@ class Account
     }
 
     /**
+     * Update an account in database.
+     *
+     * @return bool True on success or false on failure
+     */
+    public function update()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('UPDATE `account` SET `bankId`=:bankId, `branchId`=:branchId, `accountId`=:accountId, `balance`=:balance, `lastUpdate`=UNIX_TIMESTAMP() WHERE `id`=:id;');
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':bankId', $this->bankId, PDO::PARAM_STR);
+        $query->bindValue(':branchId', $this->branchId, PDO::PARAM_STR);
+        $query->bindValue(':accountId', $this->accountId, PDO::PARAM_STR);
+        $query->bindValue(':balance', $this->balance, PDO::PARAM_INT);
+        if ($query->execute()) {
+            //returns update was successfully processed
+            return true;
+        }
+        //returns update has encountered an error
+        return false;
+    }
+
+    /**
      * Populates an account.
      *
      * @return bool True on success or false on failure
