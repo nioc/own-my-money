@@ -107,37 +107,24 @@
         </form>
       </b-tab-item>
     </b-tabs>
-    <div class="container box">
-      <nav class="breadcrumb" aria-label="breadcrumbs">
-        <ul>
-          <li>
-            <router-link to="/">
-              <span class="icon is-small">
-                <i class="fa fa-home" aria-hidden="true"></i>
-              </span>
-              <span>Home</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/accounts">
-              <span>Accounts</span>
-            </router-link>
-          </li>
-          <li class="is-active">
-            <router-link to="/">
-              <span>{{ accountTitle }}</span>
-            </router-link>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <breadcrumb
+      :items="[
+        {link: '/', icon: 'fa-home', text: 'Home'},
+        {link: '/accounts', text: 'Accounts'},
+        {link: '/accounts', text: accountTitle, isActive: true}
+      ]">
+    </breadcrumb>
   </div>
 </template>
 
 <script>
 import Config from './../services/Config'
+import Breadcrumb from '@/components/Breadcrumb'
 export default {
   name: 'account',
+  components: {
+    Breadcrumb
+  },
   data () {
     const today = new Date()
     return {

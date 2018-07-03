@@ -53,33 +53,24 @@
       </div>
     </div>
     <div class="hero-foot">
-      <div class="container box">
-        <nav class="breadcrumb" aria-label="breadcrumbs">
-          <ul>
-            <li>
-              <router-link to="/">
-                <span class="icon is-small">
-                  <i class="fa fa-home" aria-hidden="true"></i>
-                </span>
-                <span>Home</span>
-              </router-link>
-            </li>
-            <li class="is-active">
-              <router-link to="/">
-                <span>Accounts</span>
-              </router-link>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      <breadcrumb
+        :items="[
+          {link: '/', icon: 'fa-home', text: 'Home'},
+          {link: '/accounts', text: 'Accounts', isActive: true}
+        ]">
+      </breadcrumb>
     </div>
   </section>
 </template>
 
 <script>
 import Config from './../services/Config'
+import Breadcrumb from '@/components/Breadcrumb'
 export default {
   name: 'accounts',
+  components: {
+    Breadcrumb
+  },
   data () {
     return {
       accounts: [],
