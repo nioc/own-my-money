@@ -7,6 +7,7 @@ import VueResource from 'vue-resource'
 import VeeValidate from 'vee-validate'
 import Bus from './services/Bus.js'
 import Accounting from 'accounting'
+import Buefy from 'buefy'
 import 'font-awesome/css/font-awesome.min.css'
 import './assets/styles.scss'
 
@@ -14,6 +15,7 @@ Vue.config.productionTip = false
 Vue.use(VueResource)
 Vue.use(VeeValidate)
 Vue.use(VueMoment)
+Vue.use(Buefy, {defaultIconPack: 'fa', defaultFirstDayOfWeek: 1})
 // set header at init
 delete Vue.http.headers.common['Authorization']
 let authHeader = Auth.getAuthHeader()

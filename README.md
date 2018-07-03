@@ -81,6 +81,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 This project includes the following:
 - [VueJS](https://vuejs.org/)
 - [Bulma](https://bulma.io/)
+- [Buefy](https://buefy.github.io)
 - [Font Awesome](https://github.com/FortAwesome/Font-Awesome/)
 - [Vue-resource](https://github.com/pagekit/vue-resource)
 - [VeeValidate](https://github.com/logaretm/vee-validate)
