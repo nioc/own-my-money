@@ -106,7 +106,7 @@ export default {
       // call the async validator
       this.$validator.validateAll().then((result) => {
         if (result) {
-          // if validation is ok, call user API
+          // if validation is ok, call accounts API
           this.rAccounts.save(this.createAccount)
             .then(response => {
               this.getAccounts()

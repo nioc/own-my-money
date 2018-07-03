@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Accounts from '@/components/Accounts'
+import Account from '@/components/Account'
 import Login from '@/components/Login'
 import Profile from '@/components/Profile'
 import Home from '@/components/Home'
@@ -19,6 +20,12 @@ export default new Router({
       name: 'accounts',
       component: Accounts,
       meta: {title: 'Accounts'}
+    },
+    {
+      path: '/accounts/:id',
+      name: 'account',
+      component: Account,
+      meta: {title: 'Account :id'}
     },
     {
       path: '/login',
