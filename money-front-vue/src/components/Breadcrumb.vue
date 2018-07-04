@@ -1,6 +1,6 @@
 <template>
-  <div class="container box">
-    <nav class="breadcrumb" aria-label="breadcrumbs">
+  <div class="box is-radiusless">
+    <nav class="breadcrumb container" aria-label="breadcrumbs">
       <ul>
         <li v-for="item in items" :key="item.text" :class="{ 'is-active': item.isActive }">
           <router-link :to="item.link">

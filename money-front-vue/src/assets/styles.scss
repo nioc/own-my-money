@@ -16,6 +16,9 @@ $navbar-item-hover-color: $primary;
 html {
   background-color: $white-ter !important;
 }
+.is-400px-form input, .is-400px-form .control {
+  max-width: 400px;
+}
 
 @import "~bulma/sass/utilities/_all";
 @import "~bulma/sass/base/_all";
@@ -23,5 +26,22 @@ html {
 @import "~bulma/sass/components/_all";
 @import "~bulma/sass/grid/_all";
 @import "~bulma/sass/layout/_all";
+
+.hero .tabs ul {
+  border-bottom-color: $tabs-border-bottom-color;
+  border-bottom-style: $tabs-border-bottom-style;
+  border-bottom-width: $tabs-border-bottom-width;
+}
+
+.hero-body {
+  @include mobile {
+    padding: 0;
+  }
+}
+.box {
+  @include mobile {
+    border-radius: unset;
+  }
+}
 
 @import "~buefy/src/scss/buefy";
