@@ -37,23 +37,10 @@
         <div v-else>
           <p>There is no account yet</p>
         </div>
-        <form @submit.prevent="validateBeforeSubmit" novalidate>
-          <div class="field is-grouped">
-            <div class="control">
-              <input class="input" type="text" name="bankId" placeholder="Bank Id" v-model="createAccount.bankId" v-validate="'required|alpha_num'" :class="{'input': true, 'is-danger': errors.has('bankId') }">
-              <span v-show="errors.has('bankId')" class="help is-danger">{{errors.first('bankId')}}</span>
-            </div>
-            <div class="control">
-              <input class="input" type="text" name="BranchId" placeholder="Branch Id" v-model="createAccount.branchId" v-validate="'required|alpha_num'" :class="{'input': true, 'is-danger': errors.has('BranchId') }">
-              <span v-show="errors.has('BranchId')" class="help is-danger">{{errors.first('BranchId')}}</span>
-            </div>
-            <div class="control">
-              <input class="input" type="text" name="AccountId" placeholder="Account Id" v-model="createAccount.accountId" v-validate="'required|alpha_num'" :class="{'input': true, 'is-danger': errors.has('AccountId') }">
-              <span v-show="errors.has('AccountId')" class="help is-danger">{{errors.first('AccountId')}}</span>
-            </div>
-            <button type="submit" class="button is-primary" role="button"><i class="fa fa-plus"/>&nbsp;Add an account</button>
-          </div>
-        </form>
+        <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true"><i class="fa fa-plus"/>&nbsp;Add account</button>
+        <b-modal :active.sync="isCreateAccountModalActive" has-modal-card>
+          <create-account></create-account>
+        </b-modal>
       </div>
     </div>
   </section>
@@ -62,16 +49,18 @@
 <script>
 import Config from './../services/Config'
 import Breadcrumb from '@/components/Breadcrumb'
+import CreateAccount from '@/components/CreateAccount'
 export default {
   name: 'accounts',
   components: {
-    Breadcrumb
+    Breadcrumb,
+    CreateAccount
   },
   data () {
     return {
       accounts: [],
-      createAccount: {},
       error: '',
+      isCreateAccountModalActive: false,
       // resources
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}')
     }
@@ -88,24 +77,6 @@ export default {
           }
           this.error = response.status + ' - ' + response.statusText
         })
-    },
-    validateBeforeSubmit () {
-      // call the async validator
-      this.$validator.validateAll().then((result) => {
-        if (result) {
-          // if validation is ok, call accounts API
-          this.rAccounts.save(this.createAccount)
-            .then(response => {
-              this.getAccounts()
-            }, response => {
-              if (response.body.message) {
-                this.error = response.body.message
-                return
-              }
-              this.error = response.status + ' - ' + response.statusText
-            })
-        }
-      })
     }
   },
   mounted: function () {
