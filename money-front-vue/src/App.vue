@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <nav class="navbar is-dark" v-if="user.authenticated">
+    <nav class="navbar is-dark is-fixed-top" v-if="user.authenticated">
       <div class="navbar-brand">
         <router-link class="navbar-item" to="/"><i class="fa fa-money fa-fw"/>&nbsp;OwnMyMoney</router-link>
         <a role="button" class="navbar-burger" @click="toggleMenu" aria-label="menu" aria-expanded="false">

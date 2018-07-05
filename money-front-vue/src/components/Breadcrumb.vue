@@ -1,5 +1,5 @@
 <template>
-  <div class="box is-radiusless">
+  <div class="box is-radiusless has-background-white-bis">
     <nav class="breadcrumb container" aria-label="breadcrumbs">
       <ul>
         <li v-for="item in items" :key="item.text" :class="{ 'is-active': item.isActive }">
