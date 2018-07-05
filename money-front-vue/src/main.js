@@ -43,6 +43,12 @@ router.beforeEach((to, from, next) => {
     }
     document.title = title + ' | OwnMyMoney'
   }
+  // close hamburger (if existing)
+  let burger = document.getElementById('navbar-burger')
+  if (burger) {
+    burger.classList.remove('is-active')
+    document.getElementById('navbar-menu').classList.remove('is-active')
+  }
   next()
 })
 

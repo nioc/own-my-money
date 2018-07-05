@@ -3,7 +3,7 @@
     <nav class="navbar is-dark is-fixed-top" v-if="user.authenticated">
       <div class="navbar-brand">
         <router-link class="navbar-item" to="/"><i class="fa fa-money fa-fw"/>&nbsp;OwnMyMoney</router-link>
-        <a role="button" class="navbar-burger" @click="toggleMenu" aria-label="menu" aria-expanded="false">
+        <a role="button" id="navbar-burger" class="navbar-burger" @click="toggleMenu" aria-label="menu" aria-expanded="false">
           <span aria-hidden="true" class="is-primary"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
