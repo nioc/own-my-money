@@ -28,6 +28,7 @@
             <router-link :to="{ name: 'category', params: { id: 'new' }}" class="has-text-grey-light"><i class="fa fa-fw fa-plus-square-o"></i>Add a category</router-link>
           </li>
         </ul>
+        <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
       </div>
     </div>
   </section>
@@ -46,11 +47,13 @@ export default {
   data () {
     return {
       rCategories: this.$resource(Config.API_URL + 'categories{/id}'),
-      categories: []
+      categories: [],
+      isLoading: false
     }
   },
   methods: {
     get () {
+      this.isLoading = true
       this.rCategories.query({status: 'all'})
         .then(response => {
           this.categories = response.body
@@ -59,6 +62,10 @@ export default {
         }, response => {
         // @TODO : add error handling
           console.error(response)
+        })
+        .finally(function () {
+          // remove loading overlay when API replies
+          this.isLoading = false
         })
     }
   },

@@ -130,14 +130,18 @@ export default {
   methods: {
     // get category informations
     get () {
+      this.isLoading = true
       this.rCategories.get({ id: this.category.id })
         .then(response => {
           this.category = response.body
           this.updateBreadcrumbItems()
-          this.isLoading = false
         }, response => {
         // @TODO : add error handling
           console.error(response)
+        })
+        .finally(function () {
+          // remove loading overlay when API replies
+          this.isLoading = false
         })
     },
     updateBreadcrumbItems () {
@@ -193,10 +197,10 @@ export default {
     },
     validateBeforeSubmit () {
       this.error = null
-      this.isLoading = true
       // call the async validator
       this.$validator.validateAll().then((result) => {
         if (result) {
+          this.isLoading = true
           // if validation is ok, call category API
           if (!this.category.id) {
             // creating new (sub)category
@@ -229,10 +233,7 @@ export default {
               // remove loading overlay when API replies
               this.isLoading = false
             })
-          return
         }
-        // remove loading overlay if validation failed
-        this.isLoading = false
       })
     }
   },
@@ -243,7 +244,6 @@ export default {
     ]
     if (this.category.id) {
       // for existing category, get data
-      this.isLoading = true
       this.get()
     }
     if (!this.isCategory) {

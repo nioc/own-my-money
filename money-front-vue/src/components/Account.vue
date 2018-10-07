@@ -116,6 +116,7 @@
                 </div>
               </div>
             </form>
+            <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
           </b-tab-item>
         </b-tabs>
       </div>
@@ -207,17 +208,21 @@ export default {
     getTransactions () {
       this.isLoading = true
       this.rTransactions.query({aid: this.account.id}).then(response => {
-        this.isLoading = false
         this.account.transactions = response.body
       }, response => {
         // @TODO : add error handling
         console.error(response)
+      })
+      .finally(function () {
+        // remove loading overlay when API replies
+        this.isLoading = false
       })
     },
     validateUpdateBeforeSubmit () {
       // call the async validator
       this.$validator.validateAll().then((result) => {
         if (result) {
+          this.isLoading = true
           // if validation is ok, call accounts API
           this.rAccounts.update({id: this.account.id}, this.updatedAccount)
             .then(response => {
@@ -233,6 +238,10 @@ export default {
               }
               this.error = response.status + ' - ' + response.statusText
             })
+            .finally(function () {
+              // remove loading overlay when API replies
+              this.isLoading = false
+            })
         }
       })
     },
@@ -246,12 +255,17 @@ export default {
         confirmText: 'Delete account',
         focusOn: 'cancel',
         onConfirm: () => {
+          this.isLoading = true
           this.rAccounts.delete({id: this.account.id})
             .then(response => {
               this.$router.replace({name: 'accounts'})
             }, response => {
               // @TODO : add error handling
               console.error(response)
+            })
+            .finally(function () {
+              // remove loading overlay when API replies
+              this.isLoading = false
             })
         }
       })

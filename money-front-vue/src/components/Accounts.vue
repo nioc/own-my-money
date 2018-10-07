@@ -41,6 +41,7 @@
         <b-modal :active.sync="isCreateAccountModalActive" has-modal-card>
           <create-account></create-account>
         </b-modal>
+        <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
       </div>
     </div>
   </section>
@@ -61,12 +62,14 @@ export default {
       accounts: [],
       error: '',
       isCreateAccountModalActive: false,
+      isLoading: false,
       // resources
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}')
     }
   },
   methods: {
     getAccounts () {
+      this.isLoading = true
       this.rAccounts.query()
         .then(response => {
           this.accounts = response.body
@@ -76,6 +79,10 @@ export default {
             return
           }
           this.error = response.status + ' - ' + response.statusText
+        })
+        .finally(function () {
+          // remove loading overlay when API replies
+          this.isLoading = false
         })
     }
   },

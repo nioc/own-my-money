@@ -78,6 +78,7 @@
               </div>
             </div>
           </div>
+          <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
         </form>
       </div>
     </div>
@@ -98,6 +99,7 @@ export default {
       user: Auth.getProfile(),
       password: '',
       error: '',
+      isLoading: false,
       // resources
       rUsers: this.$resource(Config.API_URL + 'users{/id}')
     }
@@ -107,6 +109,7 @@ export default {
       // call the async validator
       this.$validator.validateAll().then((result) => {
         if (result) {
+          this.isLoading = true
           // if validation is ok, call user API
           this.rUsers.update({id: this.user.id}, {sub: this.user.id, login: this.user.login, password: this.password})
             .then(response => {
@@ -116,6 +119,10 @@ export default {
                 return
               }
               this.error = response.status + ' - ' + response.statusText
+            })
+            .finally(function () {
+              // remove loading overlay when API replies
+              this.isLoading = false
             })
         }
       })
