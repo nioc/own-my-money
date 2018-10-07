@@ -16,6 +16,9 @@
         <div class="navbar-end">
           <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link"><i class="fa fa-wrench fa-fw"/>&nbsp;System settings</a>
+            <div class="navbar-dropdown is-right">
+              <router-link class="navbar-item" to="/categories"><i class="fa fa-folder-open-o fa-fw"/>&nbsp;Categories</router-link>
+            </div>
           </div>
           <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link"><i class="fa fa-user fa-fw"/>&nbsp;{{ this.user.login }}</a>

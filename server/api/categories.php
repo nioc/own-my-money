@@ -19,11 +19,24 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        $category = new Category();
-        $categories = array_values($category->getCategories(true));
-        $api->output(200, $categories);
-        //return categories list
-        return;
+        if (!$api->checkParameterExists('id', $id)) {
+            //query all categories
+            $category = new Category();
+            $api->checkParameterExists('status', $status);
+            $isOnlyActives = $status !== 'all';
+            $categories = array_values($category->getCategories($isOnlyActives));
+            $api->output(200, $categories);
+            //return categories list
+            return;
+        }
+        $category = new Category($id);
+        //query a specific category
+        if (!$category->get()) {
+            $api->output(404, 'Category not found');
+            //indicate the category was not found
+            return;
+        }
+        $api->output(200, $category->structureData());
         break;
     case 'POST':
         //post operation for adding category
@@ -39,7 +52,6 @@ switch ($api->method) {
             return;
         }
         //create category
-        $category->status = true;
         if (!$category->insert()) {
             $api->output(500, 'Error during creation');
             //something gone wrong :(
@@ -61,7 +73,6 @@ switch ($api->method) {
            return;
        }
        //update category
-       $category->status = true;
        if (!$category->update($errorMessage)) {
            $api->output(500, 'Error during update: '.$errorMessage);
            //something gone wrong :(

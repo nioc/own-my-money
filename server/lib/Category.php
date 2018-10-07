@@ -22,6 +22,10 @@ class Category
      */
     public $status;
     /**
+     * @var string Category (only) icon
+     */
+    public $icon;
+    /**
      * @var int Parent category (if is subcategory)
      */
     public $parentId;
@@ -37,7 +41,9 @@ class Category
         if ($id !== null) {
             $this->id = intval($id);
         }
-        $this->label = $label;
+        if ($label !== null) {
+          $this->label = $label;
+        }
     }
 
     /**
@@ -49,9 +55,10 @@ class Category
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `category` (`label`, `status`, `parentId`) VALUES ( :label, :status, :parentId);');
+        $query = $connection->prepare('INSERT INTO `category` (`label`, `status`, `icon`, `parentId`) VALUES ( :label, :status, :icon, :parentId);');
         $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':status', $this->status, PDO::PARAM_BOOL);
+        $query->bindValue(':icon', $this->icon, PDO::PARAM_STR);
         $query->bindValue(':parentId', $this->parentId, PDO::PARAM_INT);
         if ($query->execute()) {
             $this->id = $connection->lastInsertId();
@@ -74,9 +81,10 @@ class Category
         $error = '';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('UPDATE `category` SET `label`=:label, `status`=:status, `parentId`=:parentId WHERE `id`=:id;');
+        $query = $connection->prepare('UPDATE `category` SET `label`=:label, `status`=:status, `parentId`=:parentId, `icon`=:icon WHERE `id`=:id;');
         $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':status', $this->status, PDO::PARAM_BOOL);
+        $query->bindValue(':icon', $this->icon, PDO::PARAM_STR);
         $query->bindValue(':parentId', $this->parentId, PDO::PARAM_INT);
         $query->bindValue(':id', $this->id, PDO::PARAM_INT);
         if ($query->execute()) {
@@ -85,6 +93,27 @@ class Category
         }
         $error = $query->errorInfo()[2];
         //returns update has encountered an error
+        return false;
+    }
+
+    /**
+     * Populates a category.
+     *
+     * @return bool True on success or false on failure
+     */
+    public function get()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT * FROM `category` WHERE `id`=:id LIMIT 1;');
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        $query->setFetchMode(PDO::FETCH_INTO, $this);
+        if ($query->execute() && $query->fetch()) {
+            $this->id = intval($this->id);
+            //returns the category object was successfully fetched
+            return true;
+        }
+        //returns the category is not known or database was not reachable
         return false;
     }
 
@@ -99,6 +128,12 @@ class Category
         $category = $this;
         if (isset($category->id)) {
             $category->id = (int) $category->id;
+        }
+        if (isset($category->status)) {
+            $category->status = (bool) $category->status;
+        }
+        if (isset($category->parentId)) {
+            $category->parentId = (int) $category->parentId;
         }
         //return structured category
         return $category;
@@ -115,15 +150,19 @@ class Category
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT * FROM `category` WHERE `status`=1 ORDER BY `parentId`, `id`;');
+        $queryString = 'SELECT * FROM `category` ORDER BY `parentId`, `id`;';
+        if ($returnActive) {
+          $queryString = 'SELECT * FROM `category` WHERE `status`=1 ORDER BY `parentId`, `id`;';
+        }
+        $query = $connection->prepare($queryString);
         if ($query->execute()) {
-            $arr_category = $query->fetchAll(PDO::FETCH_CLASS);
+            $arr_category = $query->fetchAll(PDO::FETCH_CLASS, 'Category');
             foreach ($arr_category as $category) {
                 //remove status if the request is about only actives ones
                 if ($returnActive) {
                     unset($category->status);
                 }
-                $category->id = (int) $category->id;
+                $category = $category->structureData();
                 if (is_null($category->parentId)) {
                     unset($category->parentId);
                     $category->sub = [];
@@ -169,7 +208,7 @@ class Category
             //return false and detailed error message
             return false;
         }
-        //Categoryis valid
+        //Category is valid
         return true;
     }
 }
