@@ -30,6 +30,10 @@ class Account
      */
     public $accountId;
     /**
+     * @var string Account label
+     */
+    public $label;
+    /**
      * @var float Current account balance
      */
     public $balance;
@@ -59,11 +63,12 @@ class Account
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `account` (`user`, `bankId`, `branchId`, `accountId`, `balance`, `lastUpdate`) VALUES ( :user, :bankId, :branchId, :accountId, :balance, :lastUpdate);');
+        $query = $connection->prepare('INSERT INTO `account` (`user`, `bankId`, `branchId`, `accountId`, `label`, `balance`, `lastUpdate`) VALUES ( :user, :bankId, :branchId, :accountId, :label, :balance, :lastUpdate);');
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
         $query->bindValue(':bankId', $this->bankId, PDO::PARAM_STR);
         $query->bindValue(':branchId', $this->branchId, PDO::PARAM_STR);
         $query->bindValue(':accountId', $this->accountId, PDO::PARAM_STR);
+        $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':balance', $this->balance, PDO::PARAM_INT);
         $query->bindValue(':lastUpdate', $this->lastUpdate, PDO::PARAM_INT);
         if ($query->execute()) {
@@ -84,11 +89,12 @@ class Account
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('UPDATE `account` SET `bankId`=:bankId, `branchId`=:branchId, `accountId`=:accountId, `balance`=:balance, `lastUpdate`=UNIX_TIMESTAMP() WHERE `id`=:id;');
+        $query = $connection->prepare('UPDATE `account` SET `bankId`=:bankId, `branchId`=:branchId, `accountId`=:accountId, `label`=:label, `balance`=:balance, `lastUpdate`=UNIX_TIMESTAMP() WHERE `id`=:id;');
         $query->bindValue(':id', $this->id, PDO::PARAM_INT);
         $query->bindValue(':bankId', $this->bankId, PDO::PARAM_STR);
         $query->bindValue(':branchId', $this->branchId, PDO::PARAM_STR);
         $query->bindValue(':accountId', $this->accountId, PDO::PARAM_STR);
+        $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':balance', $this->balance, PDO::PARAM_INT);
         if ($query->execute()) {
             //returns update was successfully processed

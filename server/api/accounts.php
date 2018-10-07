@@ -57,6 +57,7 @@ switch ($api->method) {
         $api->checkParameterExists('bankId', $account->bankId);
         $api->checkParameterExists('branchId', $account->branchId);
         $api->checkParameterExists('accountId', $account->accountId);
+        $api->checkParameterExists('label', $account->label);
         if ($account->getByPublicId($account->user, $account->bankId, $account->branchId, $account->accountId)) {
             $api->output(400, 'This account already exists');
             return;
@@ -97,6 +98,9 @@ switch ($api->method) {
         }
         if ($api->checkParameterExists('accountId', $accountId)) {
             $account->accountId = $accountId;
+        }
+        if ($api->checkParameterExists('label', $label)) {
+            $account->label = $label;
         }
         if ($account->update()) {
             $api->output(200, $account->structureData());

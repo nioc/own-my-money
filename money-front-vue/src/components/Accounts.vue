@@ -3,8 +3,8 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: 'Home'},
-          {link: '/accounts', text: 'Accounts', isActive: true}
+          { link: '/', icon: 'fa-home', text: 'Home' },
+          { link: '/accounts', text: 'Accounts', isActive: true }
         ]">
       </breadcrumb>
     </div>
@@ -27,7 +27,7 @@
             </thead>
             <tbody>
               <tr v-for="account in accounts" :key="account.id">
-                <td><router-link :to="{ name: 'account', params: { id: account.id }}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}</router-link></td>
+                <td><router-link :to="{ name: 'account', params: { id: account.id }}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link></td>
                 <td>{{ account.balance | currency }}</td>
                 <td>{{ account.lastUpdate | moment("DD/MM/YYYY HH:mm") }}</td>
               </tr>
