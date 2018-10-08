@@ -116,6 +116,93 @@ class Transaction
     }
 
     /**
+     * Validate a transaction object with provided informations.
+     *
+     * @param object $transaction Transaction object to validate
+     * @param string $error The returned error message
+     *
+     * @return bool True if the transaction object provided is correct
+     */
+    public function validateModel($transaction, &$error)
+    {
+       $error = '';
+       if ($transaction === null) {
+           $error = 'invalid resource';
+           //return false and detailed error message
+           return false;
+       }
+       //iterate on each object attributes to set object
+       foreach ($this as $key => $value) {
+           if (property_exists($transaction, $key)) {
+               //get provided attribute
+               $this->$key = $transaction->$key;
+           }
+       }
+       //check mandatory attributes
+       if (!is_int($this->id)) {
+           $error = 'integer must be provided in id attribute';
+           //return false and detailed error message
+           return false;
+       }
+       if (!is_string($this->name) || $this->name === '') {
+           $error = 'string must be provided in name attribute';
+           //return false and detailed error message
+           return false;
+       }
+       if (!isset($this->amount) || $this->amount === '') {
+           $error = 'float must be provided in amount attribute';
+           //return false and detailed error message
+           return false;
+       }
+       if (!is_string($this->fitid) || $this->fitid === '') {
+           $error = 'string must be provided in fitid attribute';
+           //return false and detailed error message
+           return false;
+       }
+       if (!is_string($this->type) || ($this->type !== 'DEBIT') && ($this->type !== 'CREDIT')) {
+           $error = 'either DEBIT or CREDIT must be provided in fitid attribute';
+           //return false and detailed error message
+           return false;
+       }
+       //Convert datetime from ISO8601 to Unix timestamp
+       if (isset($this->datePosted)) {
+           $this->datePosted = strtotime($this->datePosted);
+       }
+       if (isset($this->dateUser)) {
+           $this->dateUser = strtotime($this->dateUser);
+       }
+       $this->amount = floatval($this->amount);
+       //Transaction is valid
+       return true;
+    }
+
+    /**
+     * Update transaction with provided informations.
+     *
+     * @param string $error The returned error message
+     *
+     * @return bool True if the transaction is updated
+     */
+    public function update(&$error)
+    {
+       $error = '';
+       if (is_int($this->id)) {
+           require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+           $connection = new DatabaseConnection();
+           $query = $connection->prepare('UPDATE `transaction` SET `note`=:note WHERE `id`=:id;');
+           $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+           $query->bindValue(':note', $this->note, PDO::PARAM_STR);
+           if ($query->execute()) {
+               //return true to indicate a successful transaction update
+               return true;
+           }
+           $error = $query->errorInfo()[2];
+       }
+       //return false to indicate an error occurred while reading the transaction
+       return false;
+    }
+
+    /**
      * Delete a transaction from database.
      *
      * @return bool True on success or false on failure
