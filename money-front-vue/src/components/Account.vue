@@ -40,7 +40,7 @@
             <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="dateUser" default-sort-direction="desc" selectable @select="editTransaction">
               <template slot-scope="props">
                 <b-table-column field="amount" label="Amount" sortable numeric>
-                  {{ props.row.amount | currency }}
+                  <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-success']">{{ props.row.amount | currency }}</span>
                 </b-table-column>
                 <b-table-column field="name" label="Name" sortable>
                   {{ props.row.name }}<span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
