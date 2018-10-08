@@ -43,7 +43,7 @@
                   {{ props.row.amount | currency }}
                 </b-table-column>
                 <b-table-column field="name" label="Name" sortable>
-                  {{ props.row.name }}
+                  {{ props.row.name }}<span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
                 </b-table-column>
                 <b-table-column field="dateUser" label="Date" sortable>
                   {{ props.row.dateUser | moment("DD/MM/YYYY") }}

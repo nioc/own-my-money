@@ -49,6 +49,10 @@ class Transaction
      * @var int Subcategory identifier
      */
     public $subcategory;
+    /**
+     * @var string User note about the transaction
+     */
+    public $note;
 
     /**
      * Initializes a Transaction object with his identifier.
@@ -71,7 +75,7 @@ class Transaction
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `category`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :category);');
+        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `category`, `note`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :category, :note);');
         $query->bindValue(':aid', $this->aid, PDO::PARAM_INT);
         $query->bindValue(':fitid', $this->fitid, PDO::PARAM_STR);
         $query->bindValue(':type', $this->type, PDO::PARAM_STR);
@@ -81,6 +85,7 @@ class Transaction
         $query->bindValue(':amount', $this->amount, PDO::PARAM_STR);
         $query->bindValue(':name', $this->name, PDO::PARAM_STR);
         $query->bindValue(':category', $this->category, PDO::PARAM_STR);
+        $query->bindValue(':note', $this->note, PDO::PARAM_STR);
         if ($query->execute()) {
             $this->id = $connection->lastInsertId();
             //returns insertion was successfully processed
