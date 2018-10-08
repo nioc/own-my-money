@@ -157,6 +157,7 @@ class Category
         $query = $connection->prepare($queryString);
         if ($query->execute()) {
             $arr_category = $query->fetchAll(PDO::FETCH_CLASS, 'Category');
+            $arr_categories = [];
             foreach ($arr_category as $category) {
                 //remove status if the request is about only actives ones
                 if ($returnActive) {
@@ -169,7 +170,9 @@ class Category
                     $arr_categories[$category->id] = $category;
                 } else {
                     $category->parentId = (int) $category->parentId;
-                    array_push($arr_categories[$category->parentId]->sub, $category);
+                    if (array_key_exists($category->parentId, $arr_categories)) {
+                      array_push($arr_categories[$category->parentId]->sub, $category);
+                    }
                 }
             }
             //return array of categories
