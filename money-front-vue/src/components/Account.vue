@@ -17,7 +17,7 @@
             <div class="field is-grouped is-grouped-multiline">
               <div class="field has-addons">
                 <p class="control has-icons-left">
-                  <input class="input" type="text" placeholder="Find a transaction" v-model="query">
+                  <input class="input" type="text" placeholder="Find a transaction" v-model="search.query">
                   <span class="icon is-small is-left">
                     <i class="fa fa-search"></i>
                   </span>
@@ -28,13 +28,33 @@
               </div>
               <div class="field">
                 <p class="control">
-                  <b-datepicker placeholder="Start date" icon="calendar" :readonly="false" :max-date="currentDate" v-model="startDate"></b-datepicker>
+                  <b-datepicker placeholder="Start date" icon="calendar" :readonly="false" :max-date="search.currentDate" v-model="search.startDate"></b-datepicker>
                 </p>
               </div>
               <div class="field">
                 <p class="control">
-                  <b-datepicker placeholder="End date" icon="calendar" :readonly="false" :max-date="currentDate" v-model="endDate"></b-datepicker>
+                  <b-datepicker placeholder="End date" icon="calendar" :readonly="false" :max-date="search.currentDate" v-model="search.endDate"></b-datepicker>
                 </p>
+              </div>
+              <div class="field">
+                <div class="control">
+                  <div class="select">
+                    <select name="parent" v-model="search.category">
+                      <option value="">-- Category --</option>
+                      <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="field" v-if="search.category && categoriesAndSubcategoriesLookup[search.category].sub.length > 0">
+                <div class="control">
+                  <div class="select">
+                    <select name="parent" v-model="search.subcategory">
+                      <option value="">-- Subcategory --</option>
+                      <option v-for="subcategory in categoriesAndSubcategoriesLookup[search.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
             <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="dateUser" default-sort-direction="desc" selectable @select="editTransaction">
@@ -49,7 +69,7 @@
                   {{ props.row.dateUser | moment("DD/MM/YYYY") }}
                 </b-table-column>
                 <b-table-column field="category" label="Category" sortable>
-                  {{ props.row.category }}
+                  {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
                 </b-table-column>
               </template>
               <template slot="empty">
@@ -168,10 +188,15 @@ export default {
       updatedAccount: {
       },
       // filter
-      query: '',
-      currentDate: today,
-      startDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
-      endDate: today,
+      search: {
+        query: '',
+        currentDate: today,
+        startDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
+        endDate: today,
+        category: '',
+        subcategory: ''
+      },
+      // modal
       modalTransaction: {
         isActive: false,
         transaction: {},
@@ -179,22 +204,32 @@ export default {
       },
       // categories
       categories: [],
-      subcategories: [],
-      categoriesAndSubcategoriesLookup: {},
+      categoriesAndSubcategoriesLookup: [],
       // resources
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}'),
+      rCategories: this.$resource(Config.API_URL + 'categories{/id}'),
       rTransactions: this.$resource(Config.API_URL + 'accounts/{aid}/transactions{/id}')
     }
   },
   computed: {
     displayedTransactions: function () {
-      let query = this.query
-      let startDate = this.startDate
-      let endDate = this.endDate
-      return this.account.transactions.filter(function (transaction) {
+      let query = this.search.query
+      let startDate = this.search.startDate
+      let endDate = this.search.endDate
+      let category = this.search.category
+      let subcategory = this.search.subcategory
+      let transactions = this.account.transactions
+      transactions.map(t => {
+        t.categoryLabel = (t.category in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.category].label : null
+        t.subcategoryLabel = (t.subcategory in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.subcategory].label : null
+        return t
+      })
+      return transactions.filter(function (transaction) {
         return transaction.name.toLowerCase().indexOf(query.toLowerCase()) > -1 &
         new Date(Date.parse(transaction.dateUser)) >= startDate &
-        new Date(Date.parse(transaction.dateUser)) <= endDate
+        new Date(Date.parse(transaction.dateUser)) <= endDate &
+        (!category || transaction.category === category) &
+        (!subcategory || transaction.subcategory === subcategory)
       })
     },
     accountTitle: function () {
@@ -294,10 +329,47 @@ export default {
             })
         }
       })
+    },
+    // get categories and subcategories
+    getCategories () {
+      function getLookup (categories) {
+        // save the complete list and create lookup for getting label
+        var lookup = []
+        for (let i = 0; i < categories.length; i++) {
+          let category = categories[i]
+          lookup[category.id] = category
+          for (let i = 0; i < category.sub.length; i++) {
+            let subcategory = category.sub[i]
+            lookup[subcategory.id] = subcategory
+          }
+        }
+        return lookup
+      }
+      if (localStorage.getItem('categories')) {
+        this.categories = JSON.parse(localStorage.getItem('categories'))
+        this.categoriesAndSubcategoriesLookup = getLookup(this.categories)
+        return
+      }
+      this.rCategories.query({status: 'all'}).then(response => {
+        this.categories = response.body
+        this.categoriesAndSubcategoriesLookup = getLookup(this.categories)
+        // put categories in local storage for future usage
+        localStorage.setItem('categories', JSON.stringify(this.categories))
+      }, response => {
+        // @TODO : add error handling
+        console.error(response)
+      })
+    }
+  },
+  watch: {
+    'search.category': function () {
+      // clear subcategory search field if category has changed
+      this.search.subcategory = ''
     }
   },
   mounted: function () {
     this.get()
+    this.getCategories()
     this.getTransactions()
   }
 }
