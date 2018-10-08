@@ -46,6 +46,7 @@
           <button class="button" type="button" @click="$parent.close()">Cancel</button>
         </footer>
       </form>
+      <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
     </div>
   </form>
 </template>
@@ -57,6 +58,7 @@ export default {
     return {
       account: {},
       error: '',
+      isLoading: false,
       // resources
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}')
     }
@@ -66,6 +68,7 @@ export default {
       // call the async validator
       this.$validator.validateAll().then((result) => {
         if (result) {
+          this.isLoading = true
           // if validation is ok, call accounts API
           this.rAccounts.save(this.account)
             .then(response => {
@@ -77,6 +80,10 @@ export default {
                 return
               }
               this.error = response.status + ' - ' + response.statusText
+            })
+            .finally(function () {
+              // remove loading overlay when API replies
+              this.isLoading = false
             })
         }
       })
