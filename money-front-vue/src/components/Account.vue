@@ -37,7 +37,7 @@
                 </p>
               </div>
             </div>
-            <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="dateUser" default-sort-direction="desc">
+            <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="dateUser" default-sort-direction="desc" selectable @select="editTransaction">
               <template slot-scope="props">
                 <b-table-column field="amount" label="Amount" sortable numeric>
                   {{ props.row.amount | currency }}
@@ -60,6 +60,9 @@
                 </section>
               </template>
             </b-table>
+            <b-modal :active.sync="modalTransaction.isActive" has-modal-card>
+              <transaction v-bind="modalTransaction"></transaction>
+            </b-modal>
           </b-tab-item>
           <b-tab-item label="Edit" icon="pencil">
             <form @submit.prevent="validateUpdateBeforeSubmit" novalidate class="section is-400px-form">
@@ -141,10 +144,12 @@
 <script>
 import Config from './../services/Config'
 import Breadcrumb from '@/components/Breadcrumb'
+import Transaction from '@/components/Transaction'
 export default {
   name: 'account',
   components: {
-    Breadcrumb
+    Breadcrumb,
+    Transaction
   },
   data () {
     const today = new Date()
@@ -167,13 +172,10 @@ export default {
       currentDate: today,
       startDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
       endDate: today,
-      transactionModal: {
-        transactionEdited: {category: {id: '', label: ''}, subcategory: {id: '', label: ''}},
-        transactionBackup: {},
-        savePattern: false,
-        pattern: '',
-        updating: false,
-        result: ''
+      modalTransaction: {
+        isActive: false,
+        transaction: {},
+        accountId: parseInt(this.$route.params.id)
       },
       // categories
       categories: [],
@@ -235,6 +237,10 @@ export default {
         // remove loading overlay when API replies
         this.isLoading = false
       })
+    },
+    editTransaction (item) {
+      this.modalTransaction.transaction = item
+      this.modalTransaction.isActive = true
     },
     validateUpdateBeforeSubmit () {
       // call the async validator
