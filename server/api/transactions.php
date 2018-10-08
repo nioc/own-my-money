@@ -94,6 +94,7 @@ switch ($api->method) {
             //something gone wrong :(
             return;
         }
+        $transaction->get();
         $api->output(200, $transaction->structureData());
         //return transaction
         return;

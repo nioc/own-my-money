@@ -34,6 +34,28 @@
               <span v-show="errors.has('note')" class="help is-danger">{{ errors.first('note') }}</span>
             </div>
           </div>
+          <div class="field">
+            <label class="label">Category</label>
+            <div class="control">
+              <div class="select">
+                <select name="parent" v-model="transaction.category">
+                  <option value="">-- Category --</option>
+                  <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field" v-if="transaction.category && categoriesAndSubcategoriesLookup[transaction.category] && categoriesAndSubcategoriesLookup[transaction.category].sub.length > 0">
+            <label class="label">Subcategory</label>
+            <div class="control">
+              <div class="select">
+                <select name="parent" v-model="transaction.subcategory">
+                  <option value="">-- Subcategory --</option>
+                  <option v-for="subcategory in categoriesAndSubcategoriesLookup[transaction.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <div class="message is-danger block" v-if="error">
             <div class="message-body">
               {{ error }}
@@ -59,8 +81,11 @@ export default {
       error: '',
       isLoading: false,
       currentDate: new Date(),
+      categories: [],
+      categoriesAndSubcategoriesLookup: [],
       // resources
-      rTransactions: this.$resource(Config.API_URL + 'accounts/' + this.accountId + '/transactions{/id}')
+      rTransactions: this.$resource(Config.API_URL + 'accounts/' + this.accountId + '/transactions{/id}'),
+      rCategories: this.$resource(Config.API_URL + 'categories{/id}')
     }
   },
   computed: {
@@ -74,6 +99,37 @@ export default {
     }
   },
   methods: {
+    // get categories and subcategories
+    getCategories () {
+      // TODO refactoring this function
+      function getLookup (categories) {
+        // save the complete list and create lookup for getting label
+        var lookup = []
+        for (let i = 0; i < categories.length; i++) {
+          let category = categories[i]
+          lookup[category.id] = category
+          for (let i = 0; i < category.sub.length; i++) {
+            let subcategory = category.sub[i]
+            lookup[subcategory.id] = subcategory
+          }
+        }
+        return lookup
+      }
+      if (localStorage.getItem('categoriesActives')) {
+        this.categories = JSON.parse(localStorage.getItem('categoriesActives'))
+        this.categoriesAndSubcategoriesLookup = getLookup(this.categories)
+        return
+      }
+      this.rCategories.query().then(response => {
+        this.categories = response.body
+        this.categoriesAndSubcategoriesLookup = getLookup(this.categories)
+        // put categories in local storage for future usage
+        localStorage.setItem('categoriesActives', JSON.stringify(this.categories))
+      }, response => {
+        // @TODO : add error handling
+        console.error(response)
+      })
+    },
     validateBeforeSubmit () {
       // call the async validator
       this.$validator.validateAll().then((result) => {
@@ -83,7 +139,6 @@ export default {
           this.transaction.amount = parseFloat(this.transaction.amount)
           this.rTransactions.update({ id: this.transaction.id }, this.transaction)
             .then(response => {
-              // TODO provide updated transaction
               this.$parent.close()
             }, response => {
               if (response.body.message) {
@@ -99,6 +154,15 @@ export default {
         }
       })
     }
+  },
+  watch: {
+    'transaction.category': function () {
+      // clear subcategory field if category has changed
+      this.transaction.subcategory = ''
+    }
+  },
+  mounted: function () {
+    this.getCategories()
   }
 }
 </script>

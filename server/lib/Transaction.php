@@ -171,6 +171,12 @@ class Transaction
        if (isset($this->dateUser)) {
            $this->dateUser = strtotime($this->dateUser);
        }
+       if ($this->category === '') {
+           $this->category = null;
+       }
+       if ($this->subcategory === '') {
+           $this->subcategory = null;
+       }
        $this->amount = floatval($this->amount);
        //Transaction is valid
        return true;
@@ -189,8 +195,10 @@ class Transaction
        if (is_int($this->id)) {
            require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
            $connection = new DatabaseConnection();
-           $query = $connection->prepare('UPDATE `transaction` SET `note`=:note WHERE `id`=:id;');
+           $query = $connection->prepare('UPDATE `transaction` SET `category`=:category, `subcategory`=:subcategory, `note`=:note WHERE `id`=:id;');
            $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+           $query->bindValue(':category', $this->category, PDO::PARAM_INT);
+           $query->bindValue(':subcategory', $this->subcategory, PDO::PARAM_INT);
            $query->bindValue(':note', $this->note, PDO::PARAM_STR);
            if ($query->execute()) {
                //return true to indicate a successful transaction update
@@ -240,8 +248,12 @@ class Transaction
         if (isset($transaction->dateUser)) {
             $transaction->dateUser = date('c', $transaction->dateUser);
         }
-        $transaction->category = (int) $transaction->category;
-        $transaction->subcategory= (int) $transaction->subcategory;
+        if (isset($transaction->category)) {
+          $transaction->category = (int) $transaction->category;
+        }
+        if (isset($transaction->subcategory)) {
+          $transaction->subcategory= (int) $transaction->subcategory;
+        }
         unset($transaction->aid);
         //return structured transaction
         return $transaction;
