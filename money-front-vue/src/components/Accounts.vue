@@ -29,7 +29,7 @@
               <tr v-for="account in accounts" :key="account.id">
                 <td><router-link :to="{ name: 'account', params: { id: account.id }}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link></td>
                 <td>{{ account.balance | currency }}</td>
-                <td>{{ account.lastUpdate | moment("DD/MM/YYYY HH:mm") }}</td>
+                <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("DD/MM/YYYY HH:mm") }}</td><td v-else></td>
               </tr>
             </tbody>
           </table>
