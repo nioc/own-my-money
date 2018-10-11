@@ -22,11 +22,11 @@ class Transaction
      */
     public $type;
     /**
-     * @var int Posted date
+     * @var int Date transaction was posted to account
      */
     public $datePosted;
     /**
-     * @var int Value date for customer
+     * @var int Date user initiated transaction, if known
      */
     public $dateUser;
     /**
@@ -38,9 +38,13 @@ class Transaction
      */
     public $name;
     /**
-     * @var string Fitid
+     * @var string Financial Institution Transaction ID
      */
     public $fitid;
+    /**
+     * @var string Optional memo from Financial Institution
+     */
+    public $memo;
     /**
      * @var int Category identifier
      */
@@ -75,7 +79,7 @@ class Transaction
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `category`, `note`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :category, :note);');
+        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `memo`, `category`, `note`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :memo, :category, :note);');
         $query->bindValue(':aid', $this->aid, PDO::PARAM_INT);
         $query->bindValue(':fitid', $this->fitid, PDO::PARAM_STR);
         $query->bindValue(':type', $this->type, PDO::PARAM_STR);
@@ -84,6 +88,7 @@ class Transaction
         //there is no PARAM_FLOAT in PDO so use PARAM_STR instead...
         $query->bindValue(':amount', $this->amount, PDO::PARAM_STR);
         $query->bindValue(':name', $this->name, PDO::PARAM_STR);
+        $query->bindValue(':memo', $this->memo, PDO::PARAM_STR);
         $query->bindValue(':category', $this->category, PDO::PARAM_STR);
         $query->bindValue(':note', $this->note, PDO::PARAM_STR);
         if ($query->execute()) {

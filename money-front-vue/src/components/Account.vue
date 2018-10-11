@@ -63,7 +63,7 @@
                   <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-success']">{{ props.row.amount | currency }}</span>
                 </b-table-column>
                 <b-table-column field="name" label="Name" sortable>
-                  {{ props.row.name }}<span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
+                  {{ props.row.fullname }}<span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
                 </b-table-column>
                 <b-table-column field="dateUser" label="Date" sortable>
                   {{ props.row.dateUser | moment("DD/MM/YYYY") }}
@@ -222,10 +222,11 @@ export default {
       transactions.map(t => {
         t.categoryLabel = (t.category in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.category].label : null
         t.subcategoryLabel = (t.subcategory in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.subcategory].label : null
+        t.fullname = (t.memo) ? t.memo + ' ' + t.name : t.name
         return t
       })
       return transactions.filter(function (transaction) {
-        return transaction.name.toLowerCase().indexOf(query.toLowerCase()) > -1 &
+        return transaction.fullname.toLowerCase().indexOf(query.toLowerCase()) > -1 &
         new Date(Date.parse(transaction.dateUser)) >= startDate &
         new Date(Date.parse(transaction.dateUser)) <= endDate &
         (!category || transaction.category === category) &
