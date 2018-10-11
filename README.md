@@ -87,3 +87,4 @@ This project includes the following:
 - [VeeValidate](https://github.com/logaretm/vee-validate)
 - [Vue-moment](https://github.com/brockpetrie/vue-moment)
 - [accounting.js](https://github.com/openexchangerates/accounting.js)
+- [OFX Parser](https://github.com/asgrim/ofxparser)

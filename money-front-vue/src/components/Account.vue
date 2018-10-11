@@ -80,6 +80,31 @@
                 </section>
               </template>
             </b-table>
+            <div class="field">
+              <p class="control">
+                <b-field class="file">
+                  <b-upload v-model="upload.files" @input="uploadDataset" :disabled="upload.isUploading">
+                    <a class="button is-primary">
+                      <b-icon icon="upload"></b-icon>
+                      <span>Upload OFX</span>
+                    </a>
+                  </b-upload>
+                  <span class="file-name"
+                    v-if="upload.files && upload.files.length">
+                    {{ upload.files[0].name }} ({{ upload.files[0].size }} bytes)
+                  </span>
+                </b-field>
+              </p>
+            </div>
+            <div class="field is-horizontal" >
+              <div class="field-body">
+                <div class="message is-danger"  v-if="upload.result">
+                  <div class="message-body">
+                    {{ upload.result }}
+                  </div>
+                </div>
+              </div>
+            </div>
             <b-modal :active.sync="modalTransaction.isActive" has-modal-card>
               <transaction v-bind="modalTransaction"></transaction>
             </b-modal>
@@ -196,6 +221,12 @@ export default {
         category: '',
         subcategory: ''
       },
+      // upload dataset
+      upload: {
+        file: null,
+        isUploading: false,
+        result: ''
+      },
       // modal
       modalTransaction: {
         isActive: false,
@@ -208,7 +239,8 @@ export default {
       // resources
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}'),
       rCategories: this.$resource(Config.API_URL + 'categories{/id}'),
-      rTransactions: this.$resource(Config.API_URL + 'accounts/{aid}/transactions{/id}')
+      rTransactions: this.$resource(Config.API_URL + 'accounts/{aid}/transactions{/id}'),
+      rDatasets: this.$resource(Config.API_URL + 'accounts/' + parseInt(this.$route.params.id) + '/dataset')
     }
   },
   computed: {
@@ -360,6 +392,42 @@ export default {
         // @TODO : add error handling
         console.error(response)
       })
+    },
+    uploadDataset () {
+      this.upload.result = ''
+      // get file
+      let file = this.upload.files[0]
+      var data = new FormData()
+      data.append('Content-Type', file.type || 'application/octet-stream')
+      data.append('file', file)
+      // check file size
+      if (file.size > 80000000) {
+        this.upload.result = 'File too big'
+        return
+      }
+      // prepare context
+      this.upload.isUploading = true
+      this.isLoading = true
+      // call API
+      this.rDatasets.save({}, data)
+        .then(response => {
+          if (response.body.message) {
+            this.upload.result = response.body.message
+          }
+          this.getTransactions()
+        }, response => {
+        // upload failed, inform user
+          if (response.body.message) {
+            this.upload.result = response.body.message
+            return
+          }
+          this.upload.result = response.status + ' - ' + response.statusText
+        })
+        .finally(function () {
+          // remove loading overlay when API replies
+          this.upload.isUploading = false
+          this.isLoading = false
+        })
     }
   },
   watch: {

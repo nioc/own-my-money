@@ -180,4 +180,42 @@ class User
         //returns the user public profile
         return $user;
     }
+
+    /**
+     * Add account from OFX file.
+     *
+     * @param BankAccount $bankAccount Account read from OFX file
+     *
+     * @return array Operation result
+     */
+    public function insertAccountFromDataset($bankAccount)
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
+        $result = [];
+        $result['accountInserted'] = 0;
+        $result['accountprocessed'] = 0;
+
+        $account = new Account();
+        if (isset($bankAccount->routingNumber, $bankAccount->agencyNumber, $bankAccount->accountNumber)) {
+            $result['accountprocessed']++;
+            if (!$account->getByPublicId($this->id, $bankAccount->routingNumber, $bankAccount->agencyNumber, $bankAccount->accountNumber)) {
+                //account does not exists, creating it
+                $account->user = $this->id;
+                $account->bankId = $bankAccount->routingNumber;
+                $account->branchId = $bankAccount->agencyNumber;
+                $account->accountId = $bankAccount->accountNumber;
+                $account->balance = floatval($bankAccount->balance);
+                $account->lastUpdate = time();
+                if ($account->insert()) {
+                    $result['accountInserted']++;
+                }
+            }
+            if ($account->user === $this->id) {
+                //account is ok, now working on transactions
+                $transactionsResult = $account->insertTransactionsFromDataset($bankAccount->statement->transactions);
+                $result = array_merge($result, $transactionsResult);
+            }
+        }
+        return $result;
+    }
 }

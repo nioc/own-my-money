@@ -37,7 +37,34 @@
         <div v-else>
           <p>There is no account yet</p>
         </div>
-        <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true"><i class="fa fa-plus"/>&nbsp;Add account</button>
+        <div class="field is-grouped">
+          <p class="control">
+            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true"><i class="fa fa-plus"/>&nbsp;Add account</button>
+          </p>
+          <p class="control">
+            <b-field class="file">
+              <b-upload v-model="upload.files" @input="uploadDataset" :disabled="upload.isUploading">
+                <a class="button is-primary">
+                  <b-icon icon="upload"></b-icon>
+                  <span>Upload OFX</span>
+                </a>
+              </b-upload>
+              <span class="file-name"
+                v-if="upload.files && upload.files.length">
+                {{ upload.files[0].name }} ({{ upload.files[0].size }} bytes)
+              </span>
+            </b-field>
+          </p>
+        </div>
+        <div class="field is-horizontal" >
+          <div class="field-body">
+            <div class="message is-danger"  v-if="upload.result">
+              <div class="message-body">
+                {{ upload.result }}
+              </div>
+            </div>
+          </div>
+        </div>
         <b-modal :active.sync="isCreateAccountModalActive" has-modal-card>
           <create-account></create-account>
         </b-modal>
@@ -63,8 +90,15 @@ export default {
       error: '',
       isCreateAccountModalActive: false,
       isLoading: false,
+      // upload dataset
+      upload: {
+        file: null,
+        isUploading: false,
+        result: ''
+      },
       // resources
-      rAccounts: this.$resource(Config.API_URL + 'accounts{/id}')
+      rAccounts: this.$resource(Config.API_URL + 'accounts{/id}'),
+      rDatasets: this.$resource(Config.API_URL + 'dataset')
     }
   },
   methods: {
@@ -82,6 +116,42 @@ export default {
         })
         .finally(function () {
           // remove loading overlay when API replies
+          this.isLoading = false
+        })
+    },
+    uploadDataset () {
+      this.upload.result = ''
+      // get file
+      let file = this.upload.files[0]
+      var data = new FormData()
+      data.append('Content-Type', file.type || 'application/octet-stream')
+      data.append('file', file)
+      // check file size
+      if (file.size > 80000000) {
+        this.upload.result = 'File too big'
+        return
+      }
+      // prepare context
+      this.upload.isUploading = true
+      this.isLoading = true
+      // call API
+      this.rDatasets.save({}, data)
+        .then(response => {
+          if (response.body.message) {
+            this.upload.result = response.body.message
+          }
+          this.getAccounts()
+        }, response => {
+        // upload failed, inform user
+          if (response.body.message) {
+            this.upload.result = response.body.message
+            return
+          }
+          this.upload.result = response.status + ' - ' + response.statusText
+        })
+        .finally(function () {
+          // remove loading overlay when API replies
+          this.upload.isUploading = false
           this.isLoading = false
         })
     }
