@@ -248,7 +248,7 @@ export default {
     }
     if (!this.isCategory) {
       // for subcategory, get parent category id from path and get all ids/labels
-      this.category.parentId = parseInt(this.$route.params.id)
+      this.category.parentId = parseInt(this.$route.params.pid)
       this.getParentCategories()
     }
   }
