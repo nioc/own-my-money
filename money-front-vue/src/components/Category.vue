@@ -254,6 +254,9 @@ export default {
       // for subcategory, get parent category id from path and get all ids/labels
       this.category.parentId = parseInt(this.$route.params.pid)
       this.getParentCategories()
+    } else if (!this.category.icon) {
+      // set default icon for new category
+      this.category.icon = 'fa-question'
     }
   }
 }
