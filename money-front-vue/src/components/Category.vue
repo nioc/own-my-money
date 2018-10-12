@@ -206,6 +206,8 @@ export default {
             // creating new (sub)category
             this.rCategories.save(this.category)
               .then(response => {
+                // return to categories
+                this.$router.replace({ name: 'categories' })
               }, response => {
                 if (response.body.message) {
                   this.error = response.body.message
@@ -222,6 +224,8 @@ export default {
           // updating new (sub)category
           this.rCategories.update({ id: this.category.id }, this.category)
             .then(response => {
+              // return to categories
+              this.$router.replace({ name: 'categories' })
             }, response => {
               if (response.body.message) {
                 this.error = response.body.message
