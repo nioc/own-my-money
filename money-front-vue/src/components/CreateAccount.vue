@@ -1,51 +1,48 @@
 <template>
-  <form action="">
+  <form @submit.prevent="validateBeforeSubmit" novalidate>
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">New account</p>
-        <button class="delete" aria-label="close" @click="$parent.close()"></button>
       </header>
-      <form @submit.prevent="validateBeforeSubmit" novalidate>
-        <section class="modal-card-body">
-          <div class="field">
-            <label class="label">Bank identifier</label>
-            <div class="control">
-              <input class="input" type="text" name="bankId" placeholder="Bank Id" v-model="account.bankId" v-validate="'required|alpha_num'" data-vv-as="bank id" :class="{ 'is-danger': errors.has('bankId') }">
-              <span v-show="errors.has('bankId')" class="help is-danger">{{ errors.first('bankId') }}</span>
-            </div>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Bank identifier</label>
+          <div class="control">
+            <input class="input" type="text" name="bankId" placeholder="Bank Id" v-model="account.bankId" v-validate="'required|alpha_num'" data-vv-as="bank id" :class="{ 'is-danger': errors.has('bankId') }">
+            <span v-show="errors.has('bankId')" class="help is-danger">{{ errors.first('bankId') }}</span>
           </div>
-          <div class="field">
-            <label class="label">Branch identifier</label>
-            <div class="control">
-              <input class="input" type="text" name="BranchId" placeholder="Branch Id" v-model="account.branchId" v-validate="'required|alpha_num'" data-vv-as="branch id" :class="{ 'is-danger': errors.has('BranchId') }">
-              <span v-show="errors.has('BranchId')" class="help is-danger">{{ errors.first('BranchId') }}</span>
-            </div>
+        </div>
+        <div class="field">
+          <label class="label">Branch identifier</label>
+          <div class="control">
+            <input class="input" type="text" name="BranchId" placeholder="Branch Id" v-model="account.branchId" v-validate="'required|alpha_num'" data-vv-as="branch id" :class="{ 'is-danger': errors.has('BranchId') }">
+            <span v-show="errors.has('BranchId')" class="help is-danger">{{ errors.first('BranchId') }}</span>
           </div>
-          <div class="field">
-            <label class="label">Account identifier</label>
-            <div class="control">
-              <input class="input" type="text" name="AccountId" placeholder="Account Id" v-model="account.accountId" v-validate="'required|alpha_num'" data-vv-as="account id" :class="{ 'is-danger': errors.has('AccountId') }">
-              <span v-show="errors.has('AccountId')" class="help is-danger">{{ errors.first('AccountId') }}</span>
-            </div>
+        </div>
+        <div class="field">
+          <label class="label">Account identifier</label>
+          <div class="control">
+            <input class="input" type="text" name="AccountId" placeholder="Account Id" v-model="account.accountId" v-validate="'required|alpha_num'" data-vv-as="account id" :class="{ 'is-danger': errors.has('AccountId') }">
+            <span v-show="errors.has('AccountId')" class="help is-danger">{{ errors.first('AccountId') }}</span>
           </div>
-          <div class="field">
-            <label class="label">Label</label>
-            <div class="control">
-              <input class="input" type="text" name="label" placeholder="Label of your choice" v-model="account.label" v-validate="'max:30'" :class="{ 'is-danger': errors.has('label') }">
-              <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
-            </div>
+        </div>
+        <div class="field">
+          <label class="label">Label</label>
+          <div class="control">
+            <input class="input" type="text" name="label" placeholder="Label of your choice" v-model="account.label" v-validate="'max:30'" :class="{ 'is-danger': errors.has('label') }">
+            <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
           </div>
-          <div class="message is-danger block" v-if="error">
-            <div class="message-body">
-              {{ error }}
-            </div>
+        </div>
+        <div class="message is-danger block" v-if="error">
+          <div class="message-body">
+            {{ error }}
           </div>
-        </section>
-        <footer class="modal-card-foot">
-          <button class="button is-primary">Create</button>
-          <button class="button" type="button" @click="$parent.close()">Cancel</button>
-        </footer>
-      </form>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-primary">Create</button>
+        <button class="button" type="button" @click="$parent.close()">Cancel</button>
+      </footer>
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
     </div>
   </form>

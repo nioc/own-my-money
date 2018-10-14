@@ -65,7 +65,7 @@
             </div>
           </div>
         </div>
-        <b-modal :active.sync="isCreateAccountModalActive" has-modal-card>
+        <b-modal :active.sync="isCreateAccountModalActive" has-modal-card scroll="keep">
           <create-account></create-account>
         </b-modal>
         <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>

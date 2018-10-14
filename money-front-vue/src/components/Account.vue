@@ -105,7 +105,7 @@
                 </div>
               </div>
             </div>
-            <b-modal :active.sync="modalTransaction.isActive" has-modal-card>
+            <b-modal :active.sync="modalTransaction.isActive" has-modal-card scroll="keep">
               <transaction v-bind="modalTransaction"></transaction>
             </b-modal>
           </b-tab-item>
