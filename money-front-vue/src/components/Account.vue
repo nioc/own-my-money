@@ -79,7 +79,7 @@
               <div class="card-content">
                 <div class="field is-grouped is-grouped-multiline is-block-mobile">
                   <div class="field">
-                    <div class="input is-static">{{batch.checkedTransactions.length}} transactions selected</div>
+                    <div class="input is-static">{{batch.checkedTransactions.length}} transactions selected ({{ transactionsCheckedSum | currency }})</div>
                   </div>
                   <div class="field">
                     <div class="select">
@@ -340,6 +340,9 @@ export default {
         return this.account.bankId + ' ' + this.account.branchId + ' ' + this.account.accountId + ' (' + this.account.label + ')'
       }
       return this.account.bankId + ' ' + this.account.branchId + ' ' + this.account.accountId
+    },
+    transactionsCheckedSum: function () {
+      return this.batch.checkedTransactions.length > 0 ? this.batch.checkedTransactions.reduce((sum, transaction) => sum + transaction.amount, 0) : 0
     }
   },
   methods: {
