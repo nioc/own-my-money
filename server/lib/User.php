@@ -39,6 +39,23 @@ class User
     }
 
     /**
+     * Return all users.
+     *
+     * @return array Users
+     */
+    public static function getAll()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT * FROM `user`;');
+        if ($query->execute()) {
+            //return array of users
+            return $query->fetchAll(PDO::FETCH_CLASS, 'User');
+        }
+        return [];
+    }
+
+    /**
      * Create user.
      *
      * @param string $error The returned error message
