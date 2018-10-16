@@ -29,6 +29,14 @@ class User
      * @var array User scope
      */
     public $scope;
+    /**
+     * @var int User login attempts failed
+     */
+    public $loginAttemptFailed;
+    /**
+     * @var int Timestamp of the last user login attempt failed
+     */
+    public $lastLoginAttemptFailed;
 
     /**
      * Initializes a User object with his identifier.
@@ -127,10 +135,48 @@ class User
         $query->bindValue(':login', $this->login, PDO::PARAM_STR);
         $query->setFetchMode(PDO::FETCH_INTO, $this);
         if ($query->execute() && $query->fetch()) {
+            if ($this->loginAttemptFailed > 1 && $this->lastLoginAttemptFailed > (time() - 300)) {
+                //return false if user is blocked (tried more than max attempts since 5 minutes)
+                return false;
+            }
             //return if password does match or not
             return password_verify($password, $this->password);
         }
         //return false to indicate an error occurred while reading the user
+        return false;
+    }
+
+    /**
+     * Store login attempt failed.
+     *
+     * @return bool True if the user login failure is updated
+     */
+    public function increaseLoginAttemptFailed()
+    {
+        if (!is_null($this->id)) {
+            require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+            $connection = new DatabaseConnection();
+            $query = $connection->prepare('UPDATE `user` SET `loginAttemptFailed`=`loginAttemptFailed`+1, `lastLoginAttemptFailed`=UNIX_TIMESTAMP() WHERE `id`=:id LIMIT 1;');
+            $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+            return $query->execute();
+        }
+        return false;
+    }
+
+    /**
+     * Clear login attempt failed.
+     *
+     * @return bool True if the user login failure is updated
+     */
+    public function clearLoginAttemptFailed()
+    {
+        if (!is_null($this->id)) {
+            require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+            $connection = new DatabaseConnection();
+            $query = $connection->prepare('UPDATE `user` SET `loginAttemptFailed`=0, `lastLoginAttemptFailed`=null WHERE `id`=:id LIMIT 1;');
+            $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+            return $query->execute();
+        }
         return false;
     }
 

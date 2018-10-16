@@ -21,11 +21,14 @@ switch ($api->method) {
         }
         $user = new User();
         if (!$user->checkCredentials($login, $password)) {
+            error_log('Login attempt failed: '.$login);
+            $user->increaseLoginAttemptFailed();
             $api->output(401, 'Invalid credentials');
             header('WWW-Authenticate: Bearer realm="money"');
             //invalid credentials
             return;
         }
+        $user->clearLoginAttemptFailed();
         $api->output(201, $api->generateToken($user->getProfile()));
         break;
 }
