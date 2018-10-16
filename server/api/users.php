@@ -45,33 +45,52 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        $user = new User();
-        if (!$api->checkParameterExists('id', $user->id) || $user->id == '') {
+        $postedUser = new User();
+        if (!$api->checkParameterExists('id', $postedUser->id) || $postedUser->id == '') {
             $api->output(400, 'PUT method must be called on a specific resource');
             //indicate the request is not valid, id must be provided in query path
             return;
         }
-        $user->id = intval($user->id);
-        if ($user->id !== $api->requesterId) {
+        $postedUser->id = intval($postedUser->id);
+        if ($postedUser->id !== $api->requesterId) {
             $api->output(403, 'User can be updated by himself only');
             //indicate the requester is not the user and is not allowed to update it
             return;
         }
-        if (!$api->checkParameterExists('login', $user->login) || $user->login == '') {
+        if (!$api->checkParameterExists('login', $postedUser->login) || $postedUser->login == '') {
             $api->output(400, 'Login must be provided');
             //indicate the request is not valid, login must be provided
             return;
         }
-        if (!$api->checkParameterExists('password', $user->password) || $user->password == '') {
+        if (!$api->checkParameterExists('password', $postedUser->password) || $postedUser->password == '') {
             $api->output(400, 'Password must be provided');
             //indicate the request is not valid, password must be provided
             return;
+        }
+        $user = new User($postedUser->id);
+        if (!$user->get()) {
+            $api->output(404, 'User not found');
+            //indicate the user was not found
+            return;
+        }
+        //iterate on each object attributes to set object
+        foreach ($user as $key => $value) {
+            if (property_exists($postedUser, $key) && !is_null($postedUser->$key)) {
+                //get provided attribute
+                $user->$key = $postedUser->$key;
+            }
         }
         if (!$user->update($error)) {
             $api->output(500, 'Error during profile update'.$error);
             //something gone wrong :(
             return;
         }
+        if (!is_null($user->password) && !$user->updatePassword($error)) {
+            $api->output(500, 'Error during password update'.$error);
+            //something gone wrong :(
+            return;
+        }
+        $user->get();
         $api->output(200, $user->getProfile());
         break;
 }

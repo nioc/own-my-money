@@ -22,6 +22,10 @@ class User
      */
     public $password;
     /**
+     * @var boolean User status
+     */
+    public $status;
+    /**
      * @var array User scope
      */
     public $scope;
@@ -119,7 +123,7 @@ class User
         $this->password = $password;
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT * FROM `user` WHERE `login`=:login AND `password`=:password LIMIT 1;');
+        $query = $connection->prepare('SELECT * FROM `user` WHERE `login`=:login AND `password`=:password AND `status`=1 LIMIT 1;');
         $query->bindValue(':login', $this->login, PDO::PARAM_STR);
         $query->bindValue(':password', md5($this->password), PDO::PARAM_STR);
         if ($query->execute()) {
@@ -132,7 +136,7 @@ class User
     }
 
     /**
-     * Update user.
+     * Update user (login, scope and status).
      *
      * @param string $error The returned error message
      *
@@ -144,10 +148,11 @@ class User
         if (is_int($this->id)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
             $connection = new DatabaseConnection();
-            $query = $connection->prepare('UPDATE `user` SET `login`=:login, `password`=:password WHERE `id`=:id;');
+            $query = $connection->prepare('UPDATE `user` SET `login`=:login, `scope`=:scope, `status`=:status WHERE `id`=:id;');
             $query->bindValue(':id', $this->id, PDO::PARAM_INT);
             $query->bindValue(':login', $this->login, PDO::PARAM_STR);
-            $query->bindValue(':password', md5($this->password), PDO::PARAM_STR);
+            $query->bindValue(':scope', $this->scope, PDO::PARAM_STR);
+            $query->bindValue(':status', $this->status, PDO::PARAM_BOOL);
             if ($query->execute()) {
                 //return true to indicate a successful user update
                 return true;
@@ -157,6 +162,32 @@ class User
             if ($query->errorInfo()[1] === 1062 || $query->errorInfo()[2] === 'UNIQUE constraint failed: user.login') {
                 $error = ' : login `'.$this->login.'` already exists';
             }
+        }
+        //return false to indicate an error occurred while updating the user
+        return false;
+    }
+
+    /**
+     * Update user password.
+     *
+     * @param string $error The returned error message
+     *
+     * @return bool True if the user password is updated
+     */
+    public function updatePassword(&$error)
+    {
+        $error = '';
+        if (is_int($this->id)) {
+            require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+            $connection = new DatabaseConnection();
+            $query = $connection->prepare('UPDATE `user` SET `password`=:password WHERE `id`=:id;');
+            $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+            $query->bindValue(':password', md5($this->password), PDO::PARAM_STR);
+            if ($query->execute()) {
+                //return true to indicate a successful user update
+                return true;
+            }
+            $error = ' '.$query->errorInfo()[2];
         }
         //return false to indicate an error occurred while updating the user
         return false;
@@ -191,9 +222,9 @@ class User
         $user = new stdClass();
         $user->sub = (int) $this->id;
         $user->login = $this->login;
+        $user->status = (bool) $this->status;
         //get user scope as a list of space-delimited strings (see https://tools.ietf.org/html/rfc6749#section-3.3)
-        //$user->scope = implode(' ', $this->getScope());
-        $user->scope = 'user';
+        $user->scope = $this->scope;
         //returns the user public profile
         return $user;
     }
