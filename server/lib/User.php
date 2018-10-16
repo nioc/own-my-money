@@ -72,7 +72,7 @@ class User
         $connection = new DatabaseConnection();
         $query = $connection->prepare('INSERT INTO `user` (`login`, `password`) VALUES ( :login, :password);');
         $query->bindValue(':login', $this->login, PDO::PARAM_STR);
-        $query->bindValue(':password', md5($this->password), PDO::PARAM_STR);
+        $query->bindValue(':password', password_hash($this->password, PASSWORD_DEFAULT), PDO::PARAM_STR);
         if ($query->execute() && $query->rowCount() > 0) {
             $this->id = $connection->lastInsertId();
             //return true to indicate a successful user creation
@@ -123,13 +123,12 @@ class User
         $this->password = $password;
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT * FROM `user` WHERE `login`=:login AND `password`=:password AND `status`=1 LIMIT 1;');
+        $query = $connection->prepare('SELECT * FROM `user` WHERE `login`=:login AND `status`=1 LIMIT 1;');
         $query->bindValue(':login', $this->login, PDO::PARAM_STR);
-        $query->bindValue(':password', md5($this->password), PDO::PARAM_STR);
-        if ($query->execute()) {
-            $query->setFetchMode(PDO::FETCH_INTO, $this);
-            //return true if there is user fetched, false otherwise
-            return (bool) $query->fetch();
+        $query->setFetchMode(PDO::FETCH_INTO, $this);
+        if ($query->execute() && $query->fetch()) {
+            //return if password does match or not
+            return password_verify($password, $this->password);
         }
         //return false to indicate an error occurred while reading the user
         return false;
@@ -182,7 +181,7 @@ class User
             $connection = new DatabaseConnection();
             $query = $connection->prepare('UPDATE `user` SET `password`=:password WHERE `id`=:id;');
             $query->bindValue(':id', $this->id, PDO::PARAM_INT);
-            $query->bindValue(':password', md5($this->password), PDO::PARAM_STR);
+            $query->bindValue(':password', password_hash($this->password, PASSWORD_DEFAULT), PDO::PARAM_STR);
             if ($query->execute()) {
                 //return true to indicate a successful user update
                 return true;
