@@ -13,51 +13,108 @@
       <div class="container box">
         <h1 class="title container">Account {{ accountTitle }}</h1>
         <b-tabs type="is-boxed" :animated="false">
+
           <b-tab-item label="Transactions" icon="file-text-o">
-            <div class="field is-grouped is-grouped-multiline">
-              <div class="field has-addons">
-                <p class="control has-icons-left">
-                  <input class="input" type="text" placeholder="Find a transaction" v-model="search.query">
-                  <span class="icon is-small is-left">
-                    <i class="fa fa-search"></i>
-                  </span>
-                </p>
-                <p class="control">
-                  <a class="button is-primary">Search</a>
-                </p>
+            <b-collapse class="card" :open.sync="search.isActive">
+              <div slot="trigger" class="card-header">
+                <span class="card-header-icon">
+                  <i class="fa" :class="search.isActive ? 'fa-angle-down' : 'fa-angle-right'"></i>
+                </span>
+                <p class="card-header-title">Search transactions</p>
               </div>
-              <div class="field">
-                <p class="control">
-                  <b-datepicker placeholder="Start date" icon="calendar" :readonly="false" :max-date="search.currentDate" v-model="search.startDate"></b-datepicker>
-                </p>
-              </div>
-              <div class="field">
-                <p class="control">
-                  <b-datepicker placeholder="End date" icon="calendar" :readonly="false" :max-date="search.currentDate" v-model="search.endDate"></b-datepicker>
-                </p>
-              </div>
-              <div class="field">
-                <div class="control">
-                  <div class="select">
-                    <select name="parent" v-model="search.category">
-                      <option value="">-- Category --</option>
-                      <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
-                    </select>
+              <div class="card-content">
+                <div class="field is-grouped is-grouped-multiline is-block-mobile">
+                  <div class="field has-addons">
+                    <p class="control has-icons-left">
+                      <input class="input" type="text" placeholder="Find a transaction" v-model="search.query">
+                      <span class="icon is-small is-left">
+                        <i class="fa fa-search"></i>
+                      </span>
+                    </p>
+                    <p class="control">
+                      <a class="button is-primary">Search</a>
+                    </p>
+                  </div>
+                  <div class="field">
+                    <p class="control">
+                      <b-datepicker placeholder="Start date" icon="calendar" :readonly="false" :max-date="search.currentDate" v-model="search.startDate"></b-datepicker>
+                    </p>
+                  </div>
+                  <div class="field">
+                    <p class="control">
+                      <b-datepicker placeholder="End date" icon="calendar" :readonly="false" :max-date="search.currentDate" v-model="search.endDate"></b-datepicker>
+                    </p>
+                  </div>
+                  <div class="field">
+                    <div class="control">
+                      <div class="select">
+                        <select name="parent" v-model="search.category">
+                          <option value="">-- Category --</option>
+                          <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field" v-if="search.category && categoriesAndSubcategoriesLookup[search.category].sub.length > 0">
+                    <div class="control">
+                      <div class="select">
+                        <select name="parent" v-model="search.subcategory">
+                          <option value="">-- Subcategory --</option>
+                          <option v-for="subcategory in categoriesAndSubcategoriesLookup[search.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="field" v-if="search.category && categoriesAndSubcategoriesLookup[search.category].sub.length > 0">
-                <div class="control">
-                  <div class="select">
-                    <select name="parent" v-model="search.subcategory">
-                      <option value="">-- Subcategory --</option>
-                      <option v-for="subcategory in categoriesAndSubcategoriesLookup[search.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
-                    </select>
+            </b-collapse>
+
+            <b-collapse class="card" :open.sync="batch.isActive">
+              <div slot="trigger" class="card-header">
+                <span class="card-header-icon">
+                  <i class="fa" :class="batch.isActive ? 'fa-angle-down' : 'fa-angle-right'"></i>
+                </span>
+                <p class="card-header-title">Batch updates</p>
+              </div>
+              <div class="card-content">
+                <div class="field is-grouped is-grouped-multiline is-block-mobile">
+                  <div class="field">
+                    <div class="input is-static">{{batch.checkedTransactions.length}} transactions selected</div>
+                  </div>
+                  <div class="field">
+                    <div class="select">
+                      <select v-model="batch.category">
+                        <option value="">-- Category --</option>
+                        <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="field" v-if="batch.category && categoriesAndSubcategoriesLookup[batch.category].sub.length > 0">
+                    <div class="select">
+                      <select v-model="batch.subcategory">
+                        <option value="">-- Subcategory --</option>
+                        <option v-for="subcategory in categoriesAndSubcategoriesLookup[batch.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="batch.isLoading">Apply</button>
+                  </div>
+                </div>
+                <div class="field is-block-mobile">
+                  <progress class="progress" :value="batch.progress" max="1">{{ batch.progress }} %</progress>
+                </div>
+                <div class="field">
+                  <div class="message is-danger" v-if="batch.result">
+                    <div class="message-body">
+                      {{ batch.result }}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="dateUser" default-sort-direction="desc" selectable @select="editTransaction">
+            </b-collapse>
+
+            <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="dateUser" default-sort-direction="desc" @select="editTransaction" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
               <template slot-scope="props">
                 <b-table-column field="amount" label="Amount" sortable numeric>
                   <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-success']">{{ props.row.amount | currency }}</span>
@@ -80,6 +137,7 @@
                 </section>
               </template>
             </b-table>
+
             <div class="field">
               <p class="control">
                 <b-field class="file">
@@ -109,6 +167,7 @@
               <transaction v-bind="modalTransaction"></transaction>
             </b-modal>
           </b-tab-item>
+
           <b-tab-item label="Edit" icon="pencil">
             <form @submit.prevent="validateUpdateBeforeSubmit" novalidate class="section is-400px-form">
               <div class="field is-horizontal">
@@ -180,6 +239,7 @@
             </form>
             <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
           </b-tab-item>
+
         </b-tabs>
       </div>
     </div>
@@ -210,10 +270,20 @@ export default {
         transactions: []
       },
       isLoading: false,
+      batch: {
+        isActive: false,
+        isLoading: false,
+        progress: 0,
+        result: '',
+        checkedTransactions: [],
+        category: '',
+        subcategory: ''
+      },
       updatedAccount: {
       },
       // filter
       search: {
+        isActive: false,
         query: '',
         currentDate: today,
         startDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
@@ -307,8 +377,10 @@ export default {
       })
     },
     editTransaction (item) {
-      this.modalTransaction.transaction = item
-      this.modalTransaction.isActive = true
+      if (!this.batch.isActive) {
+        this.modalTransaction.transaction = item
+        this.modalTransaction.isActive = true
+      }
     },
     validateUpdateBeforeSubmit () {
       // call the async validator
@@ -392,6 +464,41 @@ export default {
         // @TODO : add error handling
         console.error(response)
       })
+    },
+    processBatchUpdate () {
+      let length = this.batch.checkedTransactions.length
+      if (length > 0) {
+        this.batch.isLoading = true
+        this.batch.progress = 0
+        let processed = 0
+        let category = this.batch.category
+        let subcategory = this.batch.subcategory
+        this.batch.result = ''
+        for (let transaction of this.batch.checkedTransactions) {
+          if (category) {
+            transaction.category = category
+            if (subcategory) {
+              transaction.subcategory = subcategory
+            }
+          }
+          this.rTransactions.update({ aid: this.account.id, id: transaction.id }, transaction)
+            .then(response => {
+            }, response => {
+              if (response.body.message) {
+                this.batch.result += transaction.id + ' : ' + response.body.message + '. '
+                return
+              }
+              this.batch.result += transaction.id + ' : ' + response.status + ' - ' + response.statusText + '. '
+            })
+            .finally(function () {
+              processed++
+              this.batch.progress = processed / length
+              if (processed === length) {
+                this.batch.isLoading = false
+              }
+            })
+        }
+      }
     },
     uploadDataset () {
       this.upload.result = ''

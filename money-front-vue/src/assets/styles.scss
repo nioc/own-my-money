@@ -20,6 +20,10 @@ html {
   max-width: 400px;
 }
 
+$card-header-background-color: $white-bis;
+$card-shadow: 0 0 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
+$card-header-shadow: 0;
+
 @import "~bulma/sass/utilities/_all";
 @import "~bulma/sass/base/_all";
 @import "~bulma/sass/elements/_all";
