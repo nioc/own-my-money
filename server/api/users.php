@@ -11,7 +11,7 @@
  */
 require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Api.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
-$api = new Api('json', ['GET', 'PUT']);
+$api = new Api('json', ['GET', 'POST', 'PUT']);
 switch ($api->method) {
   case 'GET':
       //returns a specific user or all
@@ -39,7 +39,7 @@ switch ($api->method) {
       //request all users
       if (!$api->checkScope('admin')) {
           $api->output(403, 'Admin scope required');
-          //indicate the requester is not the user and is not allowed to update it
+          //indicate the requester is not allowed to get all users
           return;
       }
       $rawUsers = User::getAll();
@@ -49,6 +49,44 @@ switch ($api->method) {
       }
       $api->output(200, $users);
       break;
+
+    case 'POST':
+        //create user
+        if (!$api->checkAuth()) {
+            //User not authentified/authorized
+            return;
+        }
+        if (!$api->checkScope('admin')) {
+            $api->output(403, 'Admin scope required');
+            //indicate the requester is not allowed to create user
+            return;
+        }
+        $postedUser = new User();
+
+        if (!$api->checkParameterExists('login', $postedUser->login) || $postedUser->login == '') {
+            $api->output(400, 'Login must be provided');
+            //indicate the request is not valid, login must be provided
+            return;
+        }
+        if (!$api->checkParameterExists('password', $postedUser->password) || $postedUser->password == '') {
+            $api->output(400, 'Password must be provided');
+            //indicate the request is not valid, password must be provided
+            return;
+        }
+        $api->checkParameterExists('scope', $postedUser->scope);
+        if ($api->checkParameterExists('status', $postedUser->status)) {
+          $postedUser->status = boolval($postedUser->status);
+        }
+
+        if (!$postedUser->insert($error)) {
+            $api->output(500, 'Error during user creation'.$error);
+            //something gone wrong :(
+            return;
+        }
+        $postedUser->get();
+        $api->output(201, $postedUser->getProfile());
+        break;
+
     case 'PUT':
         //update user
         if (!$api->checkAuth()) {
