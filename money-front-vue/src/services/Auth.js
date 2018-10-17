@@ -60,7 +60,11 @@ export default {
       this.user.token = payload.token
       this.user.id = payload.id
       this.user.login = payload.login
-      this.user.scope = payload.scope
+      let scope = {}
+      if (payload.scope) {
+        payload.scope.split(' ').forEach(function (role) { scope[role] = true })
+      }
+      this.user.scope = scope
       this.user.exp = payload.exp
       // check if token is not expired
       this.user.authenticated = (payload.exp > Math.floor(Date.now() / 1000))
