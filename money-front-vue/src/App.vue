@@ -18,6 +18,7 @@
             <a class="navbar-link"><i class="fa fa-wrench fa-fw"/>&nbsp;System settings</a>
             <div class="navbar-dropdown is-right">
               <router-link class="navbar-item" to="/categories"><i class="fa fa-folder-open-o fa-fw"/>&nbsp;Categories</router-link>
+              <router-link class="navbar-item" to="/users"><i class="fa fa-users fa-fw"/>&nbsp;Users</router-link>
             </div>
           </div>
           <div class="navbar-item has-dropdown is-hoverable">

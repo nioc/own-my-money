@@ -4,6 +4,7 @@ import Accounts from '@/components/Accounts'
 import Account from '@/components/Account'
 import Login from '@/components/Login'
 import Profile from '@/components/Profile'
+import Users from '@/components/Users'
 import Categories from '@/components/Categories'
 import Categorie from '@/components/Category'
 import Home from '@/components/Home'
@@ -40,6 +41,12 @@ export default new Router({
       name: 'profile',
       component: Profile,
       meta: {title: 'Profile'}
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: Users,
+      meta: {title: 'Manage users'}
     },
     {
       path: '/categories',

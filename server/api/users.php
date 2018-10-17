@@ -72,10 +72,14 @@ switch ($api->method) {
             //indicate the request is not valid, login must be provided
             return;
         }
-        if (!$api->checkParameterExists('password', $postedUser->password) || $postedUser->password == '') {
+        if ($api->checkParameterExists('password', $postedUser->password) && $postedUser->password == '') {
             $api->output(400, 'Password must be provided');
             //indicate the request is not valid, password must be provided
             return;
+        }
+        $api->checkParameterExists('scope', $postedUser->scope);
+        if ($api->checkParameterExists('status', $postedUser->status)) {
+          $postedUser->status = boolval($postedUser->status);
         }
         $user = new User($postedUser->id);
         if (!$user->get()) {
@@ -95,7 +99,7 @@ switch ($api->method) {
             //something gone wrong :(
             return;
         }
-        if (!is_null($user->password) && !$user->updatePassword($error)) {
+        if (!is_null($postedUser->password) && !$user->updatePassword($error)) {
             $api->output(500, 'Error during password update'.$error);
             //something gone wrong :(
             return;
