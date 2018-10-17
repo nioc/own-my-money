@@ -21,6 +21,11 @@ switch ($api->method) {
       }
       if ($api->checkParameterExists('id', $id) && $id !== '') {
           //request a specific user
+          if ($api->requesterId !== intval($id) && !$api->checkScope('admin')) {
+              $api->output(403, 'Admin scope required');
+              //indicate the requester is not the user and is not allowed to update it
+              return;
+          }
           $user = new User($id);
           if (!$user->get()) {
               $api->output(404, 'User not found');
@@ -32,6 +37,11 @@ switch ($api->method) {
           return;
       }
       //request all users
+      if (!$api->checkScope('admin')) {
+          $api->output(403, 'Admin scope required');
+          //indicate the requester is not the user and is not allowed to update it
+          return;
+      }
       $rawUsers = User::getAll();
       $users =  array();
       foreach ($rawUsers as $user) {
@@ -52,7 +62,7 @@ switch ($api->method) {
             return;
         }
         $postedUser->id = intval($postedUser->id);
-        if ($postedUser->id !== $api->requesterId) {
+        if ($postedUser->id !== $api->requesterId && !$api->checkScope('admin')) {
             $api->output(403, 'User can be updated by himself only');
             //indicate the requester is not the user and is not allowed to update it
             return;
