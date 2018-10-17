@@ -44,6 +44,11 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
+        if (!$api->checkScope('admin')) {
+            $api->output(403, 'Admin scope required');
+            //indicate the requester is not allowed to create category
+            return;
+        }
         $category = new Category();
         $requestedCategory = $api->query['body'];
         if (!$category->validateModel($requestedCategory, $errorMessage)) {
@@ -63,6 +68,11 @@ switch ($api->method) {
        //put operation for updating category label, status or parent
        if (!$api->checkAuth()) {
            //User not authentified/authorized
+           return;
+       }
+       if (!$api->checkScope('admin')) {
+           $api->output(403, 'Admin scope required');
+           //indicate the requester is not allowed to update a category
            return;
        }
        $category = new Category();
