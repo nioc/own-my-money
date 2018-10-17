@@ -141,15 +141,14 @@
             <div class="field">
               <p class="control">
                 <b-field class="file">
-                  <b-upload v-model="upload.files" @input="uploadDataset" :disabled="upload.isUploading">
+                  <b-upload v-model="upload.file" @input="uploadDataset" :disabled="upload.isUploading">
                     <a class="button is-primary">
                       <b-icon icon="upload"></b-icon>
                       <span>Upload OFX</span>
                     </a>
                   </b-upload>
-                  <span class="file-name"
-                    v-if="upload.files && upload.files.length">
-                    {{ upload.files[0].name }} ({{ upload.files[0].size }} bytes)
+                  <span class="file-name" v-if="upload.file">
+                    {{ upload.file.name }} ({{ upload.file.size }} bytes)
                   </span>
                 </b-field>
               </p>
@@ -506,7 +505,7 @@ export default {
     uploadDataset () {
       this.upload.result = ''
       // get file
-      let file = this.upload.files[0]
+      let file = this.upload.file
       var data = new FormData()
       data.append('Content-Type', file.type || 'application/octet-stream')
       data.append('file', file)
