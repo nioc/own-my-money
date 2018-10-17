@@ -112,8 +112,37 @@ class User
                 //return true if there is user fetched, false otherwise
                 return (bool) $query->fetch();
             }
+            //return false to indicate an error occurred while reading the user
+            return false;
         }
         //return false to indicate an error occurred while reading the user
+        return false;
+    }
+
+    /**
+     * Return if user has requested scope
+     *
+     * @param string $scope    Requested scope
+     *
+     * @return bool True if the user has the scope
+     */
+    public function hasScope($scope)
+    {
+        if (is_int($this->id)) {
+            if (is_null($this->scope) || $this->scope === '') {
+                //get scope from database
+                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+                $connection = new DatabaseConnection();
+                $query = $connection->prepare('SELECT * FROM `user` WHERE `id`=:id LIMIT 1;');
+                $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+                $query->setFetchMode(PDO::FETCH_INTO, $this);
+                $query->execute();
+                $query->fetch();
+            }
+            //return true if role is in scope
+            return in_array($scope, explode(' ', $this->scope));
+        }
+        //return false to indicate an error occurred while reading the user scope
         return false;
     }
 

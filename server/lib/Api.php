@@ -164,16 +164,15 @@ class Api
      *
      * @param string $requiredScope Required user scope for processing the API
      *
-     * @return bool Return if user has the required scope or not
+     * @return bool Return if user has the required scope
      */
     public function checkScope($requiredScope)
     {
         if (is_int($this->requesterId)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
             $requester = new User($this->requesterId);
-            $scope = $requester->getScope();
             //return if required scope is found in user scope
-            return in_array($requiredScope, $scope);
+            return $requester->hasScope($requiredScope);
         }
         //requester is not identified, return false
         return false;
