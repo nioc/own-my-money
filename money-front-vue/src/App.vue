@@ -2,7 +2,7 @@
   <div id="app">
     <nav class="navbar is-dark is-fixed-top" v-if="user.authenticated">
       <div class="navbar-brand">
-        <router-link class="navbar-item" to="/"><i class="fa fa-money fa-fw"/>&nbsp;OwnMyMoney</router-link>
+        <router-link class="navbar-item" to="/"><img src="/static/icon-whitesmoke.svg">&nbsp;OwnMyMoney</router-link>
         <a role="button" id="navbar-burger" class="navbar-burger" @click="toggleMenu" aria-label="menu" aria-expanded="false">
           <span aria-hidden="true" class="is-primary"></span>
           <span aria-hidden="true"></span>
@@ -11,7 +11,7 @@
       </div>
       <div class="navbar-menu" id="navbar-menu">
         <div class="navbar-start">
-          <router-link class="navbar-item" to="/accounts">Accounts</router-link>
+          <router-link class="navbar-item" to="/accounts"><i class="fa fa-table fa-fw"/>&nbsp;Accounts</router-link>
         </div>
         <div class="navbar-end">
           <div class="navbar-item has-dropdown is-hoverable" v-if="this.user.scope.admin">
