@@ -90,7 +90,7 @@ class Api
             return true;
         }
         //try in the body request, if it exists
-        if (array_key_exists('body', $this->query) && property_exists($this->query['body'], $parameter)) {
+        if (array_key_exists('body', $this->query) && $this->query['body'] && property_exists($this->query['body'], $parameter)) {
             $value = $this->query['body']->$parameter;
             //returns requested parameter has been found in the body
             return true;
