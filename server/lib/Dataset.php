@@ -91,4 +91,52 @@ class Dataset
         //return all transactions of the provided account
         return $transactions;
     }
+
+    /**
+     * Parse account transactions from JSON file
+     *
+     * @param int $accountId Account identifier
+     * @param string $mapCode Map to use for parsing JSON
+     *
+     * @return array Transactions
+     */
+    public function parseTransactionsFromJson($accountId, $mapCode)
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Map.php';
+        //get file content and decode JSON
+        $json = file_get_contents($this->filepath);
+        $jsTransactions = json_decode($json, true);
+        //get map
+        $map = new Map($mapCode);
+        if (!$map->get()) {
+            //map not found return empty list
+            return [];
+        }
+        $mapAttributes = $map->getAttributes();
+        $transactions = [];
+        foreach ($jsTransactions as $currentTransaction) {
+            $transaction = new Transaction();
+            foreach ($currentTransaction as $key => $value) {
+                //parse provided transaction with Map to feed Transaction object
+                if (array_key_exists($key, $mapAttributes)) {
+                    //attribute in provided transaction is found in map, feed the related Transaction attribute with the value
+                    $attribute = $mapAttributes[$key];
+                    if ($attribute === 'dateUser' || $attribute === 'datePosted') {
+                        //handle format for date attributes
+                        if ($dateTime = DateTime::createFromFormat($map->dateFormat, $value)) {
+                            $value = $dateTime->getTimestamp();
+                        }
+                    }
+                    $transaction->$attribute = $value;
+                }
+            }
+            $transaction->aid = $accountId;
+            $transaction->type = 'DEBIT';
+            if ($transaction->amount > 0) {
+                $transaction->type = 'CREDIT';
+            }
+            array_push($transactions, $transaction);
+        }
+        return $transactions;
+    }
 }

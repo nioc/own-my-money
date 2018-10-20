@@ -95,6 +95,26 @@ switch ($api->method) {
                     }
                 }
                 break;
+            case '.json':
+                if (!$api->checkParameterExists('map', $mapCode)) {
+                    $api->output(400, 'Map code must be provided in query string for JSON dataset');
+                    //indicate the map code is not provided
+                    return;
+                }
+                $dataset = new Dataset($file['tmp_name']);
+                //process account transactions
+                if (!$transactions = $dataset->parseTransactionsFromJson($accountId, $mapCode)) {
+                    $api->output(500, 'Error during JSON process');
+                    //something gone wrong :(
+                    return;
+                }
+                foreach ($transactions as $transaction) {
+                    $result['processed']++;
+                    if ($transaction->insert()) {
+                        $result['inserted']++;
+                    }
+                }
+                break;
             default:
                 $api->output(501, 'File extension "' . $extension . '" is not implemented');
                 //upload failed, return an error

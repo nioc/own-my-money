@@ -12,4 +12,5 @@ RewriteRule ^accounts/([0-9]+)/transactions/([0-9]+)/?$    transactions.php?aid=
 RewriteRule ^categories/?$                                 categories.php [L]
 RewriteRule ^categories/?([0-9]*)/?$                       categories.php?id=$1 [L]
 RewriteRule ^dataset/?$                                    dataset.php [L]
-RewriteRule ^accounts/([0-9]+)/dataset/?$                  dataset.php?aid=$1 [L]
+RewriteRule ^accounts/([0-9]+)/dataset/?$                  dataset.php?aid=$1 [L,QSA]
+RewriteRule ^maps/?$                                       maps.php [L]

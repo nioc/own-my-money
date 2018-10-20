@@ -138,13 +138,13 @@
               </template>
             </b-table>
 
-            <div class="field">
+            <div class="field is-grouped">
               <p class="control">
                 <b-field class="file">
                   <b-upload v-model="upload.file" @input="uploadDataset" :disabled="upload.isUploading">
                     <a class="button is-primary">
                       <b-icon icon="upload"></b-icon>
-                      <span>Upload OFX</span>
+                      <span>Upload OFX/JSON</span>
                     </a>
                   </b-upload>
                   <span class="file-name" v-if="upload.file">
@@ -152,6 +152,14 @@
                   </span>
                 </b-field>
               </p>
+              <div class="control">
+                <div class="select">
+                  <select name="parent" v-model="upload.map">
+                    <option value="">-- JSON Map --</option>
+                    <option v-for="map in maps" :key="map.code" v-bind:value="map.code">{{ map.label }}</option>
+                  </select>
+                </div>
+              </div>
             </div>
             <div class="field is-horizontal" >
               <div class="field-body">
@@ -290,9 +298,12 @@ export default {
         category: '',
         subcategory: ''
       },
+      // maps
+      maps: [],
       // upload dataset
       upload: {
         file: null,
+        map: '',
         isUploading: false,
         result: ''
       },
@@ -309,6 +320,7 @@ export default {
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}'),
       rCategories: this.$resource(Config.API_URL + 'categories{/id}'),
       rTransactions: this.$resource(Config.API_URL + 'accounts/{aid}/transactions{/id}'),
+      rMaps: this.$resource(Config.API_URL + 'maps'),
       rDatasets: this.$resource(Config.API_URL + 'accounts/' + parseInt(this.$route.params.id) + '/dataset')
     }
   },
@@ -502,6 +514,15 @@ export default {
         }
       }
     },
+    // get dataset maps
+    getMaps () {
+      this.rMaps.get().then(response => {
+        this.maps = response.body
+      }, response => {
+        // @TODO : add error handling
+        console.error(response)
+      })
+    },
     uploadDataset () {
       this.upload.result = ''
       // get file
@@ -514,11 +535,19 @@ export default {
         this.upload.result = 'File too big'
         return
       }
+      let params = {}
+      if (file.type === 'application/json') {
+        if (!this.upload.map) {
+          this.upload.result = 'Map must be set for uploading a JSON file'
+          return
+        }
+        params = { map: this.upload.map }
+      }
       // prepare context
       this.upload.isUploading = true
       this.isLoading = true
       // call API
-      this.rDatasets.save({}, data)
+      this.rDatasets.save(params, data)
         .then(response => {
           if (response.body.message) {
             this.upload.result = response.body.message
@@ -549,6 +578,7 @@ export default {
     this.get()
     this.getCategories()
     this.getTransactions()
+    this.getMaps()
   }
 }
 </script>
