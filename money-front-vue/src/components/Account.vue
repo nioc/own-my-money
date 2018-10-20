@@ -114,7 +114,7 @@
               </div>
             </b-collapse>
 
-            <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="dateUser" default-sort-direction="desc" @select="editTransaction" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
+            <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" @select="editTransaction" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
               <template slot-scope="props">
                 <b-table-column field="amount" label="Amount" sortable numeric>
                   <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-success']">{{ props.row.amount | currency }}</span>
@@ -122,8 +122,8 @@
                 <b-table-column field="name" label="Name" sortable>
                   {{ props.row.fullname }}<span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
                 </b-table-column>
-                <b-table-column field="dateUser" label="Date" sortable>
-                  {{ props.row.dateUser | moment("DD/MM/YYYY") }}
+                <b-table-column field="datePosted" label="Date" sortable>
+                  {{ props.row.datePosted | moment("DD/MM/YYYY") }}
                 </b-table-column>
                 <b-table-column field="category" label="Category" sortable>
                   {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
@@ -328,8 +328,8 @@ export default {
       })
       return transactions.filter(function (transaction) {
         return transaction.fullname.toLowerCase().indexOf(query.toLowerCase()) > -1 &
-        new Date(Date.parse(transaction.dateUser)) >= startDate &
-        new Date(Date.parse(transaction.dateUser)) <= endDate &
+        new Date(Date.parse(transaction.datePosted)) >= startDate &
+        new Date(Date.parse(transaction.datePosted)) <= endDate &
         (!category || transaction.category === category) &
         (!subcategory || transaction.subcategory === subcategory)
       })
