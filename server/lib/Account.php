@@ -41,6 +41,10 @@ class Account
      * @var string Timestamp representing the last update
      */
     public $lastUpdate;
+    /**
+     * @var array Transactions
+     */
+    public $transactions;
 
     /**
      * Initializes an Account  object with his identifier.
@@ -180,40 +184,6 @@ class Account
     }
 
     /**
-     * Insert transactions from OFX file.
-     *
-     * @param array $transactions Transactions read from OFX file
-     *
-     * @return array Result of process (transactions read and inserted)
-     */
-    public function insertTransactionsFromDataset($transactions)
-    {
-        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
-        $result = [];
-        $result['inserted'] = 0;
-        $result['processed'] = 0;
-        for ($i = 1; $i < count($transactions); $i++) {
-            $currentTransaction = $transactions[$i];
-            $result['processed']++;
-            $transaction = new Transaction();
-            $transaction->datePosted = $currentTransaction->date->getTimestamp();
-            $transaction->dateUser = $transaction->datePosted;
-            $transaction->aid = $this->id;
-            $transaction->amount = $currentTransaction->amount;
-            $transaction->fitid = $currentTransaction->uniqueId;
-            $transaction->name = $currentTransaction->name;
-            $transaction->memo = $currentTransaction->memo;
-            if ($transaction->amount > 0) {
-                $transaction->type = 'CREDIT';
-            }
-            $transaction->type = 'DEBIT';
-            if ($transaction->insert()) {
-                $result['inserted']++;
-            }
-        }
-        return $result;
-    }
-    /**
      * Delete an account from database.
      *
      * @return bool True on success or false on failure
@@ -248,6 +218,7 @@ class Account
         if (isset($account->lastUpdate)) {
             $account->lastUpdate= date('c', $account->lastUpdate);
         }
+        unset($account->transactions);
         //return structured account
         return $account;
     }

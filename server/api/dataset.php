@@ -23,6 +23,24 @@ switch ($api->method) {
         $file = $_FILES['file'];
         // check extension
         $allowedExtensions = array('.ofx');
+        if ($api->checkParameterExists('aid', $accountId)) {
+            $accountId = intval($accountId);
+            //allow json files for dataset account
+            array_push($allowedExtensions, '.json');
+            //check provided account exists
+            $account = new Account($accountId);
+            if (!$account->get()) {
+                $api->output(404, 'Account not found');
+                //indicate the account was not found
+                return;
+            }
+            //check provided account is owned by the requester
+            if ($account->user !== $api->requesterId) {
+                $api->output(403, 'Account can be updated by owner only');
+                //indicate the requester is not the account owner and is not allowed to update it
+                return;
+            }
+        }
         $extension = strtolower(strrchr($file['name'], '.'));
         if (!in_array($extension, $allowedExtensions)) {
             $api->output(400, 'File extension must be in ' . implode(', ', $allowedExtensions));
@@ -35,21 +53,47 @@ switch ($api->method) {
             //upload failed, return an error
             return;
         }
-        //call parser
+        //call parser to produce transactions array
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Dataset.php';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
+        $transactions = [];
+        $result = [];
+        $result['accountProcessed'] = 0;
+        $result['accountInserted'] = 0;
+        $result['inserted'] = 0;
+        $result['processed'] = 0;
         switch ($extension) {
             case '.ofx':
-                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/vendor/ofxparser/lib/OfxParser/Parser.php';
-                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/vendor/ofxparser/lib/OfxParser/Ofx.php';
-                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/vendor/ofxparser/lib/OfxParser/Entities/AbstractEntity.php';
-                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/vendor/ofxparser/lib/OfxParser/Entities/SignOn.php';
-                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/vendor/ofxparser/lib/OfxParser/Entities/Status.php';
-                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/vendor/ofxparser/lib/OfxParser/Entities/Institute.php';
-                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/vendor/ofxparser/lib/OfxParser/Entities/BankAccount.php';
-                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/vendor/ofxparser/lib/OfxParser/Entities/Statement.php';
-                require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/vendor/ofxparser/lib/OfxParser/Entities/Transaction.php';
-                $ofxParser = new \OfxParser\Parser();
-                $ofx = $ofxParser->loadFromFile($file['tmp_name']);
-                $bankAccount = reset($ofx->bankAccounts);
+                $dataset = new Dataset($file['tmp_name']);
+                if (!$accounts = $dataset->parseAccountsFromOfx($api->requesterId)) {
+                    $api->output(500, 'Error during OFX process');
+                    //something gone wrong :(
+                    return;
+                }
+                //iterate on each account
+                foreach ($accounts as $currentAccount) {
+                    //check if API is called without account id or account does not exists or if the existing account is the one provided and owned by requester
+                    if (!$accountId || !$currentAccount->id || ($accountId === $currentAccount->id && $currentAccount->user === $api->requesterId)) {
+                        $result['accountProcessed']++;
+                        if (!$currentAccount->id) {
+                            //account creation by dataset (not already known)
+                            if ($currentAccount->insert()) {
+                                $result['accountInserted']++;
+                            }
+                        } else {
+                            //update timestamp
+                            $currentAccount->update();
+                        }
+                        //process account transactions
+                        $transactions = $dataset->parseTransactionsFromOfx($currentAccount);
+                        foreach ($transactions as $transaction) {
+                            $result['processed']++;
+                            if ($transaction->insert()) {
+                                $result['inserted']++;
+                            }
+                        }
+                    }
+                }
                 break;
             default:
                 $api->output(501, 'File extension "' . $extension . '" is not implemented');
@@ -57,41 +101,14 @@ switch ($api->method) {
                 return;
         }
 
-        if (!$api->checkParameterExists('aid', $accountId)) {
-            //account creation by dataset
-            $user = new User($api->requesterId);
-            if (!$result = $user->insertAccountFromDataset($bankAccount)) {
-                $api->output(500, 'Error during process');
-                //something gone wrong :(
-                return;
-            }
-            $response = new stdClass();
-            $response->code = 201;
-            $response->message = $result['accountInserted'] . '/' . $result['accountprocessed'] . ' account created, ' . $result['inserted'] . '/' . $result['processed'] . ' transactions created';
-            $api->output(201, $response);
-            return;
-        }
-
-        //insert transactions from OFX into account
-        $account = new Account($accountId);
-        if (!$account->get()) {
-            $api->output(404, 'Account not found');
-            //indicate the account was not found
-            return;
-        }
-        if ($account->user !== $api->requesterId) {
-            $api->output(403, 'Account can be updated by owner only');
-            //indicate the requester is not the account owner and is not allowed to update it
-            return;
-        }
-        if (!$result = $account->insertTransactionsFromDataset($bankAccount->statement->transactions)) {
-            $api->output(500, 'Error during process');
-            //something gone wrong :(
-            return;
-        }
+        //produce API response
         $response = new stdClass();
         $response->code = 201;
-        $response->message = $result['inserted'] . '/' . $result['processed'] . ' transactions created';
+        if (!$accountId) {
+            $response->message = $result['accountInserted'] . '/' . $result['accountProcessed'] . ' account created, ' . $result['inserted'] . '/' . $result['processed'] . ' transactions created';
+        } else {
+            $response->message = $result['inserted'] . '/' . $result['processed'] . ' transactions created';
+        }
         $api->output(201, $response);
         return;
         break;
