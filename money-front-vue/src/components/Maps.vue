@@ -47,6 +47,8 @@ export default {
       this.rMaps.query({})
         .then(response => {
           this.maps = response.body
+          // put maps in local storage for future usage
+          localStorage.setItem('maps', JSON.stringify(this.maps))
         }, response => {
         // @TODO : add error handling
           console.error(response)

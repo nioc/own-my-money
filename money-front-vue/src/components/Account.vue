@@ -513,8 +513,15 @@ export default {
     },
     // get dataset maps
     getMaps () {
+      // try to get maps from local storage
+      if (localStorage.getItem('maps')) {
+        this.maps = JSON.parse(localStorage.getItem('maps'))
+        return
+      }
       this.rMaps.get().then(response => {
         this.maps = response.body
+        // put maps in local storage for future usage
+        localStorage.setItem('maps', JSON.stringify(this.maps))
       }, response => {
         // @TODO : add error handling
         console.error(response)

@@ -249,6 +249,7 @@ export default {
           this.isLoading = true
           this.rMaps.delete({ code: this.$route.params.code })
             .then(response => {
+              localStorage.removeItem('maps')
               this.$router.replace({ name: 'maps' })
             }, response => {
               // remove loading overlay when API replies
@@ -274,6 +275,7 @@ export default {
             this.rMaps.save(this.map)
               .then(response => {
                 // return to maps
+                localStorage.removeItem('maps')
                 this.$router.replace({ name: 'maps' })
               }, response => {
                 // remove loading overlay when API replies
@@ -290,6 +292,7 @@ export default {
           this.rMaps.update({ code: this.$route.params.code }, this.map)
             .then(response => {
               // return to maps
+              localStorage.removeItem('maps')
               this.$router.replace({ name: 'maps' })
             }, response => {
               // remove loading overlay when API replies
