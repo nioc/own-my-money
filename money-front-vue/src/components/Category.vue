@@ -248,7 +248,7 @@ export default {
   mounted: function () {
     this.breadcrumbItems = [
       { link: '/', icon: 'fa-home', text: 'Home' },
-      { link: '/categories', text: 'Categories' }
+      { link: '/categories', icon: 'fa-folder-open-o', text: 'Categories' }
     ]
     if (this.category.id) {
       // for existing category, get data

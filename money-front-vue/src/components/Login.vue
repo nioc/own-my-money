@@ -1,5 +1,5 @@
 <template>
-  <section class="hero is-light is-fullheight">
+  <section class="hero is-light is-fullheight login">
      <div class="hero-body">
        <div class="container has-text-centered">
          <div class="column is-4 is-offset-4">
@@ -78,3 +78,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .login {
+    margin-top: -3.25rem;
+  }
+</style>

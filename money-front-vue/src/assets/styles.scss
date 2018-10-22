@@ -13,9 +13,6 @@ $navbar-item-hover-color: $primary;
 .navbar .router-link-exact-active {
   color: $grey-light !important
 }
-html {
-  background-color: $white-ter !important;
-}
 .is-400px-form input, .is-400px-form .control {
   max-width: 400px;
 }
@@ -23,6 +20,8 @@ html {
 $card-header-background-color: $white-bis;
 $card-shadow: 0 0 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
 $card-header-shadow: 0;
+$body-background-color: $white-ter;
+$input-shadow: none;
 
 @import "~bulma/sass/utilities/_all";
 @import "~bulma/sass/base/_all";

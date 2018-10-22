@@ -27,6 +27,7 @@
             <div class="navbar-dropdown is-right">
               <router-link class="navbar-item" to="/profile"><i class="fa fa-user-circle fa-fw"/>&nbsp;Profile</router-link>
               <hr class="navbar-divider">
+              <a class="navbar-item" href="https://github.com/nioc/own-my-money/issues/new" target="_blank"><i class="fa fa-bug fa-fw"/>&nbsp;Report a bug</a>
               <a class="navbar-item" @click="logout()"><i class="fa fa-sign-out fa-fw"/>&nbsp;Logout</a>
             </div>
           </div>

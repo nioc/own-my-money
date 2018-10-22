@@ -4,7 +4,7 @@
       <breadcrumb
         :items="[
           { link: '/', icon: 'fa-home', text: 'Home' },
-          { link: '/accounts', text: 'Accounts' },
+          { link: '/accounts', icon: 'fa-table', text: 'Accounts' },
           { link: '/accounts', text: accountTitle, isActive: true }
         ]">
       </breadcrumb>
@@ -347,10 +347,7 @@ export default {
       })
     },
     accountTitle: function () {
-      if (this.account.label) {
-        return this.account.bankId + ' ' + this.account.branchId + ' ' + this.account.accountId + ' (' + this.account.label + ')'
-      }
-      return this.account.bankId + ' ' + this.account.branchId + ' ' + this.account.accountId
+      return this.account.label ? this.account.label : this.account.bankId + ' ' + this.account.branchId + ' ' + this.account.accountId
     },
     transactionsCheckedSum: function () {
       return this.batch.checkedTransactions.length > 0 ? this.batch.checkedTransactions.reduce((sum, transaction) => sum + transaction.amount, 0) : 0

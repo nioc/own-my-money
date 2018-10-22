@@ -4,7 +4,7 @@
       <breadcrumb
         :items="[
           {link: '/', icon: 'fa-home', text: 'Home'},
-          {link: '/profile', text: 'Profile', isActive: true}
+          {link: '/profile', icon: 'fa-user-circle', text: 'Profile', isActive: true}
         ]">
       </breadcrumb>
     </div>

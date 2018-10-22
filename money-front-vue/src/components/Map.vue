@@ -4,7 +4,7 @@
       <breadcrumb
         :items="[
           { link: '/', icon: 'fa-home', text: 'Home' },
-          { link: '/maps', text: 'Transaction mappings' },
+          { link: '/maps', icon: 'fa-random', text: 'Transaction mappings' },
           { link: '/maps', text: this.map.label, isActive: true }
         ]">
       </breadcrumb>

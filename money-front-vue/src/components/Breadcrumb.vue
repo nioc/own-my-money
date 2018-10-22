@@ -7,7 +7,7 @@
             <span v-if="item.icon" class="icon is-small">
               <i class="fa" :class="item.icon" aria-hidden="true"></i>
             </span>
-            <span>{{item.text}}</span>
+            <span :class="{ 'is-hidden-mobile': item.icon }">{{item.text}}</span>
           </router-link>
         </li>
       </ul>
@@ -25,3 +25,17 @@ export default {
   }
 }
 </script>
+<style>
+.breadcrumb ul {
+  flex-wrap: nowrap;
+  overflow: auto;
+}
+.breadcrumb li:first-child::before {
+  content: "\00a0";
+}
+@media screen and (max-width: 768px) {
+  .breadcrumb .icon:first-child {
+    margin-right: initial;
+  }
+}
+</style>
