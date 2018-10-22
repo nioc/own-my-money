@@ -206,6 +206,8 @@ export default {
             // creating new (sub)category
             this.rCategories.save(this.category)
               .then(response => {
+                localStorage.removeItem('categoriesActives')
+                localStorage.removeItem('categories')
                 // return to categories
                 this.$router.replace({ name: 'categories' })
               }, response => {
@@ -224,6 +226,8 @@ export default {
           // updating new (sub)category
           this.rCategories.update({ id: this.category.id }, this.category)
             .then(response => {
+              localStorage.removeItem('categoriesActives')
+              localStorage.removeItem('categories')
               // return to categories
               this.$router.replace({ name: 'categories' })
             }, response => {
