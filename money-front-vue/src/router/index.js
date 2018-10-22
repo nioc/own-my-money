@@ -7,6 +7,8 @@ import Profile from '@/components/Profile'
 import Users from '@/components/Users'
 import Categories from '@/components/Categories'
 import Categorie from '@/components/Category'
+import Mappings from '@/components/Maps'
+import Mapping from '@/components/Map'
 import Home from '@/components/Home'
 Vue.use(Router)
 
@@ -47,6 +49,26 @@ export default new Router({
       name: 'users',
       component: Users,
       meta: {title: 'Manage users'}
+    },
+    {
+      path: '/maps',
+      name: 'maps',
+      component: Mappings,
+      meta: {title: 'Edit maps'}
+    },
+    {
+      path: '/maps/new',
+      name: 'newMap',
+      component: Mapping,
+      props: { isNew: true },
+      meta: {title: 'Edit map :code'}
+    },
+    {
+      path: '/maps/:code',
+      name: 'map',
+      component: Mapping,
+      props: { isNew: false },
+      meta: {title: 'Edit map :code'}
     },
     {
       path: '/categories',

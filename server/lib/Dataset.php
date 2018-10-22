@@ -112,7 +112,7 @@ class Dataset
             //map not found return empty list
             return [];
         }
-        $mapAttributes = $map->getAttributes();
+        $mapAttributes = array_flip($map->getAttributes());
         $transactions = [];
         foreach ($jsTransactions as $currentTransaction) {
             $transaction = new Transaction();
