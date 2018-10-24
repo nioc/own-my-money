@@ -289,6 +289,25 @@ class User
     }
 
     /**
+     * Return all user transactions.
+     *
+     * @return array User transactions
+     */
+    public function getTransactions()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT `transaction`.* FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user;');
+        $query->bindValue(':user', $this->id, PDO::PARAM_STR);
+        if ($query->execute()) {
+            //return array of accounts
+            return $query->fetchAll(PDO::FETCH_CLASS, 'Transaction');
+        }
+        //indicate there is a problem during querying
+        return false;
+    }
+
+    /**
      * Return public profile.
      *
      * @return object A public version of user profile

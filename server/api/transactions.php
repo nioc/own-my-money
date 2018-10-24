@@ -13,14 +13,22 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
 $api = new Api('json', ['GET', 'PUT']);
 switch ($api->method) {
     case 'GET':
-        //returns a specific transaction or all account transactions
+        //returns a specific transaction or all transactions
         if (!$api->checkAuth()) {
             //User not authentified/authorized
             return;
         }
         if (!$api->checkParameterExists('aid', $aid)) {
-            $api->output(400, 'Account identifier must be provided');
-            //Account was not provided, return an error
+            //return all user transactions
+            require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
+            $user = new User($api->requesterId);
+            $transactionsList = $user->getTransactions();
+            $transactions = array();
+            foreach ($transactionsList as $transaction) {
+                array_push($transactions, $transaction->structureData());
+            }
+            $api->output(200, $transactions);
+            //return transactions list
             return;
         }
         //check requestor is the account owner
@@ -45,7 +53,7 @@ switch ($api->method) {
         }
         //Request all transactions of the account
         $transactionsList = $account->getTransactions();
-        $transactions =  array();
+        $transactions = array();
         foreach ($transactionsList as $transaction) {
             array_push($transactions, $transaction->structureData());
         }
@@ -59,11 +67,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('aid', $aid)) {
-            $api->output(400, 'Account identifier must be provided');
-            //Account was not provided, return an error
-            return;
-        }
+        $api->checkParameterExists('aid', $aid);
         if (!$api->checkParameterExists('id', $id) || $id === '') {
             $api->output(400, 'Transaction identifier must be provided');
             //Transaction was not provided, return an error
@@ -76,6 +80,9 @@ switch ($api->method) {
             return;
         }
         //check requestor is the account owner
+        if (!$aid) {
+            $aid = $transaction->aid;
+        }
         $account = new Account($aid);
         $account->get();
         if ($account->user !== $api->requesterId) {

@@ -5,6 +5,8 @@ Header set Access-Control-Allow-Headers "authorization, content-type"
 RewriteEngine on
 RewriteRule ^users/tokens/?$                               tokens.php [L]
 RewriteRule ^users/?([0-9]*)/?$                            users.php?id=$1 [L]
+RewriteRule ^transactions/([0-9]+)/?$                      transactions.php?id=$1 [L]
+RewriteRule ^transactions/?$                               transactions.php [L]
 RewriteRule ^accounts/([0-9]+)/?$                          accounts.php?id=$1 [L]
 RewriteRule ^accounts/?$                                   accounts.php [L]
 RewriteRule ^accounts/([0-9]+)/transactions/?$             transactions.php?aid=$1 [L]
