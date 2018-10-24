@@ -80,6 +80,11 @@ switch ($api->method) {
             return;
         }
         //check requestor is the account owner
+        if ($aid && $aid !== $transaction->aid) {
+            $api->output(400, 'Transaction is not valid: inconsistent account ');
+            //provided transaction is not valid
+            return;
+        }
         if (!$aid) {
             $aid = $transaction->aid;
         }
