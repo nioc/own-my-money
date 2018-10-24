@@ -72,7 +72,7 @@
 <script>
 import Config from './../services/Config'
 export default {
-  props: ['accountId', 'transaction'],
+  props: ['rTransactions', 'transaction'],
   data () {
     return {
       error: '',
@@ -81,7 +81,6 @@ export default {
       categories: [],
       categoriesAndSubcategoriesLookup: [],
       // resources
-      rTransactions: this.$resource(Config.API_URL + 'accounts/' + this.accountId + '/transactions{/id}'),
       rCategories: this.$resource(Config.API_URL + 'categories{/id}')
     }
   },
