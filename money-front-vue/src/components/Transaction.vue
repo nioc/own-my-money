@@ -137,15 +137,13 @@ export default {
             .then(response => {
               this.$parent.close()
             }, response => {
+              // remove loading overlay when API replies
+              this.isLoading = false
               if (response.body.message) {
                 this.error = response.body.message
                 return
               }
               this.error = response.status + ' - ' + response.statusText
-            })
-            .finally(function () {
-              // remove loading overlay when API replies
-              this.isLoading = false
             })
         }
       })
