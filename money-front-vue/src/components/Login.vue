@@ -32,7 +32,7 @@
                   </div>
               </div>
               <div class="field">
-                <button class="button is-block is-primary is-medium is-fullwidth" @click="submit"><span class="fa fa-sign-in fa-fw" aria-hidden="true"></span>&nbsp;Login</button>
+                <button class="button is-block is-primary is-medium is-fullwidth" :class="{ 'is-loading': isLoading }" :disabled="isLoading" @click="submit"><span class="fa fa-sign-in fa-fw" aria-hidden="true"></span>&nbsp;Login</button>
               </div>
               <div class="message is-danger" v-if="error">
                 <div class="message-body">
@@ -56,6 +56,7 @@ export default {
         login: '',
         password: ''
       },
+      isLoading: false,
       error: ''
     }
   },
@@ -63,6 +64,7 @@ export default {
     submit: function (e) {
       // prevent form submit
       e.preventDefault()
+      this.isLoading = true
       // get credentials
       let credentials = {
         login: this.credentials.login,
