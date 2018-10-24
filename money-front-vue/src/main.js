@@ -15,7 +15,7 @@ Vue.config.productionTip = false
 Vue.use(VueResource)
 Vue.use(VeeValidate)
 Vue.use(VueMoment)
-Vue.use(Buefy, {defaultIconPack: 'fa', defaultFirstDayOfWeek: 1})
+Vue.use(Buefy, {defaultIconPack: 'fa', defaultFirstDayOfWeek: 1, defaultDateParser: (date) => Vue.moment(date, 'DD-MM-YYYY').toDate()})
 // set header at init
 delete Vue.http.headers.common['Authorization']
 let authHeader = Auth.getAuthHeader()

@@ -22,12 +22,12 @@
           </div>
           <div class="field">
             <p class="control">
-              <b-datepicker placeholder="Start date" icon="calendar" :readonly="false" :max-date="search.currentDate" v-model="search.startDate"></b-datepicker>
+              <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" v-model="search.startDate"></b-datepicker>
             </p>
           </div>
           <div class="field">
             <p class="control">
-              <b-datepicker placeholder="End date" icon="calendar" :readonly="false" :max-date="search.currentDate" v-model="search.endDate"></b-datepicker>
+              <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" v-model="search.endDate"></b-datepicker>
             </p>
           </div>
           <div class="field">
