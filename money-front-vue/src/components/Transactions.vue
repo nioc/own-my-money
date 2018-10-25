@@ -9,28 +9,18 @@
       </div>
       <div class="card-content">
         <div class="field is-grouped is-grouped-multiline is-block-mobile">
-          <div class="field has-addons">
-            <p class="control has-icons-left">
+            <div class="control has-icons-left">
               <input class="input" type="text" placeholder="Find a transaction" v-model="search.query">
               <span class="icon is-small is-left">
                 <i class="fa fa-search"></i>
               </span>
-            </p>
-            <p class="control">
-              <a class="button is-primary">Search</a>
-            </p>
-          </div>
-          <div class="field">
-            <p class="control">
+            </div>
+            <div class="control">
               <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" v-model="search.startDate"></b-datepicker>
-            </p>
-          </div>
-          <div class="field">
-            <p class="control">
+            </div>
+            <div class="control">
               <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" v-model="search.endDate"></b-datepicker>
-            </p>
-          </div>
-          <div class="field">
+            </div>
             <div class="control">
               <div class="select">
                 <select name="parent" v-model="search.category">
@@ -39,9 +29,7 @@
                 </select>
               </div>
             </div>
-          </div>
-          <div class="field" v-if="search.category && categoriesAndSubcategoriesLookup[search.category].sub.length > 0">
-            <div class="control">
+            <div class="control" v-if="search.category && categoriesAndSubcategoriesLookup[search.category].sub.length > 0">
               <div class="select">
                 <select name="parent" v-model="search.subcategory">
                   <option value="">-- Subcategory --</option>
@@ -49,7 +37,6 @@
                 </select>
               </div>
             </div>
-          </div>
         </div>
       </div>
     </b-collapse>
@@ -62,11 +49,11 @@
         <p class="card-header-title">Batch updates</p>
       </div>
       <div class="card-content">
-        <div class="field is-grouped is-grouped-multiline is-block-mobile">
-          <div class="field">
+        <div class="field is-grouped is-grouped-multiline">
+          <div class="control">
             <div class="input is-static">{{batch.checkedTransactions.length}} transactions selected ({{ transactionsCheckedSum | currency }})</div>
           </div>
-          <div class="field">
+          <div class="control">
             <div class="select">
               <select v-model="batch.category">
                 <option value="">-- Category --</option>
@@ -74,7 +61,7 @@
               </select>
             </div>
           </div>
-          <div class="field" v-if="batch.category && categoriesAndSubcategoriesLookup[batch.category].sub.length > 0">
+          <div class="control" v-if="batch.category && categoriesAndSubcategoriesLookup[batch.category].sub.length > 0">
             <div class="select">
               <select v-model="batch.subcategory">
                 <option value="">-- Subcategory --</option>
@@ -82,8 +69,9 @@
               </select>
             </div>
           </div>
-          <div class="field">
-            <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="batch.isLoading">Apply</button>
+          <div class="control">
+            <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-cogs"></i></span><span>Apply</span></button>
+          </div>
           </div>
         </div>
         <div class="field is-block-mobile">
