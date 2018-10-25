@@ -72,6 +72,11 @@
           <div class="control">
             <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-cogs"></i></span><span>Apply</span></button>
           </div>
+          <div class="control">
+            <button class="button is-light" @click="selectAll" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-check-square-o"></i></span><span>Select all</span></button>
+          </div>
+          <div class="control">
+            <button class="button is-light" @click="selectNone" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-square-o"></i></span><span>Clear</span></button>
           </div>
         </div>
         <div class="field is-block-mobile">
@@ -273,6 +278,12 @@ export default {
             })
         }
       }
+    },
+    selectAll () {
+      this.batch.checkedTransactions = this.displayedTransactions
+    },
+    selectNone () {
+      this.batch.checkedTransactions = []
     }
   },
   watch: {
