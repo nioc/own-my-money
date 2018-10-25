@@ -7,8 +7,8 @@
         ]">
       </breadcrumb>
     </div>
-    <div class="hero-body container">
-      <div class="box">
+    <div class="hero-body">
+      <div class="container box">
         <h1 class="title">Transactions</h1>
         <transactions v-bind:url="url"/>
       </div>
