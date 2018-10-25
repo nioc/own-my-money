@@ -52,7 +52,7 @@
           </b-tab-item>
 
           <b-tab-item label="Edit" icon="pencil">
-            <form @submit.prevent="validateUpdateBeforeSubmit" novalidate class="section is-400px-form">
+            <form @submit.prevent="validateUpdateBeforeSubmit" novalidate class="section is-max-width-form">
               <div class="field is-horizontal">
                 <div class="field-label is-normal">
                   <label class="label">Bank identifier</label>

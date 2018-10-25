@@ -12,7 +12,7 @@
       <div class="container box">
         <h1 class="title container">Profile</h1>
         <p class="subtitle has-text-grey">Update your money account</p>
-        <form @submit.prevent="validateBeforeSubmit" novalidate class="section is-400px-form">
+        <form @submit.prevent="validateBeforeSubmit" novalidate class="section is-max-width-form">
           <div class="field is-horizontal">
             <div class="field-label is-normal">
               <label class="label">Login</label>

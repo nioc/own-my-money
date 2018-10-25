@@ -13,8 +13,9 @@ $navbar-item-hover-color: $primary;
 .navbar .router-link-exact-active {
   color: $grey-light !important
 }
-.is-400px-form input, .is-400px-form .control {
-  max-width: 400px;
+.is-max-width-form {
+  max-width: 800px;
+  margin: auto;
 }
 
 $card-header-background-color: $white-bis;
