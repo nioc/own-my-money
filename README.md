@@ -3,20 +3,23 @@
 Own my money is a simple way to track your bank activity on any device connected to the web (pc, smartphone, tablet, ...).
 It can work as a standalone application or in your smartphone browser.
 
-You can manage your account with the OFX or CSV integration.
+You can manage yours accounts with OFX or JSON integration.
 
 ## Installation and usage
 
 Following example is based on Linux distribution with Apache :
 
+0. Install prerequisite:
+  - Web server: Apache HTTP server / Nginx
+  - Database server: MariaDB / MySQL
+  - PHP
 1. Download the latest version [here](https://github.com/nioc/own-my-money/archive/master.tar.gz)
 2. Untar the archive : `tar -xvzf own-my-money-master.tar.gz`
 3. Move the files into you web server directory `mv own-my-money-master /var/www/money`
 4. Fix file permissions `chown www-data:www-data /var/www/money -R`
-5. Create database stuff using with the [database setup page](http://localhost/server/configuration/setup.php)
-6. Update Admin user (edit password obviously)
-7. Remove unnecessary files (/docs, /configuration/setup.php, ...)
-8. Set your library folder
+5. Configure your web server
+6. Create database stuff, user, etc... using with the [database setup page](http://localhost/#/setup)
+7. Remove unnecessary files (/docs, ...)
 
 ## Versioning
 
@@ -45,14 +48,14 @@ php /usr/local/bin/php-cs-fixer fix /path/to/editedFile.php -v
 ````
 You can handle all edited files with this single line:
 ```` bash
-cd /var/www/money/server; for file in $(git diff-index --name-only HEAD); do php /usr/local/bin/php-cs-fixer fix "$file" -v; done
+cd /var/www/money; for file in $(git diff-index --name-only HEAD); do php /usr/local/bin/php-cs-fixer fix "$file" -v; done
 ````
 
 #### Frontend part (VueJS)
 
 In order to contribute to the VueJS frontend:
 
-0. Install prerequise:
+0. Install prerequisite:
   - [Node.js](https://nodejs.org/)
   - npm `npm install npm@latest -g`
   - Vue.js `npm install -g vue,`

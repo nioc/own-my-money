@@ -10,6 +10,7 @@ import Categorie from '@/components/Category'
 import Mappings from '@/components/Maps'
 import Mapping from '@/components/Map'
 import Home from '@/components/Home'
+import Setup from '@/components/Setup'
 Vue.use(Router)
 
 export default new Router({
@@ -19,6 +20,12 @@ export default new Router({
       name: 'home',
       component: Home,
       meta: {title: 'Home'}
+    },
+    {
+      path: '/setup',
+      name: 'setup',
+      component: Setup,
+      meta: {title: 'Setup server'}
     },
     {
       path: '/accounts',

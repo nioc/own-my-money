@@ -10,6 +10,7 @@ import Accounting from 'accounting'
 import Buefy from 'buefy'
 import 'font-awesome/css/font-awesome.min.css'
 import './assets/styles.scss'
+import 'bulma-o-steps/bulma-steps.min.css'
 
 Vue.config.productionTip = false
 Vue.use(VueResource)
@@ -25,9 +26,9 @@ if (authHeader) {
 
 // check auth before changing page
 router.beforeEach((to, from, next) => {
-  // check if user is authenticated before each page (except login page)
+  // check if user is authenticated before each page (except login and setup page)
   Auth.getToken()
-  if (!Auth.user.authenticated && to.name !== 'login') {
+  if (!Auth.user.authenticated && to.name !== 'login' && to.name !== 'setup') {
     // user not authenticated, redirect to login page
     Auth.logout()
     Bus.$emit('user-logged', {})
