@@ -22,6 +22,10 @@ class Token
      */
     public $payload;
     /**
+     * @var integer Expiration timestamp
+     */
+    public $expire;
+    /**
      * @var string Token as transmitted to client
      */
     public $value;
@@ -52,9 +56,10 @@ class Token
         );
         $b64Header = base64_encode(json_encode($header));
         //payload part
+        $this->expire = time() + ($duration * 60 * 60);
         $payload = array(
                 'iss' => 'money',
-                'exp' => time() + ($duration * 60 * 60),
+                'exp' => $this->expire,
         );
         $payload = array_merge($payload, get_object_vars($this->payload));
         $b64Payload = base64_encode(json_encode($payload));
@@ -97,5 +102,30 @@ class Token
         $this->payload = $payload;
         //raw data is set, returns true
         return true;
+    }
+
+    /**
+     * Log token creation in database.
+     *
+     * @return bool Indicate if token was logged
+     */
+    public function log()
+    {
+        if (!is_null($this->payload) && property_exists($this->payload, 'sub')) {
+            require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+            $connection = new DatabaseConnection();
+            //remove expired tokens
+            $query = $connection->prepare('DELETE FROM `token` WHERE `user` =:user AND `expire` < UNIX_TIMESTAMP();');
+            $query->bindValue(':user', $this->payload->sub, PDO::PARAM_INT);
+            $query->execute();
+            //insert current token
+            $query = $connection->prepare('INSERT INTO `token` (`user`, `creation`, `ip`, `userAgent`, `expire`) VALUES (:user, UNIX_TIMESTAMP(), :ip , :ua, :expire);');
+            $query->bindValue(':user', $this->payload->sub, PDO::PARAM_INT);
+            $query->bindValue(':ip', $_SERVER['REMOTE_ADDR'], PDO::PARAM_STR);
+            $query->bindValue(':ua', $_SERVER['HTTP_USER_AGENT'], PDO::PARAM_STR);
+            $query->bindValue(':expire', $this->expire, PDO::PARAM_INT);
+            return $query->execute();
+        }
+        return false;
     }
 }

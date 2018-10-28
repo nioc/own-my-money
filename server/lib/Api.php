@@ -246,6 +246,7 @@ class Api
         $token = new Token($configuration->get('hashKey'));
         $token->payload = $payload;
         $token->encode();
+        $token->log();
         $result = new stdClass();
         $result->token = $token->value;
         //return the token

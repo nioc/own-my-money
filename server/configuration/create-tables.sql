@@ -33,6 +33,15 @@ CREATE TABLE `map_attribute` (
   `origin` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `token`;
+CREATE TABLE `token` (
+  `user` smallint(3) UNSIGNED NOT NULL,
+  `creation` int(10) NOT NULL,
+  `ip` varchar(45) NOT NULL,
+  `userAgent` text NOT NULL,
+  `expire` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE `transaction` (
   `id` int(11) NOT NULL,
@@ -76,6 +85,9 @@ ALTER TABLE `map`
 ALTER TABLE `map_attribute`
   ADD PRIMARY KEY (`code`,`target`);
 
+ALTER TABLE `token`
+  ADD KEY `fk_token_user_1` (`user`);
+
 ALTER TABLE `transaction`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `unique_fitid` (`aid`,`fitid`),
@@ -105,6 +117,9 @@ ALTER TABLE `category`
 
 ALTER TABLE `map_attribute`
   ADD CONSTRAINT `code` FOREIGN KEY (`code`) REFERENCES `map` (`code`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `token`
+  ADD CONSTRAINT `fk_token_user_1` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `transaction`
   ADD CONSTRAINT `account id` FOREIGN KEY (`aid`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
