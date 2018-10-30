@@ -323,4 +323,23 @@ class User
         //returns the user public profile
         return $user;
     }
+
+    /**
+     * Return user last connections.
+     *
+     * @return array Last connections (date, ip)
+     */
+    public function getLastConnections()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT * FROM `token` WHERE `user` =:user;');
+        $query->bindValue(':user', $this->id, PDO::PARAM_INT);
+        if ($query->execute()) {
+            //return array of connections
+            return $query->fetchAll(PDO::FETCH_OBJ);
+        }
+        //indicate there is a problem during querying
+        return false;
+    }
 }

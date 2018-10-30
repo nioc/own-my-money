@@ -4,6 +4,7 @@ Header set Access-Control-Allow-Methods "POST, GET, PUT, OPTIONS, DELETE"
 Header set Access-Control-Allow-Headers "authorization, content-type"
 RewriteEngine on
 RewriteRule ^users/tokens/?$                               tokens.php [L]
+RewriteRule ^users/([0-9]+)/tokens/?$                      tokens.php?user=$1 [L]
 RewriteRule ^users/?([0-9]*)/?$                            users.php?id=$1 [L]
 RewriteRule ^transactions/([0-9]+)/?$                      transactions.php?id=$1 [L]
 RewriteRule ^transactions/?$                               transactions.php [L]

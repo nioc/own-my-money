@@ -80,6 +80,7 @@
           </div>
           <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
         </form>
+        <user-connections v-bind:id="this.user.id"></user-connections>
       </div>
     </div>
   </section>
@@ -89,9 +90,11 @@
 import Auth from './../services/Auth'
 import Config from './../services/Config'
 import Breadcrumb from '@/components/Breadcrumb'
+import UserConnections from '@/components/UserConnections'
 export default {
   name: 'profile',
   components: {
+    UserConnections,
     Breadcrumb
   },
   data () {

@@ -39,6 +39,7 @@
             {{ error }}
           </div>
         </div>
+        <user-connections v-bind:id="this.user.sub"></user-connections>
       </section>
       <footer class="modal-card-foot">
         <button class="button is-primary">{{ action }}</button>
@@ -51,8 +52,12 @@
 
 <script>
 import Config from './../services/Config'
+import UserConnections from '@/components/UserConnections'
 export default {
   props: ['user'],
+  components: {
+    UserConnections
+  },
   data () {
     return {
       error: '',
