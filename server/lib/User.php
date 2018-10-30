@@ -26,6 +26,10 @@ class User
      */
     public $status;
     /**
+     * @var string User email address
+     */
+    public $mail;
+    /**
      * @var array User scope
      */
     public $scope;
