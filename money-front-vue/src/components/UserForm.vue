@@ -23,6 +23,15 @@
           </div>
         </div>
         <div class="field">
+          <label class="label">Mail</label>
+          <div class="control has-icons-left has-icons-right">
+            <input class="input" type="email" name="mail" placeholder="Mail address" v-model="user.mail" v-validate="'required|email'" :class="{ 'is-danger': errors.has('mail') }">
+            <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
+            <span class="icon is-small is-right" v-show="errors.has('mail')"><i class="fa fa-exclamation-triangle"></i></span>
+            <span v-show="errors.has('mail')" class="help is-danger">{{ errors.first('mail') }}</span>
+          </div>
+        </div>
+        <div class="field">
           <label class="label">Status</label>
           <div class="control">
             <b-switch v-model="user.status"></b-switch>

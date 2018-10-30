@@ -13,6 +13,7 @@
         <h1 class="title container">Profile</h1>
         <p class="subtitle has-text-grey">Update your money account</p>
         <form @submit.prevent="validateBeforeSubmit" novalidate class="section is-max-width-form">
+
           <div class="field is-horizontal">
             <div class="field-label is-normal">
               <label class="label">Login</label>
@@ -52,6 +53,27 @@
               </div>
             </div>
           </div>
+
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">Mail</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control has-icons-left has-icons-right">
+                  <input class="input" type="email" name="mail" placeholder="Type your mail address" v-model="mail" v-validate="'required|email'" :class="{'input': true, 'is-danger': errors.has('mail') }">
+                  <span class="icon is-small is-left">
+                    <i class="fa fa-envelope"></i>
+                  </span>
+                  <span class="icon is-small is-right" v-show="errors.has('mail')">
+                    <i class="fa fa-exclamation-triangle"></i>
+                  </span>
+                  <span v-show="errors.has('mail')" class="help is-danger">{{errors.first('mail')}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="field is-horizontal">
             <div class="field-label is-normal">
             </div>
@@ -71,7 +93,6 @@
             </div>
             <div class="field-body">
               <div class="message is-danger" v-if="error">
-                <!-- <div class="message-header has-text-centered">Error<button class="delete" aria-label="delete"></button></div> -->
                 <div class="message-body">
                   {{ error }}
                 </div>
@@ -114,7 +135,7 @@ export default {
         if (result) {
           this.isLoading = true
           // if validation is ok, call user API
-          this.rUsers.update({id: this.user.id}, {sub: this.user.id, login: this.user.login, password: this.password})
+          this.rUsers.update({id: this.user.id}, {sub: this.user.id, login: this.user.login, password: this.password, mail: this.mail})
             .then(response => {
             }, response => {
               if (response.body.message) {

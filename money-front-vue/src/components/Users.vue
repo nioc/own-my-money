@@ -18,6 +18,9 @@
             <b-table-column label="Login">
               {{ props.row.login }}
             </b-table-column>
+              <b-table-column label="Mail">
+                {{ props.row.mail }}
+              </b-table-column>
             <b-table-column label="Admin">
               <b-switch v-model="props.row.isAdmin" disabled></b-switch>
             </b-table-column>
