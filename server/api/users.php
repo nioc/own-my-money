@@ -73,9 +73,14 @@ switch ($api->method) {
             //indicate the request is not valid, password must be provided
             return;
         }
+        if (!$api->checkParameterExists('mail', $postedUser->mail) || $postedUser->mail == '') {
+            $api->output(400, 'Mail address must be provided');
+            //indicate the request is not valid, mail must be provided
+            return;
+        }
         $api->checkParameterExists('scope', $postedUser->scope);
         if ($api->checkParameterExists('status', $postedUser->status)) {
-          $postedUser->status = boolval($postedUser->status);
+            $postedUser->status = boolval($postedUser->status);
         }
 
         if (!$postedUser->insert($error)) {
@@ -115,9 +120,14 @@ switch ($api->method) {
             //indicate the request is not valid, password must be provided
             return;
         }
+        if ($api->checkParameterExists('mail', $postedUser->mail) && $postedUser->mail == '') {
+            $api->output(400, 'Mail address must be provided');
+            //indicate the request is not valid, mail must be provided
+            return;
+        }
         $api->checkParameterExists('scope', $postedUser->scope);
         if ($api->checkParameterExists('status', $postedUser->status)) {
-          $postedUser->status = boolval($postedUser->status);
+            $postedUser->status = boolval($postedUser->status);
         }
         $user = new User($postedUser->id);
         if (!$user->get()) {
