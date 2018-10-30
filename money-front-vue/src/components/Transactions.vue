@@ -212,6 +212,14 @@ export default {
       if (!this.batch.isActive) {
         this.modalTransaction.transaction = item
         this.modalTransaction.isActive = true
+      } else {
+        // batch edition mode, just (un)check the transaction
+        let index = this.batch.checkedTransactions.indexOf(item)
+        if (index > -1) {
+          this.batch.checkedTransactions.splice(index, 1)
+        } else {
+          this.batch.checkedTransactions.push(item)
+        }
       }
     },
     // get categories and subcategories
@@ -280,7 +288,7 @@ export default {
       }
     },
     selectAll () {
-      this.batch.checkedTransactions = this.displayedTransactions
+      this.batch.checkedTransactions = this.displayedTransactions.slice()
     },
     selectNone () {
       this.batch.checkedTransactions = []
