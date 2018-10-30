@@ -182,7 +182,7 @@ export default {
         return t
       })
       return transactions.filter(function (transaction) {
-        return transaction.fullname.toLowerCase().indexOf(query.toLowerCase()) > -1 &
+        return (transaction.note + transaction.fullname).toLowerCase().indexOf(query.toLowerCase()) > -1 &
         new Date(Date.parse(transaction.datePosted)) >= startDate &
         new Date(Date.parse(transaction.datePosted)) <= endDate &
         (!category || transaction.category === category) &
