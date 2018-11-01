@@ -92,7 +92,8 @@ class Step
         $steps = [
           new Step('set-database-access', 'Setup database access', 'fa-database', 'Application will create MySQL user and database used to store your data', $databaseConfigured ? false : true),
           new Step('create-database', 'Create database', 'fa-table', 'Now, application will create MySQL tables', false),
-          new Step('set-security', 'Setup security', 'fa-lock', 'Authorization process uses signed JWT, it requires you set your own secret key for generating the HMAC', $databaseConfigured ? true : false),
+          new Step('set-mailer', 'Setup mailer', 'fa-envelope', 'The application can send emails if your host has a SMTP server, in this step we configure the mail system', $databaseConfigured ? true : false),
+          new Step('set-security', 'Setup security', 'fa-lock', 'Authorization process uses signed JWT, it requires you set your own secret key for generating the HMAC', false),
           new Step('create-user', 'Create user', 'fa-user', 'This step will create your (super) user account', false),
           new Step('confirmation', 'Confirmation', 'fa-check', 'That\'s all, installation process has been completed, you can now <a href="/">signin</a> into the application', false)
         ];
@@ -143,6 +144,13 @@ class Step
 
             case 'create-database':
                 $this->fields = [
+                ];
+                break;
+
+            case 'set-mailer':
+                $this->fields = [
+                  new Field('mailer', 'Send mail', 'text', 'required|between:0,1', 'Does the application send out emails (for user connection) ; type 1 for sending emails, 0 for not', $configuration->get('mailer')),
+                  new Field('mail-sender', 'From address', 'email', 'required|email', 'Sender email address', $configuration->get('mailSender')),
                 ];
                 break;
 
@@ -260,6 +268,23 @@ class Step
                 //create tables
                 $sql = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/server/configuration/create-tables.sql');
                 $connection->exec($sql);
+                return true;
+                break;
+
+            case 'set-mailer':
+                $mailer = $this->getFieldValue('mailer');
+                if ($mailer === false) {
+                    return 'Failed to get `mailer` value';
+                }
+                if (!$mailSender = $this->getFieldValue('mail-sender')) {
+                    return 'Failed to get `mail-sender` value';
+                }
+                if (!$configuration->set('mailer', $mailer)) {
+                    return 'Failed to set configuration `mailer`';
+                }
+                if (!$configuration->set('mailSender', $mailSender)) {
+                    return 'Failed to set configuration `mailSender`';
+                }
                 return true;
                 break;
 
