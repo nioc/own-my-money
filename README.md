@@ -1,25 +1,12 @@
 # Own my money!
 
 Own my money is a simple way to track your bank activity on any device connected to the web (pc, smartphone, tablet, ...).
-It can work as a standalone application or in your smartphone browser.
 
 You can manage yours accounts with OFX or JSON integration.
 
 ## Installation and usage
 
-Following example is based on Linux distribution with Apache :
-
-0. Install prerequisite:
-  - Web server: Apache HTTP server / Nginx
-  - Database server: MariaDB / MySQL
-  - PHP
-1. Download the latest version [here](https://github.com/nioc/own-my-money/archive/master.tar.gz)
-2. Untar the archive : `tar -xvzf own-my-money-master.tar.gz`
-3. Move the files into you web server directory `mv own-my-money-master /var/www/money`
-4. Fix file permissions `chown www-data:www-data /var/www/money -R`
-5. Configure your web server
-6. Create database stuff, user, etc... using with the [database setup page](http://localhost/#/setup)
-7. Remove unnecessary files (/docs, ...)
+See [installation page on wiki](https://github.com/nioc/own-my-money/wiki/Installation).
 
 ## Versioning
 
