@@ -4,6 +4,8 @@ Own my money is a simple way to track your bank activity on any device connected
 
 You can manage yours accounts with OFX or JSON integration.
 
+![account](/docs/screenshot_account.png)
+
 ## Installation and usage
 
 See [installation page on wiki](https://github.com/nioc/own-my-money/wiki/Installation).
