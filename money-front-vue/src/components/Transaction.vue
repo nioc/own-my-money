@@ -71,15 +71,15 @@
 
 <script>
 import Config from './../services/Config'
+import CategoriesFactory from './../services/Categories'
 export default {
   props: ['rTransactions', 'transaction'],
+  mixins: [CategoriesFactory],
   data () {
     return {
       error: '',
       isLoading: false,
       currentDate: new Date(),
-      categories: [],
-      categoriesAndSubcategoriesLookup: [],
       // resources
       rCategories: this.$resource(Config.API_URL + 'categories{/id}')
     }
@@ -95,37 +95,6 @@ export default {
     }
   },
   methods: {
-    // get categories and subcategories
-    getCategories () {
-      // TODO refactoring this function
-      function getLookup (categories) {
-        // save the complete list and create lookup for getting label
-        var lookup = []
-        for (let i = 0; i < categories.length; i++) {
-          let category = categories[i]
-          lookup[category.id] = category
-          for (let i = 0; i < category.sub.length; i++) {
-            let subcategory = category.sub[i]
-            lookup[subcategory.id] = subcategory
-          }
-        }
-        return lookup
-      }
-      if (localStorage.getItem('categoriesActives')) {
-        this.categories = JSON.parse(localStorage.getItem('categoriesActives'))
-        this.categoriesAndSubcategoriesLookup = getLookup(this.categories)
-        return
-      }
-      this.rCategories.query().then(response => {
-        this.categories = response.body
-        this.categoriesAndSubcategoriesLookup = getLookup(this.categories)
-        // put categories in local storage for future usage
-        localStorage.setItem('categoriesActives', JSON.stringify(this.categories))
-      }, response => {
-        // @TODO : add error handling
-        console.error(response)
-      })
-    },
     validateBeforeSubmit () {
       // call the async validator
       this.$validator.validateAll().then((result) => {
@@ -156,7 +125,7 @@ export default {
     }
   },
   mounted: function () {
-    this.getCategories()
+    this.getCategories(false)
   }
 }
 </script>

@@ -122,15 +122,16 @@
 </template>
 
 <script>
-import Config from './../services/Config'
 import Bus from './../services/Bus'
 import Transaction from '@/components/Transaction'
+import CategoriesFactory from './../services/Categories'
 export default {
   name: 'transactions',
   components: {
     Transaction
   },
   props: ['url'],
+  mixins: [CategoriesFactory],
   data () {
     const today = new Date()
     return {
@@ -160,10 +161,6 @@ export default {
         isActive: false,
         transaction: {}
       },
-      // categories
-      categories: [],
-      categoriesAndSubcategoriesLookup: [],
-      rCategories: this.$resource(Config.API_URL + 'categories{/id}'),
       rTransactions: this.$resource(this.url)
     }
   },
@@ -222,36 +219,6 @@ export default {
         }
       }
     },
-    // get categories and subcategories
-    getCategories () {
-      function getLookup (categories) {
-        // save the complete list and create lookup for getting label
-        var lookup = []
-        for (let i = 0; i < categories.length; i++) {
-          let category = categories[i]
-          lookup[category.id] = category
-          for (let i = 0; i < category.sub.length; i++) {
-            let subcategory = category.sub[i]
-            lookup[subcategory.id] = subcategory
-          }
-        }
-        return lookup
-      }
-      if (localStorage.getItem('categories')) {
-        this.categories = JSON.parse(localStorage.getItem('categories'))
-        this.categoriesAndSubcategoriesLookup = getLookup(this.categories)
-        return
-      }
-      this.rCategories.query({status: 'all'}).then(response => {
-        this.categories = response.body
-        this.categoriesAndSubcategoriesLookup = getLookup(this.categories)
-        // put categories in local storage for future usage
-        localStorage.setItem('categories', JSON.stringify(this.categories))
-      }, response => {
-        // @TODO : add error handling
-        console.error(response)
-      })
-    },
     processBatchUpdate () {
       let length = this.batch.checkedTransactions.length
       if (length > 0) {
@@ -302,7 +269,7 @@ export default {
   },
   mounted: function () {
     this.get()
-    this.getCategories()
+    this.getCategories(true)
     Bus.$on('transactions-updated', () => {
       this.get()
     })
