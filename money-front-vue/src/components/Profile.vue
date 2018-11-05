@@ -61,7 +61,7 @@
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-left has-icons-right">
-                  <input class="input" type="email" name="mail" placeholder="Type your mail address" v-model="mail" v-validate="'required|email'" :class="{'input': true, 'is-danger': errors.has('mail') }">
+                  <input class="input" type="email" name="mail" placeholder="Type your mail address" v-model="user.mail" v-validate="'required|email'" :class="{'input': true, 'is-danger': errors.has('mail') }">
                   <span class="icon is-small is-left">
                     <i class="fa fa-envelope"></i>
                   </span>
