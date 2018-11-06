@@ -33,6 +33,15 @@ CREATE TABLE `map_attribute` (
   `origin` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `pattern`;
+CREATE TABLE `pattern` (
+  `user` smallint(3) UNSIGNED NOT NULL,
+  `id` mediumint(8) UNSIGNED NOT NULL,
+  `label` varchar(200) NOT NULL,
+  `category` smallint(3) UNSIGNED DEFAULT NULL,
+  `subcategory` smallint(3) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `token`;
 CREATE TABLE `token` (
   `user` smallint(3) UNSIGNED NOT NULL,
@@ -85,6 +94,12 @@ ALTER TABLE `map`
 ALTER TABLE `map_attribute`
   ADD PRIMARY KEY (`code`,`target`);
 
+ALTER TABLE `pattern`
+  ADD PRIMARY KEY (`user`,`id`),
+  ADD KEY `id` (`id`),
+  ADD KEY `fk_pattern_category_1` (`category`),
+  ADD KEY `fk_pattern_subcategory_1` (`subcategory`);
+
 ALTER TABLE `token`
   ADD KEY `fk_token_user_1` (`user`);
 
@@ -104,6 +119,8 @@ ALTER TABLE `account`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `category`
   MODIFY `id` smallint(3) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE `pattern`
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
 ALTER TABLE `transaction`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `user`
@@ -117,6 +134,11 @@ ALTER TABLE `category`
 
 ALTER TABLE `map_attribute`
   ADD CONSTRAINT `code` FOREIGN KEY (`code`) REFERENCES `map` (`code`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `pattern`
+  ADD CONSTRAINT `fk_pattern_category_1` FOREIGN KEY (`category`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_pattern_subcategory_1` FOREIGN KEY (`subcategory`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_pattern_user_1` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `token`
   ADD CONSTRAINT `fk_token_user_1` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;

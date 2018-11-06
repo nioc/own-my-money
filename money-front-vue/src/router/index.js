@@ -4,6 +4,7 @@ import Accounts from '@/components/Accounts'
 import Account from '@/components/Account'
 import Login from '@/components/Login'
 import Profile from '@/components/Profile'
+import Patterns from '@/components/Patterns'
 import Users from '@/components/Users'
 import Categories from '@/components/Categories'
 import Categorie from '@/components/Category'
@@ -50,6 +51,12 @@ export default new Router({
       name: 'profile',
       component: Profile,
       meta: {title: 'Profile'}
+    },
+    {
+      path: '/patterns',
+      name: 'patterns',
+      component: Patterns,
+      meta: {title: 'Patterns'}
     },
     {
       path: '/users',
