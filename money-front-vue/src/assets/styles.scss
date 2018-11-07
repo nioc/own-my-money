@@ -48,4 +48,10 @@ $input-shadow: none;
   }
 }
 
+.has-half-margin-mobile {
+  @include mobile {
+    margin: 0 -0.75rem;
+  }
+}
+
 @import "~buefy/src/scss/buefy";

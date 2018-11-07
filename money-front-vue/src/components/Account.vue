@@ -14,7 +14,7 @@
         <h1 class="title container">Account {{ accountTitle }}</h1>
         <b-tabs type="is-boxed" :animated="false">
 
-          <b-tab-item label="Transactions" icon="file-text-o">
+          <b-tab-item label="Transactions" icon="file-text-o" class="has-half-margin-mobile">
             <transactions v-bind:url="url"/>
 
             <div class="field is-grouped">
