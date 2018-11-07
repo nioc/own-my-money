@@ -88,6 +88,7 @@ switch ($api->method) {
                         $transactions = $dataset->parseTransactionsFromOfx($currentAccount);
                         foreach ($transactions as $transaction) {
                             $result['processed']++;
+                            $transaction->applyPatterns($api->requesterId);
                             if ($transaction->insert()) {
                                 $result['inserted']++;
                             }
@@ -110,6 +111,7 @@ switch ($api->method) {
                 }
                 foreach ($transactions as $transaction) {
                     $result['processed']++;
+                    $transaction->applyPatterns($api->requesterId);
                     if ($transaction->insert()) {
                         $result['inserted']++;
                     }

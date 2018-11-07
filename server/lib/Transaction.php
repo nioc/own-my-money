@@ -79,7 +79,7 @@ class Transaction
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `memo`, `category`, `note`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :memo, :category, :note);');
+        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `memo`, `category`, `subcategory`, `note`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :memo, :category, :subcategory, :note);');
         $query->bindValue(':aid', $this->aid, PDO::PARAM_INT);
         $query->bindValue(':fitid', $this->fitid, PDO::PARAM_STR);
         $query->bindValue(':type', $this->type, PDO::PARAM_STR);
@@ -90,6 +90,7 @@ class Transaction
         $query->bindValue(':name', $this->name, PDO::PARAM_STR);
         $query->bindValue(':memo', $this->memo, PDO::PARAM_STR);
         $query->bindValue(':category', $this->category, PDO::PARAM_STR);
+        $query->bindValue(':subcategory', $this->subcategory, PDO::PARAM_STR);
         $query->bindValue(':note', $this->note, PDO::PARAM_STR);
         if ($query->execute()) {
             $this->id = $connection->lastInsertId();
@@ -232,6 +233,37 @@ class Transaction
         }
         //returns an error if no identifier was provided
         return false;
+    }
+
+    /**
+     * Check if a Transaction matches to a pattern and apply it.
+     *
+     * @param string $userId User identifier to get patterns
+     */
+    public function applyPatterns($userId)
+    {
+        $transactionLabel = $this->name;
+        if ($this->memo) {
+            $transactionLabel = $this->memo . ' ' . $this->name;
+        }
+        // get user patterns
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Pattern.php';
+        $patterns = Pattern::getAll($userId);
+        //try to find a matching pattern
+        foreach ($patterns as $pattern) {
+            //replace regexp delimiters in pattern
+            $pattern->label = str_replace('/', '\/', $pattern->label);
+            //replace dot in pattern
+            $pattern->label = str_replace('.', '\.', $pattern->label);
+            //replace wildcard character in pattern
+            $pattern->label = str_replace('*', '.*', $pattern->label);
+            if (preg_match("/^$pattern->label$/i", $transactionLabel)) {
+                // apply pattern and end the loop
+                $this->category = $pattern->category;
+                $this->subcategory = $pattern->subcategory;
+                break;
+            }
+        }
     }
 
     /**
