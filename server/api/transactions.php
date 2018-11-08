@@ -19,10 +19,20 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkParameterExists('aid', $aid)) {
-            //return all user transactions
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
             $user = new User($api->requesterId);
-            $transactionsList = $user->getTransactions();
+            if ($api->checkParameterExists('pattern', $pattern)) {
+                //return user transactions matching pattern
+                $pattern = str_replace('*', '%', $pattern);
+                if (false === $transactionsList = $user->getTransactionsByPattern($pattern, $errorMessage)) {
+                    $api->output(500, 'Error during transaction query'.$errorMessage);
+                    //something gone wrong :(
+                    return;
+                }
+            } else {
+                //return all user transactions
+                $transactionsList = $user->getTransactions();
+            }
             $transactions = array();
             foreach ($transactionsList as $transaction) {
                 array_push($transactions, $transaction->structureData());

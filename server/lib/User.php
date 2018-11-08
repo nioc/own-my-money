@@ -313,6 +313,32 @@ class User
     }
 
     /**
+     * Return user transactions matching provided pattern
+     *
+     * @param string $pattern Pattern label to search
+     * @param string $error The returned error message
+     *
+     * @return array User transactions matching pattern
+     */
+    public function getTransactionsByPattern($pattern, &$error)
+    {
+        $error = '';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT `transaction`.* FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND CONCAT(`memo`, " ", `name`) like :pattern;');
+        $query->bindValue(':user', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':pattern', $pattern, PDO::PARAM_STR);
+        if ($query->execute()) {
+            //return array of transactions
+            return $query->fetchAll(PDO::FETCH_CLASS, 'Transaction');
+        }
+        $error = $query->errorInfo()[2];
+        //indicate there is a problem during querying
+        return false;
+    }
+
+    /**
      * Return public profile.
      *
      * @return object A public version of user profile

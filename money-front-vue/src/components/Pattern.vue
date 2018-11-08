@@ -10,10 +10,10 @@
         <div class="field">
           <label class="label">Label</label>
           <div class="control">
-            <input class="input" type="text" name="label" placeholder="Transaction name to be find" v-model="pattern.label" v-validate="'required'" :class="{ 'is-danger': errors.has('label') }">
+            <input class="input" type="text" name="label" placeholder="Transaction name to be find" v-model.lazy="pattern.label" @change="count" v-validate="'required'" :class="{ 'is-danger': errors.has('label') }">
             <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
           </div>
-          <p class="help">Wildcard character * is allowed</p>
+          <p class="help">Wildcard character * is allowed<span v-if="matchingCount !== null"> - {{ matchingCount }} results</span></p>
         </div>
         <div class="field">
           <label class="label">Category</label>
@@ -59,12 +59,15 @@
 
 <script>
 import CategoriesFactory from './../services/Categories'
+import Config from './../services/Config'
 export default {
   props: ['rPatterns', 'pattern'],
   mixins: [CategoriesFactory],
   data () {
     return {
       error: '',
+      matchingCount: null,
+      rTransactions: this.$resource(Config.API_URL + 'transactions'),
       isLoading: false
     }
   },
@@ -137,6 +140,17 @@ export default {
             })
         }
       })
+    },
+    count () {
+      if (this.pattern.label) {
+        this.rTransactions.query({pattern: this.pattern.label}).then(response => {
+          this.matchingCount = response.body.length
+          console.log(response.body.length)
+        }, response => {
+          // @TODO : add error handling
+          console.error(response)
+        })
+      }
     }
   },
   watch: {
