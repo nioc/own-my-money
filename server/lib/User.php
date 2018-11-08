@@ -339,6 +339,90 @@ class User
     }
 
     /**
+     * Return suggested patterns from user's transactions
+     *
+     * @return array Suggested patterns
+     */
+    public function suggestPatterns()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Pattern.php';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
+        //get user transactions
+        $transactions = $this->getTransactions();
+
+        //create raw patterns
+        $minLength = 6;
+        $rawPatterns = [];
+        foreach ($transactions as $transaction) {
+            $transactionLabel = $transaction->name;
+            if ($transaction->memo) {
+                $transactionLabel = $transaction->memo . ' ' . $transaction->name;
+            }
+            $transactionLabelLength = strlen($transactionLabel);
+            if ($transactionLabelLength > $minLength) {
+                for ($i = 0; $i < $transactionLabelLength - $minLength; $i++) {
+                    for ($j = $minLength; $j <= $transactionLabelLength - $i; $j++) {
+                        $patternText = substr($transactionLabel, $i, $j);
+                        array_push($rawPatterns, $patternText);
+                    }
+                }
+            }
+        }
+
+        //remove insufficient patterns (less than 5 occurences) and empty ones
+        $rawPatterns = array_count_values($rawPatterns);
+        $rawPatterns = array_filter($rawPatterns, function ($v, $k) {
+            return $v > 4 && strlen(trim($k)) > 0 ;
+        }, ARRAY_FILTER_USE_BOTH);
+
+        //remove smaller patterns (included in longer one)
+        uksort($rawPatterns, function ($a, $b) {
+            return strlen($b)-strlen($a);
+        });
+        $rawPatterns = array_keys($rawPatterns);
+        $longestPatterns = [];
+        foreach ($rawPatterns as $patternText) {
+            $isIncluded = false;
+            foreach ($longestPatterns as $longestPattern) {
+                if (strpos($longestPattern, $patternText) !== false) {
+                    $isIncluded = true;
+                }
+            }
+            if (!$isIncluded) {
+                array_push($longestPatterns, $patternText);
+            }
+        }
+        $rawPatterns = $longestPatterns;
+        unset($longestPatterns);
+
+        //compare each transaction to keep patterns with only one category
+        $validPatterns = [];
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
+        $connection = new DatabaseConnection();
+        foreach ($rawPatterns as $patternText) {
+            //get matching transactions with category
+            $query = $connection->prepare('SELECT `transaction`.`category`, `transaction`.`subcategory`, count(1) AS `count` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `transaction`.`category` IS NOT NULL AND CONCAT(`memo`, " ", `name`) like :pattern GROUP BY `transaction`.`category`, `transaction`.`subcategory`;');
+            $query->bindValue(':user', $this->id, PDO::PARAM_INT);
+            $query->bindValue(':pattern', "%$patternText%", PDO::PARAM_STR);
+            $query->execute();
+            $transactions = $query->fetchAll(PDO::FETCH_CLASS, 'Transaction');
+            //check all transactions have same category / subcategory
+            if (count($transactions) === 1) {
+                $pattern = new Pattern();
+                $pattern->label = "*$patternText*";
+                $pattern->category = $transactions[0]->category;
+                $pattern->subcategory = $transactions[0]->subcategory;
+                $pattern->count = $transactions[0]->count;
+                array_push($validPatterns, $pattern);
+            }
+        }
+
+        //return the valided patterns
+        return $validPatterns;
+    }
+
+    /**
      * Return public profile.
      *
      * @return object A public version of user profile

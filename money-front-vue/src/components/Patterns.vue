@@ -33,6 +33,9 @@
           <p class="control">
             <button class="button is-primary" role="button" @click="create"><span class="icon"><i class="fa fa-plus"/></span><span>Add pattern</span></button>
           </p>
+          <p class="control">
+            <button class="button is-primary" role="button" @click="suggest"><span class="icon"><i class="fa fa-cogs"/></span><span>Suggest patterns</span></button>
+          </p>
         </div>
 
         <div class="message is-danger block" v-if="error">
@@ -40,6 +43,23 @@
             {{ error }}
           </div>
         </div>
+
+        <b-table :data=suggestedPatterns :striped="true" :hoverable="true" @select="createSuggested" class="table-container">
+          <template slot-scope="props">
+            <b-table-column label="Label">
+              {{ props.row.label }}
+            </b-table-column>
+            <b-table-column label="Category">
+              <span v-if="props.row.category && categoriesAndSubcategoriesLookup[props.row.category]">{{ categoriesAndSubcategoriesLookup[props.row.category].label }}</span>
+            </b-table-column>
+            <b-table-column label="Subcategory">
+              <span v-if="props.row.subcategory && categoriesAndSubcategoriesLookup[props.row.subcategory]">{{ categoriesAndSubcategoriesLookup[props.row.subcategory].label }}</span>
+            </b-table-column>
+            <b-table-column label="Occurences">
+              {{ props.row.count }}
+            </b-table-column>
+          </template>
+        </b-table>
 
         <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
       </div>
@@ -67,6 +87,7 @@ export default {
   data () {
     return {
       patterns: [],
+      suggestedPatterns: [],
       error: '',
       isLoading: false,
       // modal
@@ -75,7 +96,8 @@ export default {
         pattern: {}
       },
       // resources
-      rPatterns: this.$resource(Config.API_URL + 'patterns{/id}')
+      rPatterns: this.$resource(Config.API_URL + 'patterns{/id}'),
+      rTransactionsPatterns: this.$resource(Config.API_URL + 'transactions/patterns')
     }
   },
   methods: {
@@ -105,6 +127,28 @@ export default {
     edit (pattern) {
       this.modalPattern.pattern = pattern
       this.modalPattern.isActive = true
+    },
+    suggest () {
+      this.isLoading = true
+      this.rTransactionsPatterns.query()
+        .then(response => {
+          this.suggestedPatterns = response.body
+        }, response => {
+          if (response.body.message) {
+            this.error = response.body.message
+            return
+          }
+          this.error = response.status + ' - ' + response.statusText
+        })
+        .finally(function () {
+          // remove loading overlay when API replies
+          this.isLoading = false
+        })
+    },
+    createSuggested (suggestedPattern) {
+      let pattern = JSON.parse(JSON.stringify(suggestedPattern))
+      this.patterns.push(pattern)
+      this.edit(pattern)
     }
   },
   mounted: function () {

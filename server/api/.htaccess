@@ -19,5 +19,6 @@ RewriteRule ^accounts/([0-9]+)/dataset/?$                  dataset.php?aid=$1 [L
 RewriteRule ^maps/?$                                       maps.php [L]
 RewriteRule ^maps/?([A-Za-z0-9]*)/?$                       maps.php?code=$1 [L]
 RewriteRule ^patterns/?([0-9]*)/?$                         patterns.php?id=$1 [L]
+RewriteRule ^transactions/patterns/?$                      transactionsPatterns.php [L]
 RewriteRule ^setup/steps/([A-Za-z-]+)/fields/?             steps.php?code=$1 [L]
 RewriteRule ^setup/steps/?([A-Za-z-]*)/?$                  steps.php?code=$1 [L]
