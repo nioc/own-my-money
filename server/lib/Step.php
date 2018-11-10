@@ -266,7 +266,7 @@ class Step
                     return $e->getMessage();
                 }
                 //create tables
-                $sql = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/server/configuration/create-tables.sql');
+                $sql = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/server/configuration/create-database.sql');
                 $connection->exec($sql);
                 return true;
                 break;
