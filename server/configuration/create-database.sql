@@ -79,6 +79,11 @@ CREATE TABLE `user` (
   `lastLoginAttemptFailed` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `version`;
+CREATE TABLE `version` (
+  `version` varchar(12) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 ALTER TABLE `account`
   ADD PRIMARY KEY (`id`),
@@ -114,6 +119,9 @@ ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `login` (`login`);
 
+ALTER TABLE `version`
+  ADD PRIMARY KEY (`version`);
+
 
 ALTER TABLE `account`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
@@ -147,3 +155,5 @@ ALTER TABLE `transaction`
   ADD CONSTRAINT `account id` FOREIGN KEY (`aid`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `category` FOREIGN KEY (`category`) REFERENCES `category` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `subcategory` FOREIGN KEY (`subcategory`) REFERENCES `category` (`id`) ON UPDATE CASCADE;
+
+INSERT INTO `version` (`version`) VALUES ('0.2.0');

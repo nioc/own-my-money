@@ -18,7 +18,7 @@
           </li>
         </ul>
 
-        <div v-else class="content has-text-grey has-text-centered">All is fine</div>
+        <div v-else class="content has-text-grey has-text-centered">There is nothing to do</div>
 
         <form @submit.prevent="validateBeforeSubmit" novalidate class="section is-max-width-form" v-if="steps.length > 0">
           <div v-if="steps[currentStep].help" v-html="steps[currentStep].help" class="content has-text-grey has-text-centered"/>
@@ -40,23 +40,22 @@
             </div>
           </div>
 
-          <div class="field is-horizontal">
-            <div class="field-label is-normal">
-            </div>
-            <div class="field-body">
-              <div class="message is-danger" v-if="error">
-                <div class="message-body">
-                  {{ error }}
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="has-text-centered" v-if="currentStep < steps.length-1">
             <button class="button is-primary" :disabled="errors.any()"><span class="icon"><i class="fa fa-arrow-circle-right"/></span><span>Next</span></button>
           </div>
 
         </form>
+
+        <div class="is-centered columns" v-if="error">
+          <div class="column is-narrow">
+            <div class="message is-danger">
+              <div class="message-body">
+                {{ error }}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
       </div>
     </div>

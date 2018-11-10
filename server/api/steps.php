@@ -33,6 +33,11 @@ switch ($api->method) {
     case 'GET':
         //query steps
         $steps = Step::getAll();
+        if (is_string($steps)) {
+            $api->output(500, $steps);
+            //return steps list
+            return;
+        }
         $api->output(200, $steps);
         //return steps list
         return;

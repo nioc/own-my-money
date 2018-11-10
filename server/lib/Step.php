@@ -77,9 +77,22 @@ class Step
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Configuration.php';
         $configuration = new Configuration();
         if ($configuration->get('setup') === '1') {
-            //setup is already done, return no step for installation
+            //initial setup is already done, check updates
+            $distConfiguration = new Configuration(false);
+            $installedVersion = $configuration->get('version');
+            $distVersion = $distConfiguration->get('version');
+            if ($installedVersion !== $distVersion) {
+                //there are update to do
+                return Step::getUpdateSteps($installedVersion);
+            }
+            //nothing to do, return no step
             return [];
         }
+        return Step::getInstallationSteps();
+    }
+
+    private static function getInstallationSteps()
+    {
         //check database exists
         $databaseConfigured = true;
         try {
@@ -95,8 +108,37 @@ class Step
           new Step('set-mailer', 'Setup mailer', 'fa-envelope', 'The application can send emails if your host has a SMTP server, in this step we configure the mail system', $databaseConfigured ? true : false),
           new Step('set-security', 'Setup security', 'fa-lock', 'Authorization process uses signed JWT, it requires you set your own secret key for generating the HMAC', false),
           new Step('create-user', 'Create user', 'fa-user', 'This step will create your (super) user account', false),
+          new Step('finalize-setup', 'Finalize setup', 'fa-cogs', 'This step will complete your setup', false),
           new Step('confirmation', 'Confirmation', 'fa-check', 'That\'s all, installation process has been completed, you can now <a href="/">signin</a> into the application', false)
         ];
+        return $steps;
+    }
+
+    private static function getUpdateSteps($installedVersion)
+    {
+        $hasDatabaseAlter = false;
+        switch ($installedVersion) {
+            //check if there is some database change
+            case '0.1.0':
+                $hasDatabaseAlter = true;
+                break;
+            default:
+                return 'Unknown installed version';
+                break;
+        }
+        $steps = [];
+        if ($hasDatabaseAlter) {
+            array_push(
+                $steps,
+                new Step('backup-database', 'Create backup', 'fa-life-ring', 'Your data matters, application will create a local backup of your database', false),
+                new Step('update-database', 'Update database', 'fa-table', 'Now, application will update MySQL tables', false)
+            );
+        }
+        array_push(
+            $steps,
+            new Step('finalize-setup', 'Finalize update', 'fa-cogs', 'This step will complete this update', false),
+            new Step('confirmation', 'Confirmation', 'fa-check', 'That\'s all, update process has been completed, you can now go back to the <a href="/">home</a> and discover the new features', false)
+        );
         return $steps;
     }
 
@@ -167,6 +209,9 @@ class Step
                 ];
                 break;
 
+            case 'backup-database':
+            case 'update-database':
+            case 'finalize-setup':
             case 'confirmation':
                 $this->fields = [
                 ];
@@ -314,6 +359,66 @@ class Step
                 $user->status = true;
                 if (!$user->insert($error)) {
                     return 'Error during user creation'.$error;
+                }
+                return true;
+                break;
+
+            case 'backup-database':
+                $filename = $_SERVER['DOCUMENT_ROOT'].'/money-db-backup-'.time().'.sql';
+                $dbName = $configuration->get('dbName');
+                $dbUser = $configuration->get('dbUser');
+                $dbPwd = $configuration->get('dbPwd');
+                exec("mysqldump $dbName --password=$dbPwd --user=$dbUser --single-transaction >$filename", $output);
+                if (!file_exists($filename) || filesize($filename) === 0) {
+                    return 'Error during backup creation'.join(' ', $output);
+                }
+                return true;
+                break;
+
+            case 'update-database':
+                //connect to MySQL with application credentials
+                try {
+                    require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+                    $connection = new DatabaseConnection();
+                } catch (PDOException $e) {
+                    return $e->getMessage();
+                }
+                //alter existing tables and create new ones according to the installed version
+                $installedVersion = $configuration->get('version');
+                switch ($installedVersion) {
+                    case '0.1.0':
+                        $sql = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/server/configuration/alter-database-0.2.0.sql');
+                        $connection->exec($sql);
+
+                        //cumulative scripts, break will be shared
+                        break;
+                    default:
+                        break;
+                }
+                //check the database has expected version
+                $query = $connection->prepare('SELECT `version` FROM `version`;');
+                if ($query->execute()) {
+                    $distConfiguration = new Configuration(false);
+                    if (!$distVersion = $distConfiguration->get('version')) {
+                        return 'Failed to get configuration `version`';
+                    }
+                    $databaseVersion = $query->fetchColumn();
+                    if ($distVersion === $databaseVersion) {
+                        return true;
+                    }
+                    return "Error during database update (current $databaseVersion ≠ target $distVersion)";
+                }
+                return 'Error during database update (can not read database version)';
+                break;
+
+            case 'finalize-setup':
+                //set the version installed
+                $distConfiguration = new Configuration(false);
+                if (!$version = $distConfiguration->get('version')) {
+                    return 'Failed to get configuration `version`';
+                }
+                if (!$configuration->set('version', $version)) {
+                    return 'Failed to set configuration `version`';
                 }
                 //set the installation steps are completed
                 if (!$configuration->set('setup', '1')) {

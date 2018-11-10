@@ -14,7 +14,7 @@ class Configuration
      */
     private $configuration;
 
-    public function __construct()
+    public function __construct($includeLocal = true)
     {
         $confDist = array();
         $confLocal = array();
@@ -22,9 +22,12 @@ class Configuration
         if (is_file($_SERVER['DOCUMENT_ROOT'].'/server/configuration/configuration.ini')) {
             $confDist = parse_ini_file($_SERVER['DOCUMENT_ROOT'].'/server/configuration/configuration.ini');
         }
-        //get local configuration
-        if (is_file($_SERVER['DOCUMENT_ROOT'].'/server/configuration/local.ini')) {
-            $confLocal = parse_ini_file($_SERVER['DOCUMENT_ROOT'].'/server/configuration/local.ini');
+        $confLocal = [];
+        if ($includeLocal) {
+            //get local configuration
+            if (is_file($_SERVER['DOCUMENT_ROOT'].'/server/configuration/local.ini')) {
+                $confLocal = parse_ini_file($_SERVER['DOCUMENT_ROOT'].'/server/configuration/local.ini');
+            }
         }
         //merge configurations (local override original)
         $this->configuration = array_merge($confDist, $confLocal);
@@ -78,10 +81,6 @@ class Configuration
         if ($oldValue === false) {
             //unknown key
             return false;
-        }
-        if ($oldValue === $value) {
-            //no change
-            return true;
         }
         $path = $_SERVER['DOCUMENT_ROOT'].'/server/configuration/local.ini';
         $localConfiguration = file_get_contents($path);
