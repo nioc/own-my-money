@@ -22,3 +22,4 @@ RewriteRule ^patterns/?([0-9]*)/?$                         patterns.php?id=$1 [L
 RewriteRule ^transactions/patterns/?$                      transactionsPatterns.php [L]
 RewriteRule ^setup/steps/([A-Za-z-]+)/fields/?             steps.php?code=$1 [L]
 RewriteRule ^setup/steps/?([A-Za-z-]*)/?$                  steps.php?code=$1 [L]
+RewriteRule ^setup/versions/latest/?$                      updates.php [L]

@@ -28,7 +28,9 @@
               <router-link class="navbar-item" to="/profile"><i class="fa fa-user-circle fa-fw"/>&nbsp;Profile</router-link>
               <router-link class="navbar-item" to="/patterns"><i class="fa fa-magic fa-fw"/>&nbsp;Patterns</router-link>
               <hr class="navbar-divider">
+              <router-link class="navbar-item" to="/about"><i class="fa fa-info-circle fa-fw"/>&nbsp;About</router-link>
               <a class="navbar-item" href="https://github.com/nioc/own-my-money/issues/new" target="_blank"><i class="fa fa-bug fa-fw"/>&nbsp;Report a bug</a>
+              <hr class="navbar-divider">
               <a class="navbar-item" @click="logout()"><i class="fa fa-sign-out fa-fw"/>&nbsp;Logout</a>
             </div>
           </div>

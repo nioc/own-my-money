@@ -12,6 +12,7 @@ import Mappings from '@/components/Maps'
 import Mapping from '@/components/Map'
 import Home from '@/components/Home'
 import Setup from '@/components/Setup'
+import About from '@/components/About'
 Vue.use(Router)
 
 export default new Router({
@@ -27,6 +28,12 @@ export default new Router({
       name: 'setup',
       component: Setup,
       meta: {title: 'Setup server'}
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: About,
+      meta: {title: 'About'}
     },
     {
       path: '/accounts',

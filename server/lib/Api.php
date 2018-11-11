@@ -205,7 +205,7 @@ class Api
                 $responseBody = new stdClass();
                 $responseBody->code = $this->httpCode;
                 $responseBody->message = '';
-                if (isset($this->responseBody) && is_string($this->responseBody)) {
+                if (isset($this->responseBody) && (is_string($this->responseBody) || is_array($this->responseBody))) {
                     $responseBody->message = $this->responseBody;
                 }
                 $this->responseBody = $responseBody;
