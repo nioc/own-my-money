@@ -25,6 +25,7 @@
         </div>
         <section class="content" v-if="!isUpToDate && this.user.scope.admin">
           <button class="button is-primary" @click="update" :class="{ 'is-loading': isUpdating }" :disabled="isUpdating"><span class="icon"><i class="fa fa-wrench"/></span><span>Update to {{ version.latest }}</span></button>
+          <!-- eslint-disable-next-line vue/require-v-for-key-->
           <pre class="section content" v-if="updateLogs"><span class="is-block" v-for="updateLog in updateLogs">{{ updateLog.timestamp | moment("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
         </section>
         <section class="content">
