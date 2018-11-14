@@ -47,4 +47,6 @@ This project includes the following:
 - [accounting.js](https://github.com/openexchangerates/accounting.js)
 - [OFX Parser](https://github.com/asgrim/ofxparser)
 - [UAParser.js](https://github.com/faisalman/ua-parser-js)
+- [Chart.js](https://www.chartjs.org/)
+- [vue-chartjs](https://vue-chartjs.org/)
 - Favicon: [Piggy Bank by Musmellow from the Noun Project](https://thenounproject.com/term/piggy-bank/1616637) (licensed as Creative Commons CCBY)

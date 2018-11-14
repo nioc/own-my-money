@@ -313,6 +313,120 @@ class User
     }
 
     /**
+     * Return user transactions history.
+     *
+     * @param int $periodStart Start timestamp for requesting
+     * @param int $periodEnd End timestamp for requesting
+     *
+     * @return array User transactions history
+     */
+    public function getTransactionsHistory($periodStart, $periodEnd)
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        //get debits
+        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, "%Y-%m-%d") AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY `datePosted` ORDER BY `datePosted` ASC;');
+        $query->bindValue(':user', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
+        $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
+        $query->bindValue(':type', 'debit', PDO::PARAM_STR);
+        if (!$query->execute()) {
+            return false;
+        }
+        $debits = $query->fetchAll(PDO::FETCH_ASSOC);
+        //get credits
+        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, "%Y-%m-%d") AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY `datePosted` ORDER BY `datePosted` ASC;');
+        $query->bindValue(':user', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
+        $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
+        $query->bindValue(':type', 'credit', PDO::PARAM_STR);
+        if (!$query->execute()) {
+            return false;
+        }
+        $credits = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        //create calendar for returning each days
+        $calendar = [];
+        $timestamp = $periodStart;
+        $increment = 86400;
+        do {
+            $date = date('Y-m-d', $timestamp);
+            $calendar[$date]['debit'] = 0;
+            $calendar[$date]['credit'] = 0;
+            $calendar[$date]['countCredit'] = 0;
+            $calendar[$date]['countDebit'] = 0;
+            $timestamp += $increment;
+        } while ($timestamp <= $periodEnd);
+
+        //put amount in calendar
+        foreach ($debits as $point) {
+            $calendar[$point['date']]['debit'] = intval($point['debit']);
+            $calendar[$point['date']]['countDebit'] = intval($point['countDebit']);
+        }
+        foreach ($credits as $point) {
+            $calendar[$point['date']]['credit'] = intval($point['credit']);
+            $calendar[$point['date']]['countCredit'] = intval($point['countCredit']);
+        }
+
+        //format in array
+        $points = [];
+        foreach ($calendar as $date => $value) {
+            $point = new stdClass();
+            $point->date = $date;
+            $point->debit = $value['debit'];
+            $point->credit = $value['credit'];
+            $point->countDebit = $value['countDebit'];
+            $point->countCredit = $value['countCredit'];
+            array_push($points, $point);
+        }
+        return $points;
+    }
+
+    /**
+     * Return user transactions distribution.
+     *
+     * @param int $periodStart Start timestamp for requesting
+     * @param int $periodEnd End timestamp for requesting
+     * @param string $type Transaction type ('credit' or 'debit')
+     * @param string $key Distribution group by field ('category', 'subcategory')
+     * @param string|int $value Value for distribution on a specific field (category.id for subcategory distribution)
+     *
+     * @return array User transactions distribution
+     */
+    public function getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value = null)
+    {
+        if ($key === 'categories') {
+            $queryString = 'SELECT `category` AS `key`, SUM(`amount`) AS `amount` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY `category` ORDER BY SUM(ABS(`amount`)) DESC;';
+        } elseif ($key === 'subcategories' && $value !== null) {
+            $queryString = 'SELECT `subcategory` AS `key`, SUM(`amount`) AS `amount` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `category` =:category AND `type` =:type GROUP BY `subcategory` ORDER BY SUM(ABS(`amount`)) DESC;';
+        } else {
+            //invalid request
+            return false;
+        }
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare($queryString);
+        $query->bindValue(':user', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
+        $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
+        if ($key === 'subcategories') {
+            $query->bindValue(':category', $value, PDO::PARAM_INT);
+        }
+        $query->bindValue(':type', $type, PDO::PARAM_STR);
+        if (!$query->execute()) {
+            return false;
+        }
+        $distribution = $query->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($distribution as &$item) {
+            if ($item['key'] !== null) {
+                $item['key'] = intval($item['key']);
+            }
+            $item['amount'] = intval($item['amount']);
+        }
+        return $distribution;
+    }
+
+    /**
      * Return user transactions matching provided pattern
      *
      * @param string $pattern Pattern label to search
