@@ -119,7 +119,7 @@ export default {
         })
     },
     create () {
-      let pattern = { category: '', subcategory: '' }
+      let pattern = { label: '', category: '', subcategory: '' }
       this.patterns.push(pattern)
       this.modalPattern.pattern = pattern
       this.modalPattern.isActive = true
