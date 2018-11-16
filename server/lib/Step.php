@@ -122,6 +122,10 @@ class Step
             case '0.1.0':
                 $hasDatabaseAlter = true;
                 break;
+            case '0.2.0':
+            case '0.3.0':
+            case '0.3.1':
+                break;
             default:
                 return 'Unknown installed version';
                 break;
