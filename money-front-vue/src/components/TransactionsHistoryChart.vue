@@ -61,16 +61,16 @@ export default {
             {
               data: response.data.values.map(point => point.debit),
               label: 'Debits',
-              backgroundColor: 'rgb(255, 99, 132, 0.5)',
+              backgroundColor: 'rgba(255, 99, 132, 0.5)',
               borderColor: 'rgb(255, 99, 132)',
-              pointBackgroundColor: 'rgb(255, 99, 132, 0.8)'
+              pointBackgroundColor: 'rgba(255, 99, 132, 0.8)'
             },
             {
               data: response.data.values.map(point => point.credit),
               label: 'Credits',
-              backgroundColor: 'rgb(35, 209, 96, 0.5)',
-              borderColor: 'rgb(35, 209, 96)',
-              pointBackgroundColor: 'rgb(35, 209, 96, 0.8)'
+              backgroundColor: 'rgba(66, 185, 131, 0.5)',
+              borderColor: 'rgb(66, 185, 131)',
+              pointBackgroundColor: 'rgba(66, 185, 131, 0.8)'
             }
           ],
           labels: response.data.values.map(point => this.$moment(point.date))

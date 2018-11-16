@@ -59,10 +59,26 @@ export default {
       }
       this.$http.get(Config.API_URL + this.chartEndpoint, options).then(response => {
         let values = response.data.values
+        let colors = ['#42b983', '#292f36', '#4ecdc4', '#0b3954', '#ff6663', '#7d7c84', '#7180ac', '#2b4570', '#c84630', '#81a684', '#466060', '#c9cba3', '#e26d5c', '#2a4747', '#157a6e', '#ee6c4d']
+        let count = values.length
+        let lightness
+        if (response.data.type === 'debit') {
+          colors = []
+          for (let i = 0; i < count; i++) {
+            lightness = 61 + (i) / count * 39
+            colors.push('hsla(348, 100%, ' + lightness + '%, 1)')
+          }
+        } else if (response.data.type === 'credit') {
+          colors = []
+          for (let i = 0; i < count; i++) {
+            lightness = 49 + (i) / count * 41
+            colors.push('hsla(153, 47%, ' + lightness + '%, 1)')
+          }
+        }
         this.chartData = {
           datasets: [
             {
-              backgroundColor: ['#17a2b8', '#ffc107', '#dc3545', '#007bff', '#28a745', '#868e96'],
+              backgroundColor: colors,
               data: values.map(point => point.amount)
             }
           ]
