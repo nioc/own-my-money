@@ -1,0 +1,57 @@
+@charset "utf-8";
+
+@import "~bulma/sass/utilities/initial-variables";
+
+$primary: #42b983;
+$message-body-padding: 0.75em 1.25em;
+$breadcrumb-item-color: $primary;
+.navbar-burger span {
+  color: $white-ter;
+}
+$link: $primary;
+$navbar-item-hover-color: $primary;
+.navbar .router-link-exact-active {
+  color: $grey-light !important
+}
+.is-max-width-form {
+  max-width: 800px;
+  margin: auto;
+}
+
+$card-header-background-color: $white-bis;
+$card-shadow: 0 0 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
+$card-header-shadow: 0;
+$body-background-color: $white-ter;
+$input-shadow: none;
+
+@import "~bulma/sass/utilities/_all";
+@import "~bulma/sass/base/_all";
+@import "~bulma/sass/elements/_all";
+@import "~bulma/sass/components/_all";
+@import "~bulma/sass/grid/_all";
+@import "~bulma/sass/layout/_all";
+
+.hero .tabs ul {
+  border-bottom-color: $tabs-border-bottom-color;
+  border-bottom-style: $tabs-border-bottom-style;
+  border-bottom-width: $tabs-border-bottom-width;
+}
+
+.hero-body {
+  @include mobile {
+    padding: 0;
+  }
+}
+.box {
+  @include mobile {
+    border-radius: unset;
+  }
+}
+
+.has-half-margin-mobile {
+  @include mobile {
+    margin: 0 -0.75rem;
+  }
+}
+
+@import "~buefy/src/scss/buefy";
