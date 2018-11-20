@@ -31,7 +31,7 @@
         <section class="content">
           <p>Own my money is a simple way to track your bank activity on any device connected to the web (pc, smartphone, tablet, ...).</p>
           <p>If you have any issues or feature requests, please create an <a href="https://github.com/nioc/own-my-money/issues" target="_blank">issue</a>.</p>
-          <p>This project is licensed under the <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank">GNU General Public License v3.0</a>.</p>
+          <p>This project is licensed under the <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank">GNU Affero General Public License v3.0</a>.</p>
         </section>
       </div>
     </div>
