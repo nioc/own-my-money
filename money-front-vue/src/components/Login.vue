@@ -64,18 +64,23 @@ export default {
     submit: function (e) {
       // prevent form submit
       e.preventDefault()
-      this.isLoading = true
-      // get credentials
-      let credentials = {
-        login: this.credentials.login,
-        password: this.credentials.password
-      }
-      // check errors bag and field value
-      if (this.errors.count() > 0 || credentials.login === '' || credentials.password === '') {
-        return
-      }
-      // call the auth service
-      Auth.login(this, credentials, this.$router.currentRoute.query.redirect)
+      // call the async validator
+      this.$validator.validateAll().then((result) => {
+        if (result) {
+          this.isLoading = true
+          // get credentials
+          let credentials = {
+            login: this.credentials.login,
+            password: this.credentials.password
+          }
+          // check errors bag and field value
+          if (this.errors.count() > 0 || credentials.login === '' || credentials.password === '') {
+            return
+          }
+          // call the auth service
+          Auth.login(this, credentials, this.$router.currentRoute.query.redirect)
+        }
+      })
     }
   }
 }
