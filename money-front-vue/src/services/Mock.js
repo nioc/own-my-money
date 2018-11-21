@@ -38,11 +38,17 @@ export default {
     let startDate = Vue.moment().subtract(30, 'days')
     let endDate = Vue.moment()
     var dt = startDate
+    let length = dates.length
     // eslint-disable-next-line
     while (dt <= endDate) {
-      if (!dates.find(element => {
-        return element.date === dt.format('YYYY-MM-DD')
-      })) {
+      let dateExists = false
+      for (var i = 0; i < length; i++) {
+        if (dates[i].date === dt.format('YYYY-MM-DD')) {
+          dateExists = true
+          break
+        }
+      }
+      if (!dateExists) {
         dates.push({
           date: Vue.moment(dt).format('YYYY-MM-DD'),
           debit: 0,
@@ -180,10 +186,17 @@ export default {
 
     Vue.http.interceptors.push((request) => {
       let url = request.getUrl()
-      let route = routes.find(item => {
-        return (request.method === item.method && url === Config.API_URL + item.url)
-      })
-      if (!route) {
+      let length = routes.length
+      let routeExists = false
+      let route = {}
+      for (var i = 0; i < length; i++) {
+        if (request.method === routes[i].method && url === Config.API_URL + routes[i].url) {
+          routeExists = true
+          route = routes[i]
+          break
+        }
+      }
+      if (!routeExists) {
         console.log(url)
         return request.respondWith({status: 404, statusText: 'Not found'})
       } else {
