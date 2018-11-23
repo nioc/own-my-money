@@ -3,16 +3,19 @@ import Config from './../services/Config'
 export default {
   install (Vue, options) {
     let transactions = [
-      {id: 1, type: 'CREDIT', datePosted: Vue.moment().subtract(1, 'days'), dateUser: Vue.moment().subtract(1, 'days'), amount: 543, name: 'SUNSHINE AUTOS IMPORT GARAGE', fitid: '5387240011638', memo: '', category: 3, subcategory: 33, note: 'Car selling'},
-      {id: 2, type: 'DEBIT', datePosted: Vue.moment().subtract(3, 'days'), dateUser: Vue.moment().subtract(3, 'days'), amount: -39.85, name: 'LOS SANTOS CUSTOMS', fitid: '5387600307178', memo: '', category: 1, subcategory: 14, note: 'Wheels'},
-      {id: 7, type: 'DEBIT', datePosted: Vue.moment().subtract(3, 'days'), dateUser: Vue.moment().subtract(3, 'days'), amount: -250, name: 'PEGASUS', fitid: '5387600307178', memo: '', category: 1, subcategory: 14, note: ''},
+      {id: 1, type: 'CREDIT', datePosted: Vue.moment().subtract(3, 'days'), dateUser: Vue.moment().subtract(3, 'days'), amount: 342, name: 'SUNSHINE AUTOS IMPORT GARAGE', fitid: '5387240011638', memo: '', category: 3, subcategory: 33, note: 'Car selling'},
+      {id: 10, type: 'DEBIT', datePosted: Vue.moment().subtract(4, 'days'), dateUser: Vue.moment().subtract(4, 'days'), amount: -60.5, name: 'ARROW GASOLINE', fitid: '5387600307180', memo: '', category: 1, subcategory: 12, note: 'Gasoil'},
+      {id: 2, type: 'DEBIT', datePosted: Vue.moment().subtract(4, 'days'), dateUser: Vue.moment().subtract(4, 'days'), amount: -39.85, name: 'LOS SANTOS CUSTOMS', fitid: '5387600307178', memo: '', category: 1, subcategory: 14, note: 'Wheels'},
       {id: 3, type: 'DEBIT', datePosted: Vue.moment().subtract(5, 'days'), dateUser: Vue.moment().subtract(5, 'days'), amount: -17, name: 'PIZZA THIS', fitid: '5387600307179', memo: '', category: 2, subcategory: 20, note: 'Lunch with Trevor'},
       {id: 5, type: 'CREDIT', datePosted: Vue.moment().subtract(6, 'days'), dateUser: Vue.moment().subtract(6, 'days'), amount: 300, name: 'MERRYWEATHER SECURITY', fitid: '5387600307179', memo: '', category: 3, subcategory: 32, note: ''},
       {id: 9, type: 'DEBIT', datePosted: Vue.moment().subtract(6, 'days'), dateUser: Vue.moment().subtract(6, 'days'), amount: -39.99, name: 'MORS MUTUAL INSURANCE', fitid: '5387600307180', memo: '', category: 1, subcategory: 13, note: ''},
       {id: 6, type: 'CREDIT', datePosted: Vue.moment().subtract(8, 'days'), dateUser: Vue.moment().subtract(8, 'days'), amount: 200, name: 'TRANSFER FROM L. CREST', fitid: '5387600307180', memo: '', category: 3, subcategory: 32, note: 'Mission success'},
-      {id: 8, type: 'DEBIT', datePosted: Vue.moment().subtract(8, 'days'), dateUser: Vue.moment().subtract(8, 'days'), amount: -59, name: 'VANILLA UNICORN', fitid: '5387600307179', memo: '', category: 2, subcategory: null, note: ''},
+      {id: 8, type: 'DEBIT', datePosted: Vue.moment().subtract(8, 'days'), dateUser: Vue.moment().subtract(8, 'days'), amount: -99, name: 'VANILLA UNICORN', fitid: '5387600307179', memo: '', category: 2, subcategory: null, note: ''},
       {id: 4, type: 'DEBIT', datePosted: Vue.moment().subtract(15, 'days'), dateUser: Vue.moment().subtract(15, 'days'), amount: -28.5, name: 'PONSONBY', fitid: '5387600307180', memo: '', category: 5, subcategory: 51, note: 'hats'},
-      {id: 9, type: 'DEBIT', datePosted: Vue.moment().subtract(18, 'days'), dateUser: Vue.moment().subtract(18, 'days'), amount: -60.5, name: 'ARROW GASOLINE', fitid: '5387600307180', memo: '', category: 1, subcategory: 12, note: 'Gasoil'}
+      {id: 9, type: 'DEBIT', datePosted: Vue.moment().subtract(18, 'days'), dateUser: Vue.moment().subtract(18, 'days'), amount: -60.5, name: 'ARROW GASOLINE', fitid: '5387600307180', memo: '', category: 1, subcategory: 12, note: 'Gasoil'},
+      {id: 7, type: 'DEBIT', datePosted: Vue.moment().subtract(20, 'days'), dateUser: Vue.moment().subtract(20, 'days'), amount: -250, name: 'PEGASUS', fitid: '5387600307178', memo: '', category: 1, subcategory: 14, note: ''},
+      {id: 9, type: 'DEBIT', datePosted: Vue.moment().subtract(21, 'days'), dateUser: Vue.moment().subtract(21, 'days'), amount: -60.5, name: 'O SHEAS BARBERS SHOP', fitid: '5387600307181', memo: '', category: 5, subcategory: null, note: ''},
+      {id: 9, type: 'CREDIT', datePosted: Vue.moment().subtract(22, 'days'), dateUser: Vue.moment().subtract(22, 'days'), amount: 210, name: 'SUNSHINE AUTOS IMPORT GARAGE', fitid: '5387600307180', memo: '', category: 3, subcategory: 33, note: 'Car selling'}
     ]
     // let history = []
     function groupBy (collection, attribute) {
@@ -197,7 +200,7 @@ export default {
         }
       }
       if (!routeExists) {
-        console.log(url)
+        // console.log(url)
         return request.respondWith({status: 404, statusText: 'Not found'})
       } else {
         return request.respondWith(
