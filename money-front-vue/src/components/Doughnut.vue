@@ -10,8 +10,8 @@ export default {
       type: Object,
       required: true
     },
-    chartLabels: {
-      type: Array,
+    onClick: {
+      type: Function,
       required: false
     }
   },
@@ -23,8 +23,7 @@ export default {
         },
         responsive: true,
         maintainAspectRatio: false,
-        elements: {
-        }
+        onClick: this.onClick
       }
     }
   },

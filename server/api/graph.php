@@ -64,7 +64,7 @@ switch ($api->method) {
                 $api->checkParameterExists('value', $value);
                 //request transactions distribution
                 $values = $user->getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value);
-                if (!$values) {
+                if ($values === false) {
                     $api->output(500, '');
                     //something go wrong
                     return;

@@ -12,12 +12,13 @@
         <button class="button" :class="{ 'is-loading': isLoading }" @click="requestData" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>Refresh</span></button>
       </div>
     </div>
-    <doughnut :chartData="chartData"></doughnut>
+    <doughnut :chartData="chartData" :onClick="onClick"></doughnut>
   </div>
 </template>
 
 <script>
 import Config from './../services/Config'
+import Bus from '@/services/Bus'
 import Doughnut from '@/components/Doughnut'
 import CategoriesFactory from './../services/Categories'
 export default {
@@ -41,6 +42,7 @@ export default {
       isLoading: false,
       isLoaded: false,
       chartData: null,
+      onClick: null,
       search: {
         currentDate: today,
         periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
@@ -75,6 +77,16 @@ export default {
             colors.push('hsla(153, 47%, ' + lightness + '%, 1)')
           }
         }
+        this.onClick = function (evt) {
+          let index = this.chart.getElementsAtEvent(evt)[0]
+          if (index) {
+            let key = values[index._index].key
+            if (key) {
+              // send event for parent update (may be displaying subcategories distribution)
+              Bus.$emit('category-selected', {key: key, label: this.chart.data.labels[index._index]})
+            }
+          }
+        }
         this.chartData = {
           datasets: [
             {
@@ -84,7 +96,7 @@ export default {
           ]
         }
         let labels
-        if (response.data.key === 'categories') {
+        if (response.data.key === 'categories' || response.data.key === 'subcategories') {
           labels = values.map(point => this.categoriesAndSubcategoriesLookup[point.key] ? this.categoriesAndSubcategoriesLookup[point.key].label : point.key)
         } else {
           labels = values.map(point => point.key)
