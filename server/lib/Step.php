@@ -125,6 +125,7 @@ class Step
             case '0.2.0':
             case '0.3.0':
             case '0.3.1':
+            case '0.3.2':
                 break;
             default:
                 return 'Unknown installed version';
