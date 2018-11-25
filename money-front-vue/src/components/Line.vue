@@ -33,13 +33,6 @@ export default {
           scales: {
             xAxes: [{
               type: 'time',
-              time: {
-                displayFormats: {
-                  quarter: 'MMM YYYY'
-                },
-                unit: 'week',
-                unitStepSize: 1
-              },
               ticks: {
                 autoSkip: false,
                 maxRotation: 0

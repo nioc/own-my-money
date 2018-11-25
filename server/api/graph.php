@@ -36,14 +36,23 @@ switch ($api->method) {
         $response = new stdClass();
         switch ($request) {
             case 'history':
+                //determine the best time unit according to requested duration
+                $duration = $periodEnd - $periodStart;
+                $timeUnit = 'D';
+                if ($duration > 32140800) {
+                    $timeUnit = 'M';
+                } elseif ($duration > 2678400) {
+                    $timeUnit = 'W';
+                }
                 //request transactions history
-                $values = $user->getTransactionsHistory($periodStart, $periodEnd);
+                $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit);
                 if (!$values) {
                     $api->output(500, '');
                     //something go wrong
                     return;
                 }
                 $response->values = $values;
+                $response->timeUnit = $timeUnit;
                 break;
             case 'distribution':
                 if (!$api->checkParameterExists('key', $key)) {

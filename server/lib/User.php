@@ -317,29 +317,50 @@ class User
      *
      * @param int $periodStart Start timestamp for requesting
      * @param int $periodEnd End timestamp for requesting
+     * @param int $timeUnit Time unit (M for monthly, W for weekly, D for daily which is default value)
      *
      * @return array User transactions history
      */
-    public function getTransactionsHistory($periodStart, $periodEnd)
+    public function getTransactionsHistory($periodStart, $periodEnd, $timeUnit = 'D')
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
+        switch ($timeUnit) {
+          case 'M':
+            $sqlFormat = '%Y-%m';
+            $dateInterval = 'P1M';
+            $resultFormat = 'Y-m';
+            break;
+          case 'W':
+            $sqlFormat = '%YW%v';
+            $dateInterval = 'P1W';
+            $resultFormat = 'Y\WW';
+            break;
+          case 'D':
+          default:
+            $sqlFormat = '%Y-%m-%d';
+            $dateInterval = 'P1D';
+            $resultFormat = 'Y-m-d';
+            break;
+        }
         //get debits
-        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, "%Y-%m-%d") AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY `datePosted` ORDER BY `datePosted` ASC;');
+        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
         $query->bindValue(':user', $this->id, PDO::PARAM_INT);
         $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
         $query->bindValue(':type', 'debit', PDO::PARAM_STR);
+        $query->bindValue(':format', $sqlFormat, PDO::PARAM_STR);
         if (!$query->execute()) {
             return false;
         }
         $debits = $query->fetchAll(PDO::FETCH_ASSOC);
         //get credits
-        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, "%Y-%m-%d") AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY `datePosted` ORDER BY `datePosted` ASC;');
+        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
         $query->bindValue(':user', $this->id, PDO::PARAM_INT);
         $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
         $query->bindValue(':type', 'credit', PDO::PARAM_STR);
+        $query->bindValue(':format', $sqlFormat, PDO::PARAM_STR);
         if (!$query->execute()) {
             return false;
         }
@@ -347,16 +368,16 @@ class User
 
         //create calendar for returning each days
         $calendar = [];
-        $timestamp = $periodStart;
-        $increment = 86400;
+        $dateTime = new DateTime();
+        $dateTime->setTimestamp($periodStart);
         do {
-            $date = date('Y-m-d', $timestamp);
+            $date = $dateTime->format($resultFormat);
             $calendar[$date]['debit'] = 0;
             $calendar[$date]['credit'] = 0;
             $calendar[$date]['countCredit'] = 0;
             $calendar[$date]['countDebit'] = 0;
-            $timestamp += $increment;
-        } while ($timestamp <= $periodEnd);
+            $dateTime->add(new DateInterval($dateInterval));
+        } while ($dateTime->getTimestamp() <= $periodEnd);
 
         //put amount in calendar
         foreach ($debits as $point) {
