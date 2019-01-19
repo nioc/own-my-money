@@ -5,12 +5,12 @@
         <span class="card-header-icon">
           <i class="fa" :class="search.isActive ? 'fa-angle-down' : 'fa-angle-right'"></i>
         </span>
-        <p class="card-header-title">Search transactions</p>
+        <p class="card-header-title">{{ $t('labels.searchTransactions') }}</p>
       </div>
       <div class="card-content">
         <div class="field is-grouped is-grouped-multiline is-block-mobile">
             <div class="control has-icons-left">
-              <input class="input" type="text" placeholder="Find a transaction" v-model="search.query">
+              <input class="input" type="text" :placeholder="$t('labels.findATransaction')" v-model="search.query">
               <span class="icon is-small is-left">
                 <i class="fa fa-search"></i>
               </span>
@@ -24,7 +24,7 @@
             <div class="control">
               <div class="select">
                 <select name="parent" v-model="search.category">
-                  <option value="">-- Category --</option>
+                  <option value="">-- {{ $tc('objects.category', 1) }} --</option>
                   <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
                 </select>
               </div>
@@ -32,7 +32,7 @@
             <div class="control" v-if="search.category && categoriesAndSubcategoriesLookup[search.category].sub.length > 0">
               <div class="select">
                 <select name="parent" v-model="search.subcategory">
-                  <option value="">-- Subcategory --</option>
+                  <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
                   <option v-for="subcategory in categoriesAndSubcategoriesLookup[search.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
                 </select>
               </div>
@@ -46,17 +46,17 @@
         <span class="card-header-icon">
           <i class="fa" :class="batch.isActive ? 'fa-angle-down' : 'fa-angle-right'"></i>
         </span>
-        <p class="card-header-title">Batch updates</p>
+        <p class="card-header-title">{{ $t('labels.batchUpdates') }}</p>
       </div>
       <div class="card-content">
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <div class="input is-static">{{batch.checkedTransactions.length}} transactions selected ({{ transactionsCheckedSum | currency }})</div>
+            <div class="input is-static">{{ $tc('objects.transactionsSelected', batch.checkedTransactions.length) }} ({{ $n(transactionsCheckedSum, 'currency') }})</div>
           </div>
           <div class="control">
             <div class="select">
               <select v-model="batch.category">
-                <option value="">-- Category --</option>
+                <option value="">-- {{ $tc('objects.category', 1) }} --</option>
                 <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
               </select>
             </div>
@@ -64,19 +64,19 @@
           <div class="control" v-if="batch.category && categoriesAndSubcategoriesLookup[batch.category].sub.length > 0">
             <div class="select">
               <select v-model="batch.subcategory">
-                <option value="">-- Subcategory --</option>
+                <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
                 <option v-for="subcategory in categoriesAndSubcategoriesLookup[batch.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
               </select>
             </div>
           </div>
           <div class="control">
-            <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-cogs"></i></span><span>Apply</span></button>
+            <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-cogs"></i></span><span>{{ $t('actions.apply') }}</span></button>
           </div>
           <div class="control">
-            <button class="button is-light" @click="selectAll" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-check-square-o"></i></span><span>Select all</span></button>
+            <button class="button is-light" @click="selectAll" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-check-square-o"></i></span><span>{{ $t('actions.selectAll') }}</span></button>
           </div>
           <div class="control">
-            <button class="button is-light" @click="selectNone" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-square-o"></i></span><span>Clear</span></button>
+            <button class="button is-light" @click="selectNone" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-square-o"></i></span><span>{{ $t('actions.clear') }}</span></button>
           </div>
         </div>
         <div class="field is-block-mobile">
@@ -94,23 +94,23 @@
 
     <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" @select="edit" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
       <template slot-scope="props">
-        <b-table-column field="amount" label="Amount" sortable numeric>
-          <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ props.row.amount | currency }}</span>
+        <b-table-column field="amount" :label="$t('fieldnames.amount')" sortable numeric>
+          <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
         </b-table-column>
-        <b-table-column field="name" label="Name" sortable>
+        <b-table-column field="name" :label="$t('fieldnames.label')" sortable>
           {{ props.row.fullname }}<span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
         </b-table-column>
-        <b-table-column field="datePosted" label="Date" sortable>
-          {{ props.row.datePosted | moment("DD/MM/YYYY") }}
+        <b-table-column field="datePosted" :label="$t('fieldnames.date')" sortable>
+          {{ props.row.datePosted | moment("L") }}
         </b-table-column>
-        <b-table-column field="category" label="Category" sortable>
+        <b-table-column field="category" :label="$tc('objects.category', 1)" sortable>
           {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
         </b-table-column>
       </template>
       <template slot="empty">
         <section class="section">
             <div class="content has-text-grey has-text-centered">
-                <p>There is nothing to display</p>
+                <p>{{ $t('labels.nothingToDisplay') }}</p>
             </div>
         </section>
       </template>

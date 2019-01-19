@@ -2,11 +2,11 @@
   <form @submit.prevent="validateBeforeSubmit" novalidate>
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">{{ action }} user</p>
+        <p class="modal-card-title">{{ action }} {{ $tc('objects.user', 1).toLowerCase() }}</p>
       </header>
       <section class="modal-card-body">
         <div class="field">
-          <label class="label">Login</label>
+          <label class="label">{{ $t('fieldnames.login') }}</label>
           <div class="control has-icons-left has-icons-right">
             <input class="input" type="text" name="login" placeholder="Login" v-model="user.login" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('login') }">
             <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
@@ -15,7 +15,7 @@
           </div>
         </div>
         <div class="field" v-if="!user.sub">
-          <label class="label">Password</label>
+          <label class="label">{{ $t('fieldnames.password') }}</label>
           <div class="control has-icons-left">
             <input class="input" type="password" name="password" placeholder="Password" v-model="user.password" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('password') }">
             <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
@@ -23,22 +23,22 @@
           </div>
         </div>
         <div class="field">
-          <label class="label">Mail</label>
+          <label class="label">{{ $t('fieldnames.email') }}</label>
           <div class="control has-icons-left has-icons-right">
-            <input class="input" type="email" name="mail" placeholder="Mail address" v-model="user.mail" v-validate="'required|email'" :class="{ 'is-danger': errors.has('mail') }">
+            <input class="input" type="email" name="email" placeholder="Mail address" v-model="user.mail" v-validate="'required|email'" :class="{ 'is-danger': errors.has('email') }">
             <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
-            <span class="icon is-small is-right" v-show="errors.has('mail')"><i class="fa fa-exclamation-triangle"></i></span>
-            <span v-show="errors.has('mail')" class="help is-danger">{{ errors.first('mail') }}</span>
+            <span class="icon is-small is-right" v-show="errors.has('email')"><i class="fa fa-exclamation-triangle"></i></span>
+            <span v-show="errors.has('email')" class="help is-danger">{{ errors.first('email') }}</span>
           </div>
         </div>
         <div class="field">
-          <label class="label">Status</label>
+          <label class="label">{{ $t('fieldnames.status') }}</label>
           <div class="control">
             <b-switch v-model="user.status"></b-switch>
           </div>
         </div>
         <div class="field">
-          <label class="label">Admin</label>
+          <label class="label">{{ $t('fieldnames.admin') }}</label>
           <div class="control">
             <b-switch v-model="isAdmin"></b-switch>
           </div>
@@ -48,11 +48,11 @@
             {{ error }}
           </div>
         </div>
-        <user-connections v-bind:id="this.user.sub"></user-connections>
+        <user-connections v-if="this.user.sub" v-bind:id="this.user.sub"></user-connections>
       </section>
       <footer class="modal-card-foot">
         <button class="button is-primary">{{ action }}</button>
-        <button class="button" type="button" @click="$parent.close()">Cancel</button>
+        <button class="button" type="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
       </footer>
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
     </div>
@@ -136,7 +136,7 @@ export default {
     }
   },
   mounted: function () {
-    this.action = this.user.sub ? 'Update' : 'Create'
+    this.action = this.user.sub ? this.$t('actions.update') : this.$t('actions.create')
   }
 }
 </script>

@@ -17,6 +17,9 @@ $navbar-item-hover-color: $primary;
   max-width: 800px;
   margin: auto;
 }
+.is-max-width-form .field-body {
+  max-width: 500px;
+}
 
 $card-header-background-color: $white-bis;
 $card-shadow: 0 0 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);

@@ -3,28 +3,28 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          { link: '/', icon: 'fa-home', text: 'Home' },
-          { link: '/users', icon: 'fa-users', text: 'Users', isActive: true }
+          { link: '/', icon: 'fa-home', text: this.$t('labels.home') },
+          { link: '/users', icon: 'fa-users', text: this.$tc('objects.user', 2), isActive: true }
         ]">
       </breadcrumb>
     </div>
 
     <div class="hero-body">
       <div class="container box">
-        <h1 class="title container">Users</h1>
+        <h1 class="title container">{{ $tc('objects.user', 2) }}</h1>
 
         <b-table :data=displayedUsers :striped="true" :hoverable="true" @select="edit" class="table-container">
           <template slot-scope="props">
-            <b-table-column label="Login">
+            <b-table-column :label="$t('fieldnames.login')">
               {{ props.row.login }}
             </b-table-column>
-              <b-table-column label="Mail">
+              <b-table-column :label="$t('fieldnames.email')">
                 {{ props.row.mail }}
               </b-table-column>
-            <b-table-column label="Admin">
+            <b-table-column :label="$t('fieldnames.admin')">
               <b-switch v-model="props.row.isAdmin" disabled></b-switch>
             </b-table-column>
-            <b-table-column label="Status">
+            <b-table-column :label="$t('fieldnames.status')">
               <b-switch v-model="props.row.status" disabled></b-switch>
             </b-table-column>
           </template>
@@ -32,7 +32,7 @@
 
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="create"><i class="fa fa-user-plus"/>&nbsp;Add user</button>
+            <button class="button is-primary" role="button" @click="create"><i class="fa fa-user-plus"/>&nbsp;{{ $t('actions.addUser') }}</button>
           </p>
         </div>
         <div class="message is-danger" v-if="error">

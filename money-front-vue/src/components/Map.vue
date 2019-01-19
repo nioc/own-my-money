@@ -3,20 +3,20 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          { link: '/', icon: 'fa-home', text: 'Home' },
-          { link: '/maps', icon: 'fa-random', text: 'Transaction mappings' },
+          { link: '/', icon: 'fa-home', text: this.$t('labels.home') },
+          { link: '/maps', icon: 'fa-random', text: this.$tc('objects.transactionMapping', 2) },
           { link: '/maps', text: this.map.label, isActive: true }
         ]">
       </breadcrumb>
     </div>
     <div class="hero-body">
       <div class="container box">
-        <h1 class="title container">Transaction mapping</h1>
-        <p class="subtitle has-text-grey">Edit Map</p>
+        <h1 class="title container">{{ $tc('objects.transactionMapping', 1) }}</h1>
+        <p class="subtitle has-text-grey">{{ $t('labels.mapLabel')}}</p>
         <form @submit.prevent="validateBeforeSubmit" novalidate class="section is-max-width-form">
 
           <div class="field is-horizontal">
-            <div class="field-label is-normal"><label class="label">Code</label></div>
+            <div class="field-label is-normal"><label class="label">{{ $t('fieldnames.code') }}</label></div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
@@ -31,11 +31,11 @@
           </div>
 
           <div class="field is-horizontal">
-            <div class="field-label is-normal"><label class="label">Label</label></div>
+            <div class="field-label is-normal"><label class="label">{{ $t('fieldnames.label') }}</label></div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input class="input" type="text" name="label" placeholder="Type the JSON attribute" v-model="map.label" v-validate="'required|max:100'" :class="{ 'is-danger': errors.has('label') }">
+                  <input class="input" type="text" name="label" :placeholder="$t('labels.typeJsonAttribute')" v-model="map.label" v-validate="'required|max:100'" :class="{ 'is-danger': errors.has('label') }">
                   <span class="icon is-small is-right" v-show="errors.has('label')">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
@@ -46,7 +46,7 @@
           </div>
 
           <div class="field is-horizontal">
-            <div class="field-label is-normal"><label class="label">Date format</label></div>
+            <div class="field-label is-normal"><label class="label">{{ $t('fieldnames.dateFormat') }}</label></div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
@@ -61,41 +61,41 @@
           </div>
 
           <div class="field is-horizontal">
-            <div class="field-label is-normal"><label class="label">Transaction id</label></div>
+            <div class="field-label is-normal"><label class="label">{{ $t('fieldnames.transactionId') }}</label></div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input class="input" type="text" name="fitid" placeholder="Type the JSON attribute" v-model="map.attributes.fitid" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('fitid') }">
-                  <span class="icon is-small is-right" v-show="errors.has('fitid')">
+                  <input class="input" type="text" name="transactionId" :placeholder="$t('labels.typeJsonAttribute')" v-model="map.attributes.fitid" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('transactionId') }">
+                  <span class="icon is-small is-right" v-show="errors.has('transactionId')">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
-                  <span v-show="errors.has('fitid')" class="help is-danger">{{ errors.first('fitid') }}</span>
+                  <span v-show="errors.has('transactionId')" class="help is-danger">{{ errors.first('transactionId') }}</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="field is-horizontal">
-            <div class="field-label is-normal"><label class="label">Name</label></div>
+            <div class="field-label is-normal"><label class="label">{{ $t('fieldnames.label') }}</label></div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input class="input" type="text" name="name" placeholder="Type the JSON attribute" v-model="map.attributes.name" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('name') }">
-                  <span class="icon is-small is-right" v-show="errors.has('name')">
+                  <input class="input" type="text" name="label" :placeholder="$t('labels.typeJsonAttribute')" v-model="map.attributes.name" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('label') }">
+                  <span class="icon is-small is-right" v-show="errors.has('label')">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
-                  <span v-show="errors.has('name')" class="help is-danger">{{ errors.first('name') }}</span>
+                  <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="field is-horizontal">
-            <div class="field-label is-normal"><label class="label">Memo</label></div>
+            <div class="field-label is-normal"><label class="label">{{ $t('fieldnames.memo') }}</label></div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input class="input" type="text" name="memo" placeholder="Type the JSON attribute" v-model="map.attributes.memo" v-validate="'alpha_num'" :class="{ 'is-danger': errors.has('memo') }">
+                  <input class="input" type="text" name="memo" :placeholder="$t('labels.typeJsonAttribute')" v-model="map.attributes.memo" v-validate="'alpha_num'" :class="{ 'is-danger': errors.has('memo') }">
                   <span class="icon is-small is-right" v-show="errors.has('memo')">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
@@ -106,11 +106,11 @@
           </div>
 
           <div class="field is-horizontal">
-            <div class="field-label is-normal"><label class="label">Amount</label></div>
+            <div class="field-label is-normal"><label class="label">{{ $t('fieldnames.amount') }}</label></div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input class="input" type="text" name="amount" placeholder="Type the JSON attribute" v-model="map.attributes.amount" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('amount') }">
+                  <input class="input" type="text" name="amount" :placeholder="$t('labels.typeJsonAttribute')" v-model="map.attributes.amount" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('amount') }">
                   <span class="icon is-small is-right" v-show="errors.has('amount')">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
@@ -121,11 +121,11 @@
           </div>
 
           <div class="field is-horizontal">
-            <div class="field-label is-normal"><label class="label">Date posted</label></div>
+            <div class="field-label is-normal"><label class="label">{{ $t('fieldnames.datePosted') }}</label></div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input class="input" type="text" name="datePosted" placeholder="Type the JSON attribute" v-model="map.attributes.datePosted" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('datePosted') }">
+                  <input class="input" type="text" name="datePosted" :placeholder="$t('labels.typeJsonAttribute')" v-model="map.attributes.datePosted" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('datePosted') }">
                   <span class="icon is-small is-right" v-show="errors.has('datePosted')">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
@@ -136,11 +136,11 @@
           </div>
 
           <div class="field is-horizontal">
-            <div class="field-label is-normal"><label class="label">Date user</label></div>
+            <div class="field-label is-normal"><label class="label">{{ $t('fieldnames.dateUser') }}</label></div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input class="input" type="text" name="dateUser" placeholder="Type the JSON attribute" v-model="map.attributes.dateUser" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('dateUser') }">
+                  <input class="input" type="text" name="dateUser" :placeholder="$t('labels.typeJsonAttribute')" v-model="map.attributes.dateUser" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('dateUser') }">
                   <span class="icon is-small is-right" v-show="errors.has('dateUser')">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
@@ -156,13 +156,13 @@
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;Save</button>
+                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
                 </div>
                 <div class="control">
-                  <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;Cancel</a>
+                  <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.cancel') }}</a>
                 </div>
                 <div class="control">
-                  <button type="button" class="button is-danger" role="button" v-on:click="deleteMap"><i class="fa fa-trash"/>&nbsp;Delete</button>
+                  <button type="button" class="button is-danger" role="button" v-on:click="deleteMap"><i class="fa fa-trash"/>&nbsp;{{ $t('actions.delete') }}</button>
                 </div>
               </div>
             </div>
@@ -238,12 +238,12 @@ export default {
     // get map informations
     deleteMap () {
       this.$dialog.confirm({
-        message: 'Are you sure you want to delete this mapping?',
-        title: 'Deleting mapping',
+        message: this.$t('labels.deleteMapMsg'),
+        title: this.$t('labels.deleteMap'),
         type: 'is-danger',
         hasIcon: true,
         icon: 'trash',
-        confirmText: 'Delete mapping',
+        confirmText: this.$t('actions.deleteMap'),
         focusOn: 'cancel',
         onConfirm: () => {
           this.isLoading = true

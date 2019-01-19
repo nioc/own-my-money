@@ -3,35 +3,35 @@
     <div class="modal-card">
 
       <header class="modal-card-head">
-        <p class="modal-card-title">Pattern</p>
+        <p class="modal-card-title">{{ $tc('objects.pattern', 1) }}</p>
       </header>
 
       <section class="modal-card-body">
         <div class="field">
-          <label class="label">Label</label>
+          <label class="label">{{ $t('fieldnames.label') }}</label>
           <div class="control">
             <input class="input" type="text" name="label" placeholder="Transaction name to be find" v-model.lazy="pattern.label" @change="count" v-validate="'required'" :class="{ 'is-danger': errors.has('label') }">
             <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
           </div>
-          <p class="help">Wildcard character * is allowed<span v-if="matchingCount !== null"> - {{ matchingCount }} results</span></p>
+          <p class="help">{{ $t('labels.patternWildcardHelper') }}<span v-if="matchingCount !== null"> - {{ matchingCount }} {{ $tc('objects.occurence', matchingCount).toLowerCase() }}</span></p>
         </div>
         <div class="field">
-          <label class="label">Category</label>
+          <label class="label">{{ $tc('objects.category', 1) }}</label>
           <div class="control">
             <div class="select">
               <select name="parent" v-model="pattern.category">
-                <option value="">-- Category --</option>
+                <option value="">-- {{ $tc('objects.category', 1) }} --</option>
                 <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
               </select>
             </div>
           </div>
         </div>
         <div class="field" v-if="pattern.category && categoriesAndSubcategoriesLookup[pattern.category] && categoriesAndSubcategoriesLookup[pattern.category].sub.length > 0">
-          <label class="label">Subcategory</label>
+          <label class="label">{{ $tc('objects.subcategory', 1) }}</label>
           <div class="control">
             <div class="select">
               <select name="parent" v-model="pattern.subcategory">
-                <option value="">-- Subcategory --</option>
+                <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
                 <option v-for="subcategory in categoriesAndSubcategoriesLookup[pattern.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
               </select>
             </div>
@@ -46,9 +46,9 @@
       </section>
 
       <footer class="modal-card-foot">
-        <button class="button is-primary"><span class="icon"><i class="fa fa-save"/></span><span>Save</span></button>
-        <button type="button" class="button" @click="$parent.close()">Cancel</button>
-        <button v-if="pattern.id" type="button" class="button is-danger" @click="deletePattern"><span class="icon"><i class="fa fa-trash"/></span><span>Delete</span></button>
+        <button class="button is-primary"><span class="icon"><i class="fa fa-save"/></span><span>{{ $t('actions.save') }}</span></button>
+        <button type="button" class="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
+        <button v-if="pattern.id" type="button" class="button is-danger" @click="deletePattern"><span class="icon"><i class="fa fa-trash"/></span><span>{{ $t('actions.delete') }}</span></button>
       </footer>
 
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
@@ -74,12 +74,12 @@ export default {
   methods: {
     deletePattern () {
       this.$dialog.confirm({
-        message: 'Are you sure you want to delete this pattern?',
-        title: 'Deleting pattern',
+        message: this.$t('labels.deletePatternMsg'),
+        title: this.$t('labels.deletePattern'),
         type: 'is-danger',
         hasIcon: true,
         icon: 'trash',
-        confirmText: 'Delete pattern',
+        confirmText: this.$t('actions.deletePattern'),
         focusOn: 'cancel',
         onConfirm: () => {
           this.isLoading = true

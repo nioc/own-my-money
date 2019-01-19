@@ -12,7 +12,8 @@ Own my money is a simple way to stay on top of your banking from any web browser
 - data input from OFX or JSON file from you bank,
 - transactions classification (manual and automatic using data mining),
 - budget repartition analysis,
-- transactions annotations for your memory.
+- transactions annotations for your memory,
+- internationalized and localized.
 
 [Live demo](https://nioc.github.io/own-my-money).
 
@@ -46,7 +47,7 @@ This project is powered by the following components:
 - [Vue-resource](https://github.com/pagekit/vue-resource) (MIT)
 - [VeeValidate](https://github.com/logaretm/vee-validate) (MIT)
 - [Vue-moment](https://github.com/brockpetrie/vue-moment) (MIT)
-- [accounting.js](https://github.com/openexchangerates/accounting.js) (MIT)
+- [Vue I18n](https://github.com/kazupon/vue-i18n) (MIT)
 - [OFX Parser](https://github.com/asgrim/ofxparser) (MIT)
 - [UAParser.js](https://github.com/faisalman/ua-parser-js) (MIT)
 - [Chart.js](https://www.chartjs.org/) (MIT)

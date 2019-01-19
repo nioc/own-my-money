@@ -3,7 +3,7 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          { link: '/', icon: 'fa-home', text: 'Home', isActive: true }
+          { link: '/', icon: 'fa-home', text: this.$t('labels.home'), isActive: true }
         ]">
       </breadcrumb>
     </div>
@@ -11,16 +11,16 @@
       <div class="section">
         <div class="container">
           <div class="columns is-multiline">
-            <div class="column is-full"><transactions-history-chart title="Transactions by day" chartEndpoint="transactions/history"></transactions-history-chart></div>
-            <div class="column is-one-half-desktop"><transactions-distribution-chart title="Income distribution" chartEndpoint="transactions/distribution/credit/categories"></transactions-distribution-chart></div>
-            <div class="column is-one-half-desktop"><transactions-distribution-chart title="Expense distribution" chartEndpoint="transactions/distribution/debit/categories"></transactions-distribution-chart></div>
-            <div v-if="categorySelected.key" class="column is-one-half-desktop"><transactions-distribution-chart :title="'Income distribution for '+categorySelected.label" :chartEndpoint="'transactions/distribution/credit/subcategories?value='+categorySelected.key"></transactions-distribution-chart></div>
-            <div v-if="categorySelected.key" class="column is-one-half-desktop"><transactions-distribution-chart :title="'Expense distribution for '+categorySelected.label" :chartEndpoint="'transactions/distribution/debit/subcategories?value='+categorySelected.key"></transactions-distribution-chart></div>
+            <div class="column is-full"><transactions-history-chart :title="$t('labels.transactionsByDay')" chartEndpoint="transactions/history"></transactions-history-chart></div>
+            <div class="column is-one-half-desktop"><transactions-distribution-chart :title="$t('labels.incomeDistribution')" chartEndpoint="transactions/distribution/credit/categories"></transactions-distribution-chart></div>
+            <div class="column is-one-half-desktop"><transactions-distribution-chart :title="$t('labels.expenseDistribution')" chartEndpoint="transactions/distribution/debit/categories"></transactions-distribution-chart></div>
+            <div v-if="categorySelected.key" class="column is-one-half-desktop"><transactions-distribution-chart :title="$t('labels.incomeDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label" :chartEndpoint="'transactions/distribution/credit/subcategories?value='+categorySelected.key"></transactions-distribution-chart></div>
+            <div v-if="categorySelected.key" class="column is-one-half-desktop"><transactions-distribution-chart :title="$t('labels.expenseDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label" :chartEndpoint="'transactions/distribution/debit/subcategories?value='+categorySelected.key"></transactions-distribution-chart></div>
           </div>
         </div>
       </div>
       <div class="container box">
-        <h1 class="title">Transactions</h1>
+        <h1 class="title">{{ $tc('objects.transaction', 2) }}</h1>
         <transactions v-bind:url="url"/>
       </div>
     </div>
