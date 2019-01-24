@@ -1,0 +1,63 @@
+fr {
+    methodNotImplemented { "La  méthode {0} n'est pas supportée pour cette ressource" }
+    authorizationNotFound { "L'en-tête Authorization est introuvable" }
+    tokenSchemeBearer { "Le jeton doit utiliser le mécanisme d'authentification bearer" }
+    invalidToken { "Le token n'est pas valide" }
+    subjectNotFound { "Le sujet est introuvable" }
+    userNotFound { "Utilisateur non trouvé" }
+    adminScopeRequired { "Droits administrateur requis" }
+    loginMustBeProvided { "L'identifiant doit être fourni" }
+    passwordMustBeProvided { "Le password doit être fourni" }
+    emailMustBeProvided { "L'adresse email doit être fournie" }
+    accountIdMustBeProvided { "L'identifiant du compte doit être fourni" }
+    transactionIdMustBeProvided { "L'identifiant de la transaction doit être fourni" }
+    keyMustBeProvidedInPath { "L'attribut Key doit être fourni dans l'url" }
+    userIdMustBeProvidedInPath { "L'identifiant de l'utilisateur doit être fourni dans l'url" }
+    loginAndPasswordMustBeProvided { "L'identifiant et le password doivent être fournis" }
+    typeMustBeProvidedInQuery { "L'attribut Type doit être fourni dans la chaine de recherche" }
+    typeMustBeInEnum { "L'attribut Type doit être `debit` ou `credit`" }
+    userCreationError { "Erreur lors de la création de l'utilisateur" }
+    invalidCredentials { "Identifiants de connexion invalides" }
+    putMethodMustBeCalledOnASpecificResource { "La méthode PUT doit être appelée sur une ressource spécifique" }
+    deleteMethodMustBeCalledOnASpecificResource { "La méthode DELETE doit être appelée sur une ressource spécifique" }
+    userCanBeUpdatedByHimselfOnly { "L'utilisateur ne peut être mis à jour que par lui-même" }
+    transactionQueryError { "Erreur lors de la recherche de transactions" }
+    profileUpdateError { "Erreur lors de la mise à jour du profil" }
+    passwordUpdateError { "Erreur lors de la mise à jour du password" }
+    requestError { "Erreur lors de la requête" }
+    accountNotFound { "Compte introuvable" }
+    transactionNotFound { "Transaction introuvable" }
+    somethingWentWrong { "Quelque chose a mal tourné" }
+    transactionsCanBeQueriedByAccountOwnerOnly {" Seul le propriétaire du compte peut consulter ses transactions" }
+    transactionsCanBeUpdatedByAccountOwnerOnly {" Seul le propriétaire du compte peut modifier ses transactions" }
+    accountCanBeUpdatedByOwnerOnly { "Seul le propriétaire du compte peut le modifier" }
+    accountCanBeDeletedByOwnerOnly{ "Seul le propriétaire du compte peut le supprimer" }
+    accountAlreadyExists { "Ce compte existe déjà" }
+    categoryNotFound { "Catégorie introuvable" }
+    stepNotFound { "Étape introuvable" }
+    creationError { "Erreur lors de la création" }
+    categoryIsNotValid { "La catégorie n'est pas valide : " }
+    updateError { "Erreur lors de la mise à jour : " }
+    fileExtensionMustBeIn { "L'extension du fichier doit être parmi la liste suivante : " }
+    fileUploadError { "Erreur lors de l'envoi du fichier" }
+    ofxProcessError { "Erreur lors du traitement du fichier OFX" }
+    jsonProcessError { "Erreur lors du traitement du fichier JSON" }
+    mapCodeMustBeProvided { "Le code de correspondance doit être fourni dans la chaine de recherche pour un fichier JSON" }
+    fileExtensionNotImplemented { "L'extension du fichier « {0} » n'est pas pris en charge" }
+    accountsTransactionsProcessed { "{0, plural, =0{0 compte créé} =1{1 compte créé} other{# comptes créés}} ({1} dans le fichier), {2, plural, =0{0 transaction créée} =1{1 transaction créée} other{# transactions créées}} ({3} dans le fichier)" }
+    transactionsProcessed { "{0, plural, =0{0 transaction créée} =1{1 transaction créée} other{# transactions créées}} ({1} dans le fichier)" }
+    mapNotFound { "Correspondance introuvable" }
+    patternNotFound { "Modèle introuvable" }
+    mapIsNotValid { "La correspondance n'est pas valide : " }
+    patternIsNotValid { "Le modèle n'est pas valide : " }
+    transactionIsNotValid { "La transaction n'est pas valide : " }
+    inconsistentAccountId { "identifiant de compte incohérent" }
+    mapCreationError { "Erreur lors de la création de la correspondance" }
+    mapAttributesCreationError { "Erreur lors de la création des attributs de la correspondance" }
+    patternCreationError { "Erreur lors de la création du modèle" }
+    codeCanNotBeChanged { "Le code ne peut pas être modifié" }
+    transactionUpdateError { "Erreur lors de la mise à jour de la transaction" }
+    mapUpdateError { "Erreur lors de la mise à jour de la correspondance" }
+    mapAttributesUpdateError { "Erreur lors de la mise à jour des attributs de la correspondance" }
+    patternUpdateError { "Erreur lors de la mise à jour du modèle" }
+}

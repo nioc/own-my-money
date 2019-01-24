@@ -22,7 +22,7 @@ switch ($api->method) {
             $map = new Map($code);
             //query a specific map
             if (!$map->get()) {
-                $api->output(404, 'Map not found');
+                $api->output(404, $api->getMessage('mapNotFound'));
                 //indicate the map was not found
                 return;
             }
@@ -46,19 +46,19 @@ switch ($api->method) {
         $map = new Map();
         $requestedMap = $api->query['body'];
         if (!$map->validateModel($requestedMap, $errorMessage)) {
-            $api->output(400, 'Map is not valid: '.$errorMessage);
+            $api->output(400, $api->getMessage('mapIsNotValid') . $errorMessage);
             //provided map is not valid
             return;
         }
         if (!$map->insert($error)) {
-            $api->output(500, 'Error during map creation'.$error);
+            $api->output(500, $api->getMessage('mapCreationError') . $error);
             //something gone wrong :(
             return;
         }
         if (!$map->setAttributes()) {
-          $api->output(500, 'Error during attributes creation');
-          //something gone wrong :(
-          return;
+            $api->output(500, $api->getMessage('mapAttributesCreationError'));
+            //something gone wrong :(
+            return;
         }
         $map->get();
         $api->output(201, $map);
@@ -75,7 +75,7 @@ switch ($api->method) {
             $map = new Map($code);
             //query a specific map
             if (!$map->get()) {
-                $api->output(404, 'Map not found');
+                $api->output(404, $api->getMessage('mapNotFound'));
                 //indicate the map was not found
                 return;
             }
@@ -83,24 +83,24 @@ switch ($api->method) {
         $map = new Map();
         $requestedMap = $api->query['body'];
         if (!$map->validateModel($requestedMap, $errorMessage)) {
-            $api->output(400, 'Map is not valid: '.$errorMessage);
+            $api->output(400, $api->getMessage('mapIsNotValid') . $errorMessage);
             //provided map is not valid
             return;
         }
         if ($code !== $map->code) {
-            $api->output(400, 'Code can not be changed');
+            $api->output(400, $api->getMessage('codeCanNotBeChanged'));
             //something gone wrong :(
             return;
         }
         if (!$map->update($error)) {
-            $api->output(500, 'Error during map update'.$error);
+            $api->output(500, $api->getMessage('mapUpdateError') . $error);
             //something gone wrong :(
             return;
         }
         if (!$map->setAttributes()) {
-          $api->output(500, 'Error during attributes update');
-          //something gone wrong :(
-          return;
+            $api->output(500, $api->getMessage('mapAttributesUpdateError'));
+            //something gone wrong :(
+            return;
         }
         $map->get();
         $api->output(200, $map);
@@ -117,14 +117,14 @@ switch ($api->method) {
             $map = new Map($code);
             //query a specific map
             if (!$map->get()) {
-                $api->output(404, 'Map not found');
+                $api->output(404, $api->getMessage('mapNotFound'));
                 //indicate the map was not found
                 return;
             }
         }
         $map = new Map($code);
         if (!$map->delete($error)) {
-            $api->output(500, 'Error during map update'.$error);
+            $api->output(500, $api->getMessage('mapUpdateError') . $error);
             //something gone wrong :(
             return;
         }

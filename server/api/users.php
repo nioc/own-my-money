@@ -22,13 +22,13 @@ switch ($api->method) {
       if ($api->checkParameterExists('id', $id) && $id !== '') {
           //request a specific user
           if ($api->requesterId !== intval($id) && !$api->checkScope('admin')) {
-              $api->output(403, 'Admin scope required');
+              $api->output(403, $api->getMessage('adminScopeRequired'));
               //indicate the requester is not the user and is not allowed to update it
               return;
           }
           $user = new User($id);
           if (!$user->get()) {
-              $api->output(404, 'User not found');
+              $api->output(404, $api->getMessage('userNotFound'));
               //indicate the user was not found
               return;
           }
@@ -38,7 +38,7 @@ switch ($api->method) {
       }
       //request all users
       if (!$api->checkScope('admin')) {
-          $api->output(403, 'Admin scope required');
+          $api->output(403, $api->getMessage('adminScopeRequired'));
           //indicate the requester is not allowed to get all users
           return;
       }
@@ -57,24 +57,24 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkScope('admin')) {
-            $api->output(403, 'Admin scope required');
+            $api->output(403, $api->getMessage('adminScopeRequired'));
             //indicate the requester is not allowed to create user
             return;
         }
         $postedUser = new User();
 
         if (!$api->checkParameterExists('login', $postedUser->login) || $postedUser->login == '') {
-            $api->output(400, 'Login must be provided');
+            $api->output(400, $api->getMessage('loginMustBeProvided'));
             //indicate the request is not valid, login must be provided
             return;
         }
         if (!$api->checkParameterExists('password', $postedUser->password) || $postedUser->password == '') {
-            $api->output(400, 'Password must be provided');
+            $api->output(400, $api->getMessage('passwordMustBeProvided'));
             //indicate the request is not valid, password must be provided
             return;
         }
         if (!$api->checkParameterExists('mail', $postedUser->mail) || $postedUser->mail == '') {
-            $api->output(400, 'Mail address must be provided');
+            $api->output(400, $api->getMessage('emailMustBeProvided'));
             //indicate the request is not valid, mail must be provided
             return;
         }
@@ -84,7 +84,7 @@ switch ($api->method) {
         }
 
         if (!$postedUser->insert($error)) {
-            $api->output(500, 'Error during user creation'.$error);
+            $api->output(500, $api->getMessage('userCreationError'.$error));
             //something gone wrong :(
             return;
         }
@@ -100,28 +100,28 @@ switch ($api->method) {
         }
         $postedUser = new User();
         if (!$api->checkParameterExists('id', $postedUser->id) || $postedUser->id == '') {
-            $api->output(400, 'PUT method must be called on a specific resource');
+            $api->output(400, $api->getMessage('putMethodMustBeCalledOnASpecificResource'));
             //indicate the request is not valid, id must be provided in query path
             return;
         }
         $postedUser->id = intval($postedUser->id);
         if ($postedUser->id !== $api->requesterId && !$api->checkScope('admin')) {
-            $api->output(403, 'User can be updated by himself only');
+            $api->output(403, $api->getMessage('userCanBeUpdatedByHimselfOnly'));
             //indicate the requester is not the user and is not allowed to update it
             return;
         }
         if (!$api->checkParameterExists('login', $postedUser->login) || $postedUser->login == '') {
-            $api->output(400, 'Login must be provided');
+            $api->output(400, $api->getMessage('loginMustBeProvided'));
             //indicate the request is not valid, login must be provided
             return;
         }
         if ($api->checkParameterExists('password', $postedUser->password) && $postedUser->password == '') {
-            $api->output(400, 'Password must be provided');
+            $api->output(400, $api->getMessage('passwordMustBeProvided'));
             //indicate the request is not valid, password must be provided
             return;
         }
         if ($api->checkParameterExists('mail', $postedUser->mail) && $postedUser->mail == '') {
-            $api->output(400, 'Mail address must be provided');
+            $api->output(400, $api->getMessage('emailMustBeProvided'));
             //indicate the request is not valid, mail must be provided
             return;
         }
@@ -131,7 +131,7 @@ switch ($api->method) {
         }
         $user = new User($postedUser->id);
         if (!$user->get()) {
-            $api->output(404, 'User not found');
+            $api->output(404, $api->getMessage('userNotFound'));
             //indicate the user was not found
             return;
         }
@@ -143,12 +143,12 @@ switch ($api->method) {
             }
         }
         if (!$user->update($error)) {
-            $api->output(500, 'Error during profile update'.$error);
+            $api->output(500, $api->getMessage('profileUpdateError'.$error));
             //something gone wrong :(
             return;
         }
         if (!is_null($postedUser->password) && !$user->updatePassword($error)) {
-            $api->output(500, 'Error during password update'.$error);
+            $api->output(500, $api->getMessage('passwordUpdateError'.$error));
             //something gone wrong :(
             return;
         }

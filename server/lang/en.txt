@@ -1,0 +1,63 @@
+en {
+    methodNotImplemented { "{0} method is not supported for this resource" }
+    authorizationNotFound { "Authorization header not found" }
+    tokenSchemeBearer { "Token scheme must be bearer" }
+    invalidToken { "Token is not valid" }
+    subjectNotFound { "Subject not found" }
+    userNotFound { "User not found" }
+    adminScopeRequired { "Admin scope required" }
+    loginMustBeProvided { "Login must be provided" }
+    passwordMustBeProvided { "Password must be provided" }
+    emailMustBeProvided { "Email address must be provided" }
+    accountIdMustBeProvided { "Account identifier must be provided" }
+    transactionIdMustBeProvided { "Transaction identifier must be provided" }
+    keyMustBeProvidedInPath { "Key attribute must be provided in path" }
+    userIdMustBeProvidedInPath { "User identifier must be provided in path" }
+    loginAndPasswordMustBeProvided { "Both login and password must be provided" }
+    typeMustBeProvidedInQuery { "Type attribute must be provided in query string" }
+    typeMustBeInEnum { "Type attribute must be `debit` or `credit`" }
+    userCreationError { "Error during user creation" }
+    invalidCredentials { "Invalid credentials" }
+    putMethodMustBeCalledOnASpecificResource { "PUT method must be called on a specific resource" }
+    deleteMethodMustBeCalledOnASpecificResource { "DELETE method must be called on a specific resource" }
+    userCanBeUpdatedByHimselfOnly { "User can be updated by himself only" }
+    transactionQueryError { "Error during transaction query" }
+    profileUpdateError { "Error during profile update" }
+    passwordUpdateError { "Error during password update" }
+    requestError { "Error during request" }
+    accountNotFound { "Account not found" }
+    transactionNotFound { "Transaction not found" }
+    somethingWentWrong { "Something went wrong" }
+    transactionsCanBeQueriedByAccountOwnerOnly {" Transactions can be queried by account owner only" }
+    transactionsCanBeUpdatedByAccountOwnerOnly {" Transactions can be updated by account owner only" }
+    accountCanBeUpdatedByOwnerOnly { "Account can be updated by owner only" }
+    accountCanBeDeletedByOwnerOnly{ "Account can be deleted by owner only" }
+    accountAlreadyExists { "This account already exists" }
+    categoryNotFound { "Category not found" }
+    stepNotFound { "Step not found" }
+    creationError { "Error during creation" }
+    categoryIsNotValid { "Category is not valid: " }
+    updateError { "Error during update: " }
+    fileExtensionMustBeIn { "File extension must be in following list: " }
+    fileUploadError { "Error during file upload" }
+    ofxProcessError { "Error during OFX process" }
+    jsonProcessError { "Error during JSON process" }
+    mapCodeMustBeProvided { "Map code must be provided in query string for JSON dataset" }
+    fileExtensionNotImplemented { "File extension « {0} » is not implemented" }
+    accountsTransactionsProcessed { "{0, plural, =0{0 account} =1{1 account} other{# accounts}} created ({1} from file), {2, plural, =0{0 transaction} =1{1 transaction} other{# transactions}} created ({3} from file)" }
+    transactionsProcessed { "{0, plural, =0{0 transaction} =1{1 transaction} other{# transactions}} created ({1} from file)" }
+    mapNotFound { "Map not found" }
+    patternNotFound { "Pattern not found" }
+    mapIsNotValid { "Map is not valid: " }
+    patternIsNotValid { "Pattern is not valid: " }
+    transactionIsNotValid { "Transaction is not valid: " }
+    inconsistentAccountId { "inconsistent account identifier" }
+    mapCreationError { "Error during map creation" }
+    mapAttributesCreationError { "Error during attributes creation" }
+    patternCreationError { "Error during pattern creation" }
+    codeCanNotBeChanged { "Code can not be changed" }
+    transactionUpdateError { "Error during transaction update" }
+    mapUpdateError { "Error during map update" }
+    mapAttributesUpdateError { "Error during attributes update" }
+    patternUpdateError { "Error during pattern update" }
+}

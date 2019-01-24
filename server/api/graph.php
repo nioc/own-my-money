@@ -56,17 +56,17 @@ switch ($api->method) {
                 break;
             case 'distribution':
                 if (!$api->checkParameterExists('key', $key)) {
-                    $api->output(400, 'Key attribute must be provided in path');
+                    $api->output(400, $api->getMessage('keyMustBeProvidedInPath'));
                     //no distribution key provided, return error
                     return;
                 }
                 if (!$api->checkParameterExists('type', $type)) {
-                    $api->output(400, 'Type attribute must be provided in query string');
+                    $api->output(400, $api->getMessage('typeMustBeProvidedInQuery'));
                     //no transaction type provided, return error
                     return;
                 }
                 if (!in_array($type, ['debit', 'credit'])) {
-                    $api->output(400, 'Type attribute must be `debit` or `credit`');
+                    $api->output(400, $api->getMessage('typeMustBeInEnum'));
                     //no graph type provided, return error
                     return;
                 }

@@ -23,7 +23,7 @@ if ($api->method !== 'OPTIONS' && $configuration->get('setup') === '1') {
         return;
     }
     if (!$api->checkScope('admin')) {
-        $api->output(403, 'Admin scope required');
+        $api->output(403, $api->getMessage('adminScopeRequired'));
         //indicate the requester is not allowed to update it
         return;
     }
@@ -48,7 +48,7 @@ switch ($api->method) {
         }
         $step = new Step($code);
         if ($step->fields === false) {
-            $api->output(404, 'Step not found');
+            $api->output(404, $api->getMessage('stepNotFound'));
             //indicate the step has no fields to complete
             return;
         }

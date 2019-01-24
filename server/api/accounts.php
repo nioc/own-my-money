@@ -34,12 +34,12 @@ switch ($api->method) {
         $account = new Account($id);
         //query a specific account
         if (!$account->get()) {
-            $api->output(404, 'Account not found');
+            $api->output(404, $api->getMessage('accountNotFound'));
             //indicate the account was not found
             return;
         }
         if ($account->user !== $api->requesterId) {
-            $api->output(403, 'Transactions can be queried by account owner only');
+            $api->output(403, $api->getMessage('transactionsCanBeQueriedByAccountOwnerOnly'));
             //indicate the requester is not the account owner and is not allowed to query it
             return;
         }
@@ -59,14 +59,14 @@ switch ($api->method) {
         $api->checkParameterExists('accountId', $account->accountId);
         $api->checkParameterExists('label', $account->label);
         if ($account->getByPublicId($account->user, $account->bankId, $account->branchId, $account->accountId)) {
-            $api->output(400, 'This account already exists');
+            $api->output(400, $api->getMessage('accountAlreadyExists'));
             return;
         }
         if ($account->insert()) {
             $api->output(201, $account->structureData());
             return;
         }
-        $api->output(500, 'Something went wrong');
+        $api->output(500, $api->getMessage('somethingWentWrong'));
         break;
     case 'PUT':
         //returns the account
@@ -75,18 +75,18 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkParameterExists('id', $id)) {
-            $api->output(400, 'Account id must be provided');
+            $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the request is not valid
             return;
         }
         $account = new Account($id);
         if (!$account->get()) {
-            $api->output(404, 'Account not found');
+            $api->output(404, $api->getMessage('accountNotFound'));
             //indicate the account was not found
             return;
         }
         if ($account->user !== $api->requesterId) {
-            $api->output(403, 'Account can be updated by owner only');
+            $api->output(403, $api->getMessage('accountCanBeUpdatedByOwnerOnly'));
             //indicate the requester is not the account owner and is not allowed to update it
             return;
         }
@@ -106,7 +106,7 @@ switch ($api->method) {
             $api->output(200, $account->structureData());
             return;
         }
-        $api->output(500, 'Something went wrong');
+        $api->output(500, $api->getMessage('somethingWentWrong'));
         break;
     case 'DELETE':
         //account deletion
@@ -115,18 +115,18 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkParameterExists('id', $id)) {
-            $api->output(400, 'Account id must be provided');
+            $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the request is not valid
             return;
         }
         $account = new Account($id);
         if (!$account->get()) {
-            $api->output(404, 'Account not found');
+            $api->output(404, $api->getMessage('accountNotFound'));
             //indicate the account was not found
             return;
         }
         if ($account->user !== $api->requesterId) {
-            $api->output(403, 'Account can be deleted by owner only');
+            $api->output(403, $api->getMessage('accountCanBeDeletedByOwnerOnly'));
             //indicate the requester is not the account owner and is not allowed to delete it
             return;
         }
@@ -134,6 +134,6 @@ switch ($api->method) {
             $api->output(204);
             return;
         }
-        $api->output(500, 'Something went wrong');
+        $api->output(500, $api->getMessage('somethingWentWrong'));
         break;
 }

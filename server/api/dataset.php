@@ -30,26 +30,26 @@ switch ($api->method) {
             //check provided account exists
             $account = new Account($accountId);
             if (!$account->get()) {
-                $api->output(404, 'Account not found');
+                $api->output(404, $api->getMessage('accountNotFound'));
                 //indicate the account was not found
                 return;
             }
             //check provided account is owned by the requester
             if ($account->user !== $api->requesterId) {
-                $api->output(403, 'Account can be updated by owner only');
+                $api->output(403, $api->getMessage('accountCanBeUpdatedByOwnerOnly'));
                 //indicate the requester is not the account owner and is not allowed to update it
                 return;
             }
         }
         $extension = strtolower(strrchr($file['name'], '.'));
         if (!in_array($extension, $allowedExtensions)) {
-            $api->output(400, 'File extension must be in ' . implode(', ', $allowedExtensions));
+            $api->output(400, $api->getMessage('fileExtensionMustBeIn') . implode(', ', $allowedExtensions));
             //invalid posted file, return an error
             return;
         }
         //check if there was an error on upload
         if (!isset($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
-            $api->output(400, 'Error during file upload');
+            $api->output(400, $api->getMessage('fileUploadError'));
             //upload failed, return an error
             return;
         }
@@ -66,7 +66,7 @@ switch ($api->method) {
             case '.ofx':
                 $dataset = new Dataset($file['tmp_name']);
                 if (!$accounts = $dataset->parseAccountsFromOfx($api->requesterId)) {
-                    $api->output(500, 'Error during OFX process');
+                    $api->output(500, $api->getMessage('ofxProcessError'));
                     //something gone wrong :(
                     return;
                 }
@@ -98,14 +98,14 @@ switch ($api->method) {
                 break;
             case '.json':
                 if (!$api->checkParameterExists('map', $mapCode)) {
-                    $api->output(400, 'Map code must be provided in query string for JSON dataset');
+                    $api->output(400, $api->getMessage('mapCodeMustBeProvided'));
                     //indicate the map code is not provided
                     return;
                 }
                 $dataset = new Dataset($file['tmp_name']);
                 //process account transactions
                 if (!$transactions = $dataset->parseTransactionsFromJson($accountId, $mapCode)) {
-                    $api->output(500, 'Error during JSON process');
+                    $api->output(500, $api->getMessage('jsonProcessError'));
                     //something gone wrong :(
                     return;
                 }
@@ -118,7 +118,7 @@ switch ($api->method) {
                 }
                 break;
             default:
-                $api->output(501, 'File extension "' . $extension . '" is not implemented');
+                $api->output(501, $api->getMessage('fileExtensionNotImplemented', array($extension)));
                 //upload failed, return an error
                 return;
         }
@@ -127,9 +127,9 @@ switch ($api->method) {
         $response = new stdClass();
         $response->code = 201;
         if (!$accountId) {
-            $response->message = $result['accountInserted'] . '/' . $result['accountProcessed'] . ' account created, ' . $result['inserted'] . '/' . $result['processed'] . ' transactions created';
+            $response->message = $api->getMessage('accountsTransactionsProcessed', array($result['accountInserted'], $result['accountProcessed'], $result['inserted'], $result['processed']));
         } else {
-            $response->message = $result['inserted'] . '/' . $result['processed'] . ' transactions created';
+            $response->message = $api->getMessage('transactionsProcessed', array($result['inserted'], $result['processed']));
         }
         $api->output(201, $response);
         return;

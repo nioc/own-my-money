@@ -19,7 +19,7 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkScope('admin')) {
-            $api->output(403, 'Admin scope required');
+            $api->output(403, $api->getMessage('adminScopeRequired'));
             //indicate the requester is not allowed to update it
             return;
         }
@@ -31,7 +31,7 @@ switch ($api->method) {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Updater.php';
         $updater = new Updater();
         if (!$updater->getLastVersion()) {
-            $api->output(500, 'Error during request');
+            $api->output(500, $api->getMessage('requestError'));
             return;
         }
         $version->latest = $updater->version;
@@ -47,7 +47,7 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkScope('admin')) {
-            $api->output(403, 'Admin scope required');
+            $api->output(403, $api->getMessage('adminScopeRequired'));
             //indicate the requester is not allowed to update application
             return;
         }

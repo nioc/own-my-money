@@ -22,7 +22,7 @@ switch ($api->method) {
             $pattern = new Pattern($api->requesterId, $id);
             // //query a specific pattern
             if (!$pattern->get()) {
-                $api->output(404, 'Pattern not found');
+                $api->output(404, $api->getMessage('patternNotFound'));
                 //indicate the pattern was not found
                 return;
             }
@@ -48,12 +48,12 @@ switch ($api->method) {
         $pattern = new Pattern($api->requesterId);
         $requestedPattern = $api->query['body'];
         if (!$pattern->validateModel($requestedPattern, $errorMessage)) {
-            $api->output(400, 'Pattern is not valid: '.$errorMessage);
+            $api->output(400, $api->getMessage('patternIsNotValid') . $errorMessage);
             //provided pattern is not valid
             return;
         }
         if (!$pattern->insert($error)) {
-            $api->output(500, 'Error during pattern creation'.$error);
+            $api->output(500, $api->getMessage('patternCreationError') . $error);
             //something gone wrong :(
             return;
         }
@@ -69,20 +69,20 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkParameterExists('id', $id) || $id == '') {
-            $api->output(400, 'PUT method must be called on a specific resource');
+            $api->output(400, $api->getMessage('putMethodMustBeCalledOnASpecificResource'));
             //indicate the request is not valid, id must be provided in query path
             return;
         }
         $pattern = new Pattern($api->requesterId, $id);
         //query a specific pattern
         if (!$pattern->get()) {
-            $api->output(404, 'Pattern not found');
+            $api->output(404, $api->getMessage('patternNotFound'));
             //indicate the pattern was not found
             return;
         }
         $requestedPattern = $api->query['body'];
         if (!$pattern->validateModel($requestedPattern, $errorMessage)) {
-            $api->output(400, 'Pattern is not valid: '.$errorMessage);
+            $api->output(400, $api->getMessage('patternIsNotValid') . $errorMessage);
             //provided pattern is not valid
             return;
         }
@@ -92,7 +92,7 @@ switch ($api->method) {
             return;
         }
         if (!$pattern->update($error)) {
-            $api->output(500, 'Error during pattern update'.$error);
+            $api->output(500, $api->getMessage('patternUpdateError') . $error);
             //something gone wrong :(
             return;
         }
@@ -108,19 +108,19 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkParameterExists('id', $id) || $id == '') {
-            $api->output(400, 'DELETE method must be called on a specific resource');
+            $api->output(400, $api->getMessage('deleteMethodMustBeCalledOnASpecificResource'));
             //indicate the request is not valid, id must be provided in query path
             return;
         }
         $pattern = new Pattern($api->requesterId, $id);
         //query a specific pattern
         if (!$pattern->get()) {
-            $api->output(404, 'Pattern not found');
+            $api->output(404, $api->getMessage('patternNotFound'));
             //indicate the pattern was not found
             return;
         }
         if (!$pattern->delete($error)) {
-            $api->output(500, 'Error during pattern update'.$error);
+            $api->output(500, $api->getMessage('patternUpdateError') . $error);
             //something gone wrong :(
             return;
         }

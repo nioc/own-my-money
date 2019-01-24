@@ -37,6 +37,10 @@ class Api
      * @var int User identifier who is requesting API
      */
     public $requesterId;
+    /**
+     * @var string Requested language provided in Accept-Language header
+     */
+    private $language;
 
     /**
      * Initializes an API object with the given informations.
@@ -55,7 +59,7 @@ class Api
             array_push($this->allowedMethods, 'OPTIONS');
             if (!in_array($this->method, $this->allowedMethods)) {
                 //return a 501 error
-                $this->output(501, $this->method.' method is not supported for this ressource');
+                $this->output(501, $this->getMessage('methodNotImplemented', [$this->method]));
                 throw new RuntimeException($this->method.' method is not supported for this ressource');
             }
             //get parameters
@@ -126,7 +130,7 @@ class Api
         }
         $headers = apache_request_headers();
         if (!array_key_exists('Authorization', $headers)) {
-            $this->output(401, 'Authorization header not found');
+            $this->output(401, $this->getMessage('authorizationNotFound'));
             header('WWW-Authenticate: Bearer realm="money"');
             //Authorization header not provided
             return false;
@@ -137,19 +141,19 @@ class Api
         $token = new Token($configuration->get('hashKey'));
         list($scheme, $token->value) = explode(' ', $headers['Authorization'], 2);
         if ($scheme !== 'Bearer') {
-            $this->output(401, 'Token scheme must be bearer');
+            $this->output(401, $this->getMessage('tokenSchemeBearer'));
             header('WWW-Authenticate: Bearer realm="money"');
             //Not using Bearer scheme
             return false;
         }
         if (!$token->decode()) {
-            $this->output(401, 'Token is not valid');
+            $this->output(401, $this->getMessage('invalidToken'));
             header('WWW-Authenticate: Bearer realm="money"');
             //Token is not valid
             return false;
         }
         if (!property_exists($token->payload, 'sub')) {
-            $this->output(401, 'Subject not found');
+            $this->output(401, $this->getMessage('subjectNotFound'));
             header('WWW-Authenticate: Bearer realm="money"');
             //Token do not includes user profile
             return false;
@@ -251,5 +255,39 @@ class Api
         $result->token = $token->value;
         //return the token
         return $result;
+    }
+
+    /**
+     * Get localized message data.
+     *
+     * @param string $index Data index
+     * @param array $data Informations to bind in template
+     *
+     * @return string Localized data located at the index
+     */
+    public function getMessage($index, $data = [])
+    {
+        try {
+            $this->language = Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+            if (!in_array($this->language, ['fr', 'en'])) {
+                $this->language = 'en';
+            }
+            header('Content-Language: '.$this->language);
+            $r = new ResourceBundle($this->language, $_SERVER['DOCUMENT_ROOT'].'/server/lang');
+            if (is_null($template = $r->get($index))) {
+                error_log('Intl key not found: ' . $index);
+                $template = '';
+            }
+            $fmt = new MessageFormatter($this->language, $template);
+            $msg = $fmt->format($data);
+            if ($msg === false) {
+                error_log($fmt->getErrorMessage());
+                $msg = '';
+            }
+        } catch (IntlException $e) {
+            error_log($e->getMessage() . $e->getTraceAsString());
+            $msg = '';
+        }
+        return $msg;
     }
 }

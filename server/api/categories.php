@@ -32,7 +32,7 @@ switch ($api->method) {
         $category = new Category($id);
         //query a specific category
         if (!$category->get()) {
-            $api->output(404, 'Category not found');
+            $api->output(404, $api->getMessage('categoryNotFound'));
             //indicate the category was not found
             return;
         }
@@ -45,20 +45,20 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkScope('admin')) {
-            $api->output(403, 'Admin scope required');
+            $api->output(403, $api->getMessage('adminScopeRequired'));
             //indicate the requester is not allowed to create category
             return;
         }
         $category = new Category();
         $requestedCategory = $api->query['body'];
         if (!$category->validateModel($requestedCategory, $errorMessage)) {
-            $api->output(400, 'Category is not valid: '.$errorMessage);
+            $api->output(400, $api->getMessage('categoryIsNotValid') . $errorMessage);
             //provided category is not valid
             return;
         }
         //create category
         if (!$category->insert()) {
-            $api->output(500, 'Error during creation');
+            $api->output(500, $api->getMessage('creationError'));
             //something gone wrong :(
             return;
         }
@@ -71,20 +71,20 @@ switch ($api->method) {
            return;
        }
        if (!$api->checkScope('admin')) {
-           $api->output(403, 'Admin scope required');
+           $api->output(403, $api->getMessage('adminScopeRequired'));
            //indicate the requester is not allowed to update a category
            return;
        }
        $category = new Category();
        $requestedCategory = $api->query['body'];
        if (!$category->validateModel($requestedCategory, $errorMessage)) {
-           $api->output(400, 'Category is not valid: '.$errorMessage);
+           $api->output(400, $api->getMessage('categoryIsNotValid') . $errorMessage);
            //provided category is not valid
            return;
        }
        //update category
        if (!$category->update($errorMessage)) {
-           $api->output(500, 'Error during update: '.$errorMessage);
+           $api->output(500, $api->getMessage('updateError') . $errorMessage);
            //something gone wrong :(
            return;
        }

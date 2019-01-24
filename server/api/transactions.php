@@ -25,7 +25,7 @@ switch ($api->method) {
                 //return user transactions matching pattern
                 $pattern = str_replace('*', '%', $pattern);
                 if (false === $transactionsList = $user->getTransactionsByPattern($pattern, $errorMessage)) {
-                    $api->output(500, 'Error during transaction query'.$errorMessage);
+                    $api->output(500, $api->getMessage('transactionQueryError') . $errorMessage);
                     //something gone wrong :(
                     return;
                 }
@@ -45,7 +45,7 @@ switch ($api->method) {
         $account = new Account($aid);
         $account->get();
         if ($account->user !== $api->requesterId) {
-            $api->output(403, 'Transactions can be queried by account owner only');
+            $api->output(403, $api->getMessage('transactionsCanBeQueriedByAccountOwnerOnly'));
             //indicate the requester is not the account owner and is not allowed to query it
             return;
         }
@@ -53,7 +53,7 @@ switch ($api->method) {
             //request for a specific transaction
             $transaction = new Transaction($id);
             if (!$transaction->get()) {
-                $api->output(404, 'Transaction not found');
+                $api->output(404, $api->getMessage('transactionNotFound'));
                 //indicate the account was not found
                 return;
             }
@@ -79,19 +79,19 @@ switch ($api->method) {
         }
         $api->checkParameterExists('aid', $aid);
         if (!$api->checkParameterExists('id', $id) || $id === '') {
-            $api->output(400, 'Transaction identifier must be provided');
+            $api->output(400, $api->getMessage('transactionIdMustBeProvided'));
             //Transaction was not provided, return an error
             return;
         }
         $transaction = new Transaction($id);
         if (!$transaction->get()) {
-            $api->output(404, 'Transaction not found');
+            $api->output(404, $api->getMessage('transactionNotFound'));
             //indicate the transaction was not found
             return;
         }
         //check requestor is the account owner
         if ($aid && $aid !== $transaction->aid) {
-            $api->output(400, 'Transaction is not valid: inconsistent account ');
+            $api->output(400, $api->getMessage('transactionIsNotValid') . $api->getMessage('inconsistentAccountId'));
             //provided transaction is not valid
             return;
         }
@@ -101,18 +101,18 @@ switch ($api->method) {
         $account = new Account($aid);
         $account->get();
         if ($account->user !== $api->requesterId) {
-            $api->output(403, 'Transaction can be updated by its owner only');
+            $api->output(403, $api->getMessage('transactionsCanBeUpdatedByAccountOwnerOnly'));
             //indicate the requester is not the account owner and is not allowed to update it
             return;
         }
         $updatedTransaction = $api->query['body'];
         if (!$transaction->validateModel($updatedTransaction, $errorMessage)) {
-            $api->output(400, 'Transaction is not valid: '.$errorMessage);
+            $api->output(400, $api->getMessage('transactionIsNotValid') . $errorMessage);
             //provided transaction is not valid
             return;
         }
         if (!$transaction->update($errorMessage)) {
-            $api->output(500, 'Error during transaction update'.$errorMessage);
+            $api->output(500, $api->getMessage('transactionUpdateError') . $errorMessage);
             //something gone wrong :(
             return;
         }

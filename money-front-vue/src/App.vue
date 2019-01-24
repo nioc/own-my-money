@@ -51,6 +51,7 @@
 <script>
 import Auth from './services/Auth'
 import Bus from './services/Bus'
+import Vue from 'vue'
 export default {
   name: 'app',
   data () {
@@ -68,6 +69,7 @@ export default {
       document.getElementById('navbar-menu').classList.toggle('is-active')
     },
     setLocale (locale) {
+      Vue.http.headers.common['Accept-Language'] = locale
       document.querySelector('html').setAttribute('lang', locale)
       this.$i18n.locale = locale
       this.$moment.locale(locale)

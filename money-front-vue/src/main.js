@@ -32,6 +32,7 @@ const i18n = new VueI18n({
   dateTimeFormats,
   numberFormats
 })
+Vue.http.headers.common['Accept-Language'] = locale
 document.querySelector('html').setAttribute('lang', locale)
 
 Vue.use(VeeValidate, {

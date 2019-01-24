@@ -19,25 +19,25 @@ switch ($api->method) {
             return;
         }
         if (!$api->checkParameterExists('user', $id)) {
-            $api->output(400, 'User id must be provided in path');
+            $api->output(400, $api->getMessage('userIdMustBeProvidedInPath'));
             //User id was not provided
             return;
         }
         //request a specific user
         if ($api->requesterId !== intval($id) && !$api->checkScope('admin')) {
-            $api->output(403, 'Admin scope required');
+            $api->output(403, $api->getMessage('adminScopeRequired'));
             //indicate the requester is not the user and is not allowed to request
             return;
         }
         $user = new User($id);
         if (!$user->get()) {
-            $api->output(404, 'User not found');
+            $api->output(404, $api->getMessage('userNotFound'));
             //indicate the user was not found
             return;
         }
         $connections = $user->getLastConnections();
         if (!$connections) {
-            $api->output(500, 'Error during request');
+            $api->output(500, $api->getMessage('requestError'));
             //indicate something gone wrong
             return;
         }
@@ -50,7 +50,7 @@ switch ($api->method) {
         break;
     case 'POST':
         if (!$api->checkParameterExists('login', $login) || !$api->checkParameterExists('password', $password)) {
-            $api->output(400, 'Both login and password must be provided');
+            $api->output(400, $api->getMessage('loginAndPasswordMustBeProvided'));
             //login or password was not provided
             return;
         }
@@ -58,7 +58,7 @@ switch ($api->method) {
         if (!$user->checkCredentials($login, $password)) {
             error_log('Login attempt failed: '.$login);
             $user->increaseLoginAttemptFailed();
-            $api->output(401, 'Invalid credentials');
+            $api->output(401, $api->getMessage('invalidCredentials'));
             header('WWW-Authenticate: Bearer realm="money"');
             //invalid credentials
             return;
