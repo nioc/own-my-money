@@ -18,7 +18,7 @@
           </li>
         </ul>
 
-        <div v-else class="content has-text-grey has-text-centered">There is nothing to do</div>
+        <div v-else class="content has-text-grey has-text-centered">{{ $t('labels.nothingToDo') }}</div>
 
         <form @submit.prevent="validateBeforeSubmit" novalidate class="section is-max-width-form" v-if="steps.length > 0">
           <div v-if="steps[currentStep].help" v-html="steps[currentStep].help" class="content has-text-grey has-text-centered"/>
@@ -41,7 +41,7 @@
           </div>
 
           <div class="has-text-centered" v-if="currentStep < steps.length-1">
-            <button class="button is-primary" :disabled="errors.any()"><span class="icon"><i class="fa fa-arrow-circle-right"/></span><span>Next</span></button>
+            <button class="button is-primary" :disabled="errors.any()"><span class="icon"><i class="fa fa-arrow-circle-right"/></span><span>{{ $t('actions.next') }}</span></button>
           </div>
 
         </form>

@@ -40,7 +40,7 @@ class Api
     /**
      * @var string Requested language provided in Accept-Language header
      */
-    private $language;
+    public $language;
 
     /**
      * Initializes an API object with the given informations.
@@ -75,6 +75,12 @@ class Api
                 default:
                     $this->query = array_merge($this->query, $_GET);
             }
+            // get Language
+            $this->language = Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+            if (!in_array($this->language, ['fr', 'en'])) {
+                $this->language = 'en';
+            }
+            header('Content-Language: '.$this->language);
         }
     }
 
@@ -267,27 +273,9 @@ class Api
      */
     public function getMessage($index, $data = [])
     {
-        try {
-            $this->language = Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-            if (!in_array($this->language, ['fr', 'en'])) {
-                $this->language = 'en';
-            }
-            header('Content-Language: '.$this->language);
-            $r = new ResourceBundle($this->language, $_SERVER['DOCUMENT_ROOT'].'/server/lang');
-            if (is_null($template = $r->get($index))) {
-                error_log('Intl key not found: ' . $index);
-                $template = '';
-            }
-            $fmt = new MessageFormatter($this->language, $template);
-            $msg = $fmt->format($data);
-            if ($msg === false) {
-                error_log($fmt->getErrorMessage());
-                $msg = '';
-            }
-        } catch (IntlException $e) {
-            error_log($e->getMessage() . $e->getTraceAsString());
-            $msg = '';
-        }
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Lang.php';
+        $lang = new Lang($this->language);
+        $msg = $lang->getMessage($index, $data);
         return $msg;
     }
 }

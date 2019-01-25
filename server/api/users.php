@@ -84,7 +84,7 @@ switch ($api->method) {
         }
 
         if (!$postedUser->insert($error)) {
-            $api->output(500, $api->getMessage('userCreationError'.$error));
+            $api->output(500, $api->getMessage('userCreationError') . $error);
             //something gone wrong :(
             return;
         }
@@ -143,12 +143,12 @@ switch ($api->method) {
             }
         }
         if (!$user->update($error)) {
-            $api->output(500, $api->getMessage('profileUpdateError'.$error));
+            $api->output(500, $api->getMessage('profileUpdateError') . $error);
             //something gone wrong :(
             return;
         }
         if (!is_null($postedUser->password) && !$user->updatePassword($error)) {
-            $api->output(500, $api->getMessage('passwordUpdateError'.$error));
+            $api->output(500, $api->getMessage('passwordUpdateError') . $error);
             //something gone wrong :(
             return;
         }

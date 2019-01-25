@@ -29,7 +29,7 @@ switch ($api->method) {
         $version = new stdClass();
         $version->installed = $configuration->get('version');
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Updater.php';
-        $updater = new Updater();
+        $updater = new Updater($api->language);
         if (!$updater->getLastVersion()) {
             $api->output(500, $api->getMessage('requestError'));
             return;
@@ -52,7 +52,7 @@ switch ($api->method) {
             return;
         }
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Updater.php';
-        $updater = new Updater();
+        $updater = new Updater($api->language);
         if (!$updater->getLastVersion()) {
             $api->output(500, $updater->logs);
             return;

@@ -32,7 +32,7 @@ if ($api->method !== 'OPTIONS' && $configuration->get('setup') === '1') {
 switch ($api->method) {
     case 'GET':
         //query steps
-        $steps = Step::getAll();
+        $steps = Step::getAll($api->language);
         if (is_string($steps)) {
             $api->output(500, $steps);
             //return steps list
@@ -46,7 +46,7 @@ switch ($api->method) {
         //complete step (by posting a PUT in fields sub-resource)
         if (!$api->checkParameterExists('code', $code)) {
         }
-        $step = new Step($code);
+        $step = new Step($api->language, $code);
         if ($step->fields === false) {
             $api->output(404, $api->getMessage('stepNotFound'));
             //indicate the step has no fields to complete

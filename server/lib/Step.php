@@ -39,15 +39,21 @@ class Step
     public $fields;
 
     /**
+     * @var string Requested language
+     */
+    private $language;
+
+    /**
      * Initializes a Step object with the provided informations.
      *
+     * @param string $language   Language locale to output step informations
      * @param string $code       Code used for retrieving step
      * @param string $label      Label displayed in GUI
      * @param string $icon       Icon name displayed in GUI
      * @param string $help       Helper text to explain what step does
      * @param boolean $isActive  Indicate if step is the current one
      */
-    public function __construct($code = null, $label = null, $icon = null, $help = null, $isActive = false)
+    public function __construct($language = 'en', $code = null, $label = null, $icon = null, $help = null, $isActive = false)
     {
         if ($code !== null) {
             $this->code = $code;
@@ -62,6 +68,7 @@ class Step
             $this->help = $help;
         }
         $this->isActive = $isActive;
+        $this->language = $language;
         //get step fields
         $this->getFields();
     }
@@ -69,9 +76,11 @@ class Step
     /**
      * Return all steps.
      *
+     * @param string $language  Language locale to output steps informations
+     *
      * @return array Steps
      */
-    public static function getAll()
+    public static function getAll($language)
     {
         //check setup status
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Configuration.php';
@@ -83,15 +92,22 @@ class Step
             $distVersion = $distConfiguration->get('version');
             if ($installedVersion !== $distVersion) {
                 //there are update to do
-                return Step::getUpdateSteps($installedVersion);
+                return Step::getUpdateSteps($installedVersion, $language);
             }
             //nothing to do, return no step
             return [];
         }
-        return Step::getInstallationSteps();
+        return Step::getInstallationSteps($language);
     }
 
-    private static function getInstallationSteps()
+    /**
+     * Return all installation steps.
+     *
+     * @param string $language  Language locale to output steps informations
+     *
+     * @return array Steps
+     */
+    private static function getInstallationSteps($language)
     {
         //check database exists
         $databaseConfigured = true;
@@ -101,21 +117,33 @@ class Step
         } catch (PDOException $e) {
             $databaseConfigured = false;
         }
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Lang.php';
+        $lang = new Lang($language);
         //set installation step
         $steps = [
-          new Step('set-database-access', 'Setup database access', 'fa-database', 'Application will create MySQL user and database used to store your data', $databaseConfigured ? false : true),
-          new Step('create-database', 'Create database', 'fa-table', 'Now, application will create MySQL tables', false),
-          new Step('set-mailer', 'Setup mailer', 'fa-envelope', 'The application can send emails if your host has a SMTP server, in this step we configure the mail system', $databaseConfigured ? true : false),
-          new Step('set-security', 'Setup security', 'fa-lock', 'Authorization process uses signed JWT, it requires you set your own secret key for generating the HMAC', false),
-          new Step('create-user', 'Create user', 'fa-user', 'This step will create your (super) user account', false),
-          new Step('finalize-setup', 'Finalize setup', 'fa-cogs', 'This step will complete your setup', false),
-          new Step('confirmation', 'Confirmation', 'fa-check', 'That\'s all, installation process has been completed, you can now <a href="/">signin</a> into the application', false)
+          new Step($language, 'set-database-access', $lang->getMessage('stepSetupDataAccess'), 'fa-database', $lang->getMessage('stepSetupDataAccessLabel'), $databaseConfigured ? false : true),
+          new Step($language, 'create-database', $lang->getMessage('stepCreateDatabase'), 'fa-table', $lang->getMessage('stepCreateDatabaseLabel'), false),
+          new Step($language, 'set-mailer', $lang->getMessage('stepSetupmailer'), 'fa-envelope', $lang->getMessage('stepSetupmailerLabel'), $databaseConfigured ? true : false),
+          new Step($language, 'set-security', $lang->getMessage('stepSetupSecurity'), 'fa-lock', $lang->getMessage('stepSetupSecurityLabel'), false),
+          new Step($language, 'create-user', $lang->getMessage('stepCreateUser'), 'fa-user', $lang->getMessage('stepCreateUserLabel'), false),
+          new Step($language, 'finalize-setup', $lang->getMessage('stepFinalizeSetup'), 'fa-cogs', $lang->getMessage('stepFinalizeSetupLabel'), false),
+          new Step($language, 'confirmation', $lang->getMessage('stepConfirmation'), 'fa-check', $lang->getMessage('stepConfirmationLabel'), false)
         ];
         return $steps;
     }
 
-    private static function getUpdateSteps($installedVersion)
+    /**
+     * Return required update steps.
+     *
+     * @param string $installedVersion  Current version
+     * @param string $language          Language locale to output steps informations
+     *
+     * @return array Steps
+     */
+    private static function getUpdateSteps($installedVersion, $language)
     {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Lang.php';
+        $lang = new Lang($language);
         $hasDatabaseAlter = false;
         switch ($installedVersion) {
             //check if there is some database change
@@ -128,21 +156,21 @@ class Step
             case '0.3.2':
                 break;
             default:
-                return 'Unknown installed version';
+                return $lang->getMessage('unknownInstalledVersion');
                 break;
         }
         $steps = [];
         if ($hasDatabaseAlter) {
             array_push(
                 $steps,
-                new Step('backup-database', 'Create backup', 'fa-life-ring', 'Your data matters, application will create a local backup of your database', false),
-                new Step('update-database', 'Update database', 'fa-table', 'Now, application will update MySQL tables', false)
+                new Step($language, 'backup-database', $lang->getMessage('stepCreateBackup'), 'fa-life-ring', $lang->getMessage('stepCreateBackupLabel'), false),
+                new Step($language, 'update-database', $lang->getMessage('stepUpdateDatabase'), 'fa-table', $lang->getMessage('stepUpdateDatabaseLabel'), false)
             );
         }
         array_push(
             $steps,
-            new Step('finalize-setup', 'Finalize update', 'fa-cogs', 'This step will complete this update', false),
-            new Step('confirmation', 'Confirmation', 'fa-check', 'That\'s all, update process has been completed, you can now go back to the <a href="/">home</a> and discover the new features', false)
+            new Step($language, 'finalize-setup', $lang->getMessage('stepFinalizeUpdate'), 'fa-cogs', $lang->getMessage('stepFinalizeUpdateLabel'), false),
+            new Step($language, 'confirmation', $lang->getMessage('stepConfirmation'), 'fa-check', $lang->getMessage('stepUpdateConfirmationLabel'), false)
         );
         return $steps;
     }
@@ -175,17 +203,19 @@ class Step
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Field.php';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Configuration.php';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Lang.php';
         $configuration = new Configuration();
+        $lang = new Lang($this->language);
         switch ($this->code) {
 
             case 'set-database-access':
                 $this->fields = [
-                    new Field('host', 'Host', 'text', 'required', 'MySQL server host, can be `localhost`, an ip address, ...', $configuration->get('dbHost')),
-                    new Field('admin-login', 'Login', 'text', 'required', 'Existing MySQL admin login used for create the `money` user (require the `CREATE USER` privilege)', 'root'),
-                    new Field('admin-password', 'Password', 'password', 'required', 'Existing MySQL admin password (used only for this step, it will not be stored)'),
-                    new Field('db-login', 'Login', 'text', 'required', 'MySQL `money` user login to create', $configuration->get('dbUser')),
-                    new Field('db-password', 'Password', 'password', 'required', 'MySQL `money` user password', $configuration->get('dbPwd')),
-                    new Field('db-name', 'Database', 'text', 'required', 'MySQL database name to create', $configuration->get('dbName')),
+                    new Field('host', $lang->getMessage('fieldHost'), 'text', 'required', $lang->getMessage('fieldHostLabel'), $configuration->get('dbHost')),
+                    new Field('admin-login', $lang->getMessage('fieldLogin'), 'text', 'required', $lang->getMessage('fieldLoginMySqlRootLabel'), 'root'),
+                    new Field('admin-password', $lang->getMessage('fieldPassword'), 'password', 'required', $lang->getMessage('fieldPasswordMySqlRootLabel')),
+                    new Field('db-login', $lang->getMessage('fieldLogin'), 'text', 'required', $lang->getMessage('fieldLoginMySqlLabel'), $configuration->get('dbUser')),
+                    new Field('db-password', $lang->getMessage('fieldPassword'), 'password', 'required', $lang->getMessage('fieldPasswordMySqlLabel'), $configuration->get('dbPwd')),
+                    new Field('db-name', $lang->getMessage('fieldDatabase'), 'text', 'required', $lang->getMessage('fieldDatabaseLabel'), $configuration->get('dbName')),
                 ];
                 break;
 
@@ -196,21 +226,21 @@ class Step
 
             case 'set-mailer':
                 $this->fields = [
-                  new Field('mailer', 'Send mail', 'text', 'required|between:0,1', 'Does the application send out emails (for user connection) ; type 1 for sending emails, 0 for not', $configuration->get('mailer')),
-                  new Field('mail-sender', 'From address', 'email', 'required|email', 'Sender email address', $configuration->get('mailSender')),
+                  new Field('mailer', $lang->getMessage('fieldSendMail'), 'text', 'required|between:0,1', $lang->getMessage('fieldSendMailLabel'), $configuration->get('mailer')),
+                  new Field('mail-sender', $lang->getMessage('fieldFromAddress'), 'email', 'required|email', $lang->getMessage('fieldFromAddressLabel'), $configuration->get('mailSender')),
                 ];
                 break;
 
             case 'set-security':
                 $this->fields = [
-                    new Field('hash-key', 'Hash key', 'text', 'required|min:5', 'Hash used to sign user tokens', $configuration->get('hashKey')),
+                    new Field('hash-key', $lang->getMessage('fieldHashKey'), 'text', 'required|min:5', $lang->getMessage('fieldHashKeyLabel'), $configuration->get('hashKey')),
                 ];
                 break;
 
             case 'create-user':
                 $this->fields = [
-                    new Field('login', 'Login', 'text', 'required|min:3|alpha_num', 'Your login in the application (alphanumeric only, more than 3 characters)', 'JohnDoe'),
-                    new Field('password', 'Password', 'password', 'required|min:5|alpha_num', 'Your password in the application (alphanumeric only, more than 5 characters)'),
+                    new Field('login', $lang->getMessage('fieldLogin'), 'text', 'required|min:3|alpha_num', $lang->getMessage('fieldLoginLabel'), 'JohnDoe'),
+                    new Field('password', $lang->getMessage('fieldPassword'), 'password', 'required|min:5|alpha_num', $lang->getMessage('fieldPasswordLabel')),
                 ];
                 break;
 
@@ -240,30 +270,32 @@ class Step
     {
         $this->fields = $fields;
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Configuration.php';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Lang.php';
         $configuration = new Configuration();
+        $lang = new Lang($this->language);
         switch ($this->code) {
             case 'set-database-access':
                 if (!$host = $this->getFieldValue('host')) {
-                    return 'Failed to get `host` value';
+                    return $lang->getMessage('getFieldFailed', ['host']);
                 }
                 if (!$adminLogin = $this->getFieldValue('admin-login')) {
-                    return 'Failed to get `admin-login` value';
+                    return $lang->getMessage('getFieldFailed', ['admin-login']);
                 }
                 if (!$adminPassword = $this->getFieldValue('admin-password')) {
-                    return 'Failed to get `admin-password` value';
+                    return $lang->getMessage('getFieldFailed', ['admin-password']);
                 }
                 if (!$dbLogin = $this->getFieldValue('db-login')) {
-                    return 'Failed to get `db-login` value';
+                    return $lang->getMessage('getFieldFailed', ['db-login']);
                 }
                 if (!$dbPassword = $this->getFieldValue('db-password')) {
-                    return 'Failed to get `db-password` value';
+                    return $lang->getMessage('getFieldFailed', ['db-password']);
                 }
                 if (!$dbName = $this->getFieldValue('db-name')) {
-                    return 'Failed to get `db-password` value';
+                    return $lang->getMessage('getFieldFailed', ['db-name']);
                 }
                 //store host
                 if (!$configuration->set('dbHost', $host)) {
-                    return 'Failed to set configuration `dbHost`';
+                    return $lang->getMessage('setConfigurationFailed', ['dbHost']);
                 }
                 //create MySQL user
                 try {
@@ -281,10 +313,10 @@ class Step
                 }
                 //store MySQL user credentials
                 if (!$configuration->set('dbUser', $dbLogin)) {
-                    return 'Failed to set configuration `dbUser`';
+                    return $lang->getMessage('setConfigurationFailed', ['dbUser']);
                 }
                 if (!$configuration->set('dbPwd', $dbPassword)) {
-                    return 'Failed to set configuration `dbPwd`';
+                    return $lang->getMessage('setConfigurationFailed', ['dbPwd']);
                 }
                 //create MySQL database
                 $query = $connection->prepare('CREATE DATABASE IF NOT EXISTS '.$dbName.' DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;');
@@ -302,7 +334,7 @@ class Step
                 }
                 //store MySQL database
                 if (!$configuration->set('dbName', $dbName)) {
-                    return 'Failed to set configuration `dbName`';
+                    return $lang->getMessage('setConfigurationFailed', ['dbName']);
                 }
                 return true;
                 break;
@@ -324,36 +356,36 @@ class Step
             case 'set-mailer':
                 $mailer = $this->getFieldValue('mailer');
                 if ($mailer === false) {
-                    return 'Failed to get `mailer` value';
+                    return $lang->getMessage('getFieldFailed', ['mailer']);
                 }
                 if (!$mailSender = $this->getFieldValue('mail-sender')) {
-                    return 'Failed to get `mail-sender` value';
+                    return $lang->getMessage('getFieldFailed', ['mail-sender']);
                 }
                 if (!$configuration->set('mailer', $mailer)) {
-                    return 'Failed to set configuration `mailer`';
+                    return $lang->getMessage('setConfigurationFailed', ['mailer']);
                 }
                 if (!$configuration->set('mailSender', $mailSender)) {
-                    return 'Failed to set configuration `mailSender`';
+                    return $lang->getMessage('setConfigurationFailed', ['mailSender']);
                 }
                 return true;
                 break;
 
             case 'set-security':
                 if (!$hashKey = $this->getFieldValue('hash-key')) {
-                    return 'Failed to get `hash-key` value';
+                    return $lang->getMessage('getFieldFailed', ['hash-key']);
                 }
                 if (!$configuration->set('hashKey', $hashKey)) {
-                    return 'Failed to set configuration `hashKey`';
+                    return $lang->getMessage('setConfigurationFailed', ['hashKey']);
                 }
                 return true;
                 break;
 
             case 'create-user':
                 if (!$login = $this->getFieldValue('login')) {
-                    return 'Failed to get `login` value';
+                    return $lang->getMessage('getFieldFailed', ['login']);
                 }
                 if (!$password = $this->getFieldValue('password')) {
-                    return 'Failed to get `password` value';
+                    return $lang->getMessage('getFieldFailed', ['password']);
                 }
                 //create user
                 require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
@@ -363,7 +395,7 @@ class Step
                 $user->scope = 'user admin';
                 $user->status = true;
                 if (!$user->insert($error)) {
-                    return 'Error during user creation'.$error;
+                    return $lang->getMessage('userCreationError') . $error;
                 }
                 return true;
                 break;
@@ -375,7 +407,7 @@ class Step
                 $dbPwd = $configuration->get('dbPwd');
                 exec("mysqldump $dbName --password=$dbPwd --user=$dbUser --single-transaction >$filename", $output);
                 if (!file_exists($filename) || filesize($filename) === 0) {
-                    return 'Error during backup creation'.join(' ', $output);
+                    return $lang->getMessage('backupError') . join(' ', $output);
                 }
                 return true;
                 break;
@@ -405,29 +437,29 @@ class Step
                 if ($query->execute()) {
                     $distConfiguration = new Configuration(false);
                     if (!$distVersion = $distConfiguration->get('version')) {
-                        return 'Failed to get configuration `version`';
+                        return $lang->getMessage('getConfigurationFailed', ['version']);
                     }
                     $databaseVersion = $query->fetchColumn();
                     if ($distVersion === $databaseVersion) {
                         return true;
                     }
-                    return "Error during database update (current $databaseVersion ≠ target $distVersion)";
+                    return $lang->getMessage('databaseUpdateErrorBadVersion', [$databaseVersion, $distVersion]);
                 }
-                return 'Error during database update (can not read database version)';
+                return $lang->getMessage('databaseUpdateErrorRead');;
                 break;
 
             case 'finalize-setup':
                 //set the version installed
                 $distConfiguration = new Configuration(false);
                 if (!$version = $distConfiguration->get('version')) {
-                    return 'Failed to get configuration `version`';
+                    return $lang->getMessage('getConfigurationFailed', ['version']);
                 }
                 if (!$configuration->set('version', $version)) {
-                    return 'Failed to set configuration `version`';
+                    return $lang->getMessage('setConfigurationFailed', ['version']);
                 }
                 //set the installation steps are completed
                 if (!$configuration->set('setup', '1')) {
-                    return 'Failed to set configuration `setup`';
+                    return $lang->getMessage('setConfigurationFailed', ['setup']);
                 }
                 return true;
                 break;
@@ -437,7 +469,7 @@ class Step
                 break;
 
             default:
-                return 'Step unknown';
+                return $lang->getMessage('unknownStep');
                 break;
         }
     }

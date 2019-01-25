@@ -60,4 +60,64 @@ fr {
     mapUpdateError { "Erreur lors de la mise à jour de la correspondance" }
     mapAttributesUpdateError { "Erreur lors de la mise à jour des attributs de la correspondance" }
     patternUpdateError { "Erreur lors de la mise à jour du modèle" }
+    unknownInstalledVersion { "La version installée est inconnue" }
+    stepSetupDataAccess { "Mise en place base de données" }
+    stepCreateDatabase { "Création schéma base de données" }
+    stepSetupmailer { "Configuration envoi email" }
+    stepSetupSecurity { "Sécurité" }
+    stepCreateUser{ "Création utilisateur" }
+    stepFinalizeSetup { "Finalisation" }
+    stepConfirmation { "Confirmation" }
+    unknownStep { "Etape inconnue" }
+    stepSetupDataAccessLabel { "L'application va créer un utilisateur MySQL ainsi qu'une base de données afin de stocker vos données" }
+    stepCreateDatabaseLabel { "Maintenant, l'application va créer les tables dans la base de données" }
+    stepSetupmailerLabel { "L'application peut envoyer des emails si votre serveur dispose d'un serveur SMTP, durant cette étape nous allons configurer l'envoi des mails" }
+    stepSetupSecurityLabel { "Le système d'authentification utilise des tokens JWT, pour sécuriser ce fonctionnement vous devez définir la clé secrète qui sera utilisée pour générer le HMAC" }
+    stepCreateUserLabel { "Créons maintenant votre compte (super) utilisateur" }
+    stepFinalizeSetupLabel { "Cette étape va finaliser l'installation" }
+    stepConfirmationLabel { "C'est tout, le processus d'installation est terminé, vous pouvez maintenant vous <a href=\"/\">connecter</a> dans l'application" }
+    fieldHost { "Hôte" }
+    fieldLogin { "Identifiant" }
+    fieldPassword { "Password" }
+    fieldDatabase { "Base de données" }
+    fieldSendMail { "Envoi d'email" }
+    fieldFromAddress { "Adresse d'envoi" }
+    fieldHashKey { "Clé secrète" }
+    fieldHostLabel { "Hôte du serveur MySQL, les valeurs peuvent être `localhost`, une adresse IP, ..." }
+    fieldLoginMySqlRootLabel { "Nom du compte admin MySQL existant permettant de créer l'utilisateur MySQL `money` (requiert le privilège `CREATE USER`)" }
+    fieldPasswordMySqlRootLabel { "Mot de passe du compte admin MySQL (utilisé uniquement pour cette étape, il n'est pas stocké sur le serveur)" }
+    fieldLoginMySqlLabel { "Nom du compte MySQL `money` à créer" }
+    fieldPasswordMySqlLabel { "Mot de passe du compte MySQL `money`" }
+    fieldDatabaseLabel { "Nom de la base de données MySQL à créer" }
+    fieldSendMailLabel { "Est-ce que l'application peut envoyer des emails (pour signaler une connections aux utilisateurs) ; saisir 1 pour envoyer des emails, 0 pour laisser inactif" }
+    fieldFromAddressLabel { "Adresse d'envoi pour les emails sortants" }
+    fieldHashKeyLabel { "Clé secrète propre à votre instance permettant de signer les jetons d'accès" }
+    fieldLoginLabel { "Votre identifiant dans l'application (à minima 3 caractères alphanumeriques)" }
+    fieldPasswordLabel { "Votre mot de passe dans l'application (à minima 5 caractères alphanumeriques)" }
+    stepCreateBackup { "Sauvegarde" }
+    stepUpdateDatabase { "Mise à jour base de données" }
+    stepFinalizeUpdate { "Finalisation" }
+    stepCreateBackupLabel { "Vos données sont importantes, l'application va sauvegarder localement la base de données" }
+    stepUpdateDatabaseLabel { "Maintenant, l'application va mettre à jour le modèle des tables MySQL" }
+    stepFinalizeUpdateLabel { "Cette étape va finaliser la mise à jour" }
+    stepUpdateConfirmationLabel { "C'est tout, le processus de mise à jour est terminé, vous pouvez maintenant retourner à <a href=\"/\">l'accueil</a> et découvrir les nouvelles fonctionnalités" }
+    getFieldFailed { "Erreur lors de la récupération de la valeur du paramètre `{0}`" }
+    getConfigurationFailed { "Erreur lors de la récupération de la valeur du paramètre `{0}`" }
+    setConfigurationFailed { "Erreur lors de l'écriture de la valeur du paramètre `{0}`" }
+    backupError { "Erreur lors de la sauvegarde : " }
+    databaseUpdateErrorBadVersion { "Erreur lors de la mise à jour de la base de données (courante {0} ≠ cible {1})" }
+    databaseUpdateErrorRead { "Erreur lors de la mise à jour de la base de données (la version du modèle n'est pas présent)" }
+    getLastVersion { "Récupération de la dernière version publiée..." }
+    failed { "échoué" }
+    done { "terminé" }
+    noReleaseFound { "Aucune version publiée" }
+    releaseIs { "La dernière version publiée est {0}" }
+    noDownloadUrl { "Url de téléchargement introuvable" }
+    folderNotWritable { "Le dossier '{0}' n'est pas accessible en écriture, vous devriez lancer la commande suivante : chown {1} {0} -R" }
+    downloadArchive { "Téléchargement de l'archive..." }
+    archiveNotWritable { "Impossible d'écrire l'archive à l'emplacement {0}/{1}" }
+    extractArchive { "Extraction de l'archive vers {0}..." }
+    applicationUpdated { "L'application a été mise à jour, il peut être nécessaire de finaliser la configuration ici : {0}/#/setup" }
+    downloadError { "erreur lors du téléchargement : " }
+    donwloadSpeed { "{0} octets en {1} secondes"}
 }

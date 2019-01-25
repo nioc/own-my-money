@@ -60,4 +60,64 @@ en {
     mapUpdateError { "Error during map update" }
     mapAttributesUpdateError { "Error during attributes update" }
     patternUpdateError { "Error during pattern update" }
+    unknownInstalledVersion { "Unknown installed version" }
+    stepSetupDataAccess { "Setup database access" }
+    stepCreateDatabase { "Create database" }
+    stepSetupmailer { "Setup mailer" }
+    stepSetupSecurity { "Setup security" }
+    stepCreateUser{ "Create user" }
+    stepFinalizeSetup { "Finalize setup" }
+    stepConfirmation { "Confirmation" }
+    unknownStep { "Unknown step" }
+    stepSetupDataAccessLabel { "Application will create MySQL user and database used to store your data" }
+    stepCreateDatabaseLabel { "Now, application will create MySQL tables" }
+    stepSetupmailerLabel { "The application can send emails if your host has a SMTP server, in this step we configure the mail system" }
+    stepSetupSecurityLabel { "Authorization process uses signed JWT, it requires you set your own secret key for generating the HMAC" }
+    stepCreateUserLabel { "This step will create your (super) user account" }
+    stepFinalizeSetupLabel { "This step will complete your setup" }
+    stepConfirmationLabel { "That's all, installation process has been completed, you can now <a href=\"/\">signin</a> into the application" }
+    fieldHost { "Host" }
+    fieldLogin { "Login" }
+    fieldPassword { "Password" }
+    fieldDatabase { "Database" }
+    fieldSendMail { "Send mail" }
+    fieldFromAddress { "From address" }
+    fieldHashKey { "Hash key" }
+    fieldHostLabel { "MySQL server host, can be `localhost`, an ip address, ..." }
+    fieldLoginMySqlRootLabel { "Existing MySQL admin login used for create the `money` user (require the `CREATE USER` privilege)" }
+    fieldPasswordMySqlRootLabel { "Existing MySQL admin password (used only for this step, it will not be stored)" }
+    fieldLoginMySqlLabel { "MySQL `money` user login to create" }
+    fieldPasswordMySqlLabel { "MySQL `money` user password" }
+    fieldDatabaseLabel { "MySQL database name to create" }
+    fieldSendMailLabel { "Does the application send out emails (for user connection) ; type 1 for sending emails, 0 for not" }
+    fieldFromAddressLabel { "Sender email address" }
+    fieldHashKeyLabel { "Hash used to sign user tokens" }
+    fieldLoginLabel { "Your login in the application (alphanumeric only, more than 3 characters)" }
+    fieldPasswordLabel { "Your password in the application (alphanumeric only, more than 5 characters)" }
+    stepCreateBackup { "Create backup" }
+    stepUpdateDatabase { "Update database" }
+    stepFinalizeUpdate { "Finalize update" }
+    stepCreateBackupLabel { "Your data matters, application will create a local backup of your database" }
+    stepUpdateDatabaseLabel { "Now, application will update MySQL tables" }
+    stepFinalizeUpdateLabel { "This step will complete this update" }
+    stepUpdateConfirmationLabel { "That's all, update process has been completed, you can now go back to the <a href=\"/\">home</a> and discover the new features" }
+    getFieldFailed { "Failed to get `{0}` value" }
+    getConfigurationFailed { "Failed to get `{0}` configuration" }
+    setConfigurationFailed { "Failed to set `{0}` configuration" }
+    backupError { "Error during backup creation: " }
+    databaseUpdateErrorBadVersion { "Error during database update (current {0} ≠ target {1})" }
+    databaseUpdateErrorRead { "Error during database update (can not read model version)" }
+    getLastVersion { "Get last version..." }
+    failed { "failed" }
+    done { "done" }
+    noReleaseFound { "No release was found" }
+    releaseIs { "Release is {0}" }
+    noDownloadUrl { "No download url was found" }
+    folderNotWritable { "Folder '{0}' is not writable, you should run: chown {1} {0} -R" }
+    downloadArchive { "Download archive..." }
+    archiveNotWritable { "Unable to write archive at {0}/{1}" }
+    extractArchive { "Extract archive to {0}..." }
+    applicationUpdated { "Application is updated, you may have to configure at: {0}/#/setup" }
+    downloadError { "download error: " }
+    donwloadSpeed { "{0} bytes on {1} seconds"}
 }

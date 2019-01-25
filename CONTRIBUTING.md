@@ -28,6 +28,18 @@ In order to contribute to the VueJS frontend:
 3. Start the node server `npm run dev`
 4. Edit the code!
 
+#### Translations
+
+Application was translated into the following languages:
+- english,
+- french.
+
+If you are interested in adding a new translation or updating an existing one, take a look at these two folders:
+- [back-end API](/server/lang), you will need ICU for bulding ResourceBundle (Debian and Ubuntu have `icu-devtools` package wich allow you to produce `.res` file with `genrb money/server/lang/*.txt` command),
+- [front-end](/money-front-vue/src/lang).
+
+Or you can just provide translations in an issue and we will add it.
+
 #### A little how-to for Github
 
 1. [Fork it](https://help.github.com/articles/fork-a-repo/)

@@ -28,6 +28,7 @@ export default {
       updated: 'Updated'
     },
     actions: {
+      login: 'Login',
       edit: 'Edit',
       save: 'Save',
       create: 'Create',
@@ -38,6 +39,7 @@ export default {
       refresh: 'Refresh',
       selectAll: 'Select all',
       clear: 'Clear',
+      next: 'Next',
       addCategory: 'Add a category',
       addSubcategory: 'Add a subcategory',
       editCategory: 'Edit category',
@@ -54,6 +56,7 @@ export default {
       updateTo: 'Update to'
     },
     labels: {
+      login: 'Access to your OwnMyMoney account',
       home: 'Home',
       language: 'Language',
       systemSettings: 'System settings',
@@ -75,6 +78,7 @@ export default {
       incomeDistribution: 'Income distribution',
       expenseDistribution: 'Expense distribution',
       nothingToDisplay: 'There is nothing to display',
+      nothingToDo: 'There is nothing to do',
       deleteAccount: 'Delete account',
       deleteAccountMsg: 'Are you sure you want to delete this account?<br>All transactions will be deleted too.',
       noAccount: 'There is no account yet',
@@ -131,6 +135,7 @@ export default {
       updated: 'Mise à jour'
     },
     actions: {
+      login: 'Connexion',
       edit: 'Modifier',
       save: 'Enregistrer',
       create: 'Créer',
@@ -141,6 +146,7 @@ export default {
       refresh: 'Rafraîchir',
       selectAll: 'Tout sélectionner',
       clear: 'Vider',
+      next: 'Suivant',
       addCategory: 'Ajouter une catégorie',
       addSubcategory: 'Ajouter une sous-catégorie',
       editCategory: 'Modifier une catégorie',
@@ -157,6 +163,7 @@ export default {
       updateTo: 'Mise à jour vers'
     },
     labels: {
+      login: 'Accéder à votre compte OwnMyMoney',
       home: 'Accueil',
       language: 'Langue',
       systemSettings: 'Paramètres système',
@@ -178,6 +185,7 @@ export default {
       incomeDistribution: 'Répartition des revenus',
       expenseDistribution: 'Répartition des dépenses',
       nothingToDisplay: 'Il n\'y a rien à afficher',
+      nothingToDo: 'Il n\'y a rien à faire',
       deleteAccount: 'Supprimer le compte',
       deleteAccountMsg: 'Etes vous sûr de vouloir supprimer ce compte ?<br>Toutes ses transactions seront supprimées également.',
       noAccount: 'Il n\'y a pas encore de compte',

@@ -49,7 +49,17 @@ class Updater
      */
     public $logs = [];
 
-    public function __construct()
+    /**
+     * @var string Requested language
+     */
+    private $language;
+
+    /**
+     * Initializes an Updater object with the provided informations.
+     *
+     * @param string $language   Language locale to output update informations
+     */
+    public function __construct($language)
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Configuration.php';
         $configuration = new Configuration();
@@ -57,6 +67,7 @@ class Updater
         $this->userAgent = $configuration->get('userAgent');
         $this->timeout = intval($configuration->get('externalTimeout'));
         $this->rootFolder = $_SERVER['DOCUMENT_ROOT'];
+        $this->language = $language;
         if (basename($this->rootFolder) === 'dist') {
             $this->rootFolder = dirname($this->rootFolder);
         }
@@ -94,6 +105,8 @@ class Updater
      */
     private function doHttpRequest($url, $handle = null)
     {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Lang.php';
+        $lang = new Lang($this->language);
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
@@ -106,11 +119,11 @@ class Updater
         }
         $result = curl_exec($curl);
         if (curl_errno($curl)) {
-            $this->output('download error : ' . curl_error($curl), false);
+            $this->output($lang->getMessage('downloadError') . curl_error($curl), false);
             $result = false;
         } else {
             $curlInfo = curl_getinfo($curl);
-            $this->output($curlInfo['download_content_length'] . ' bytes on ' . $curlInfo['total_time'] . ' seconds', false);
+            $this->output($lang->getMessage('donwloadSpeed', [$curlInfo['download_content_length'], $curlInfo['total_time']]), false);
         }
         curl_close($curl);
         return $result;
@@ -123,25 +136,27 @@ class Updater
      */
     public function getLastVersion()
     {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Lang.php';
+        $lang = new Lang($this->language);
         $this->version = '';
         $this->downloadUrl = null;
         //get last release on repository
-        $this->output('Get last version...', true);
+        $this->output($lang->getMessage('getLastVersion'), true);
         $result = $this->doHttpRequest($this->url);
         if (!$result) {
-            $this->output('failed', false);
+            $this->output($lang->getMessage('failed'), false);
             return false;
         }
-        $this->output('done', false);
+        $this->output($lang->getMessage('done'), false);
 
         //get version in release response
         $release = json_decode($result);
         if (!property_exists($release, 'tag_name')) {
-            $this->output('No release was found', true);
+            $this->output($lang->getMessage('noReleaseFound'), true);
             return false;
         }
         $this->version = $release->tag_name;
-        $this->output("Release is $this->version", true);
+        $this->output($lang->getMessage('releaseIs', [$this->version]), true);
 
         //iterate on assets to find the archive
         if (property_exists($release, 'assets') && is_array($release->assets) && count($release->assets) > 0) {
@@ -153,7 +168,7 @@ class Updater
             }
         }
         if ($this->downloadUrl === null) {
-            $this->output('No download url was found', true);
+            $this->output($lang->getMessage('noDownloadUrl'), true);
             return false;
         }
 
@@ -167,24 +182,26 @@ class Updater
      */
     public function downloadArchive()
     {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Lang.php';
+        $lang = new Lang($this->language);
         if (!is_writable($this->rootFolder)) {
             $webUser = posix_getpwuid(posix_getuid())['name'];
-            $this->output("Folder '$this->rootFolder' is not writable, you should run: chown $webUser $this->rootFolder -R", true);
+            $this->output($lang->getMessage('folderNotWritable', [$this->rootFolder, $webUser]), true);
             return false;
         }
-        $this->output('Download archive...', true);
+        $this->output($lang->getMessage('downloadArchive'), true);
         if (!$localHandle = fopen("$this->rootFolder/$this->filename", 'w+')) {
-            $this->output("Unable to write archive at $this->rootFolder/$this->filename", false);
+            $this->output($lang->getMessage('archiveNotWritable', [$this->rootFolder, $this->filename]), false);
             return false;
         }
         $result = $this->doHttpRequest($this->downloadUrl, $localHandle);
         fclose($localHandle);
         if (!$result) {
-            $this->output('failed', false);
+            $this->output($lang->getMessage('failed'), false);
             unlink("$this->rootFolder/$this->filename");
             return false;
         }
-        $this->output('done', false);
+        $this->output($lang->getMessage('done'), false);
 
         return true;
     }
@@ -196,17 +213,19 @@ class Updater
      */
     public function extractArchive()
     {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Lang.php';
+        $lang = new Lang($this->language);
         //extract files from archive
         $pharData = new PharData($this->rootFolder . '/' . $this->filename);
-        $this->output("Extract archive to $this->rootFolder", true);
+        $this->output($lang->getMessage('extractArchive', [$this->rootFolder]), true);
         try {
             $pharData->extractTo($this->rootFolder, null, true);
         } catch (Exception $e) {
-            $this->output('failed', false);
+            $this->output($lang->getMessage('failed'), false);
             $this->output($e->getMessage(), false);
             return false;
         }
-        $this->output('done', false);
+        $this->output($lang->getMessage('done'), false);
 
         //change back-end url
         $domain = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
@@ -222,7 +241,7 @@ class Updater
             closedir($handle);
         }
         //redirect to the setup page
-        $this->output("Application is updated, you may have to configure at : $domain/#/setup", true);
+        $this->output($lang->getMessage('applicationUpdated', [$domain]), true);
 
         return true;
     }
