@@ -116,6 +116,11 @@ switch ($api->method) {
                         $result['inserted']++;
                     }
                 }
+                //update timestamp
+                $account = new Account($accountId);
+                if ($account->get()) {
+                    $account->update();
+                }
                 break;
             default:
                 $api->output(501, $api->getMessage('fileExtensionNotImplemented', array($extension)));
