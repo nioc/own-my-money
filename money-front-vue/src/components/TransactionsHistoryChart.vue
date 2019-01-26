@@ -12,7 +12,7 @@
         <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
-    <line-chart :chartData="chartData"></line-chart>
+    <line-chart :chartData="chartData" :labelCallback="labelCallback"></line-chart>
   </div>
 </template>
 
@@ -49,6 +49,7 @@ export default {
       isLoading: false,
       isLoaded: false,
       chartData: null,
+      labelCallback: null,
       search: {
         currentDate: today,
         periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
@@ -70,18 +71,22 @@ export default {
         }
       }
       this.$http.get(Config.API_URL + this.chartEndpoint, options).then(response => {
+        let vm = this
+        this.labelCallback = function (tooltipItem, data) {
+          return data.datasets[tooltipItem.datasetIndex].label + ': ' + vm.$n(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index], 'currency')
+        }
         this.chartData = {
           datasets: [
             {
               data: response.data.values.map(point => point.debit),
-              label: 'Debits',
+              label: this.$t('labels.debits'),
               backgroundColor: 'rgba(255, 99, 132, 0.5)',
               borderColor: 'rgb(255, 99, 132)',
               pointBackgroundColor: 'rgba(255, 99, 132, 0.8)'
             },
             {
               data: response.data.values.map(point => point.credit),
-              label: 'Credits',
+              label: this.$t('labels.credits'),
               backgroundColor: 'rgba(66, 185, 131, 0.5)',
               borderColor: 'rgb(66, 185, 131)',
               pointBackgroundColor: 'rgba(66, 185, 131, 0.8)'

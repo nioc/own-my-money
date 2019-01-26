@@ -10,6 +10,10 @@ export default {
       type: Object,
       required: true
     },
+    labelCallback: {
+      type: Function,
+      required: false
+    },
     chartOptions: {
       type: Object,
       required: false,
@@ -30,6 +34,10 @@ export default {
               propagate: false
             }
           },
+          tooltips: {
+            callbacks: {
+            }
+          },
           scales: {
             xAxes: [{
               type: 'time',
@@ -44,6 +52,9 @@ export default {
     }
   },
   mounted () {
+    if (this.labelCallback !== null && typeof this.labelCallback === 'function') {
+      this.chartOptions.tooltips.callbacks = { label: this.labelCallback }
+    }
     this.renderChart(this.chartData, this.chartOptions)
   }
 }
