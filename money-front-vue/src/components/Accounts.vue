@@ -21,14 +21,12 @@
             <thead>
               <tr>
                 <th>{{ $tc('objects.account', 1) }}</th>
-                <th>{{ $t('fieldnames.balance') }}</th>
                 <th>{{ $t('fieldnames.updated') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="account in accounts" :key="account.id">
                 <td><router-link :to="{ name: 'account', params: { id: account.id }}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link></td>
-                <td>{{ $n(account.balance, 'currency') }}</td>
                 <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("from", "now") }}</td><td v-else></td>
               </tr>
             </tbody>
