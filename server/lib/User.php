@@ -332,9 +332,9 @@ class User
             $resultFormat = 'Y-m';
             break;
           case 'W':
-            $sqlFormat = '%YW%v';
+            $sqlFormat = '%xW%v';
             $dateInterval = 'P1W';
-            $resultFormat = 'Y\WW';
+            $resultFormat = 'o\WW';
             break;
           case 'D':
           default:
