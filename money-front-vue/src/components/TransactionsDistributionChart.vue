@@ -12,7 +12,7 @@
         <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
-    <doughnut :chartData="chartData" :onClick="onClick"></doughnut>
+    <doughnut :chartData="chartData" :onClick="onClick" :labelCallback="labelCallback"></doughnut>
   </div>
 </template>
 
@@ -52,6 +52,7 @@ export default {
       isLoaded: false,
       chartData: null,
       onClick: null,
+      labelCallback: null,
       search: {
         currentDate: today,
         periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
@@ -99,6 +100,16 @@ export default {
               Bus.$emit('category-selected', {key: key, label: this.chart.data.labels[index._index]})
             }
           }
+        }
+        let vm = this
+        this.labelCallback = function (tooltipItem, data) {
+          let sum = data.datasets[tooltipItem.datasetIndex].data.reduce((a, b) => a + b, 0)
+          let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
+          let label = data.labels[tooltipItem.index]
+          if (label === null) {
+            label = vm.$t('labels.uncategorizedTransaction')
+          }
+          return label + ': ' + vm.$n(value, 'currency') + ' (' + Math.round(100 * value / sum) + '%)'
         }
         this.chartData = {
           datasets: [

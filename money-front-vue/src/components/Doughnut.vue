@@ -10,6 +10,10 @@ export default {
       type: Object,
       required: true
     },
+    labelCallback: {
+      type: Function,
+      required: false
+    },
     onClick: {
       type: Function,
       required: false
@@ -23,6 +27,11 @@ export default {
         },
         responsive: true,
         maintainAspectRatio: false,
+        tooltips: {
+          callbacks: {
+            label: this.labelCallback
+          }
+        },
         onClick: this.onClick
       }
     }
