@@ -11,11 +11,46 @@
       <div class="section">
         <div class="container">
           <div class="columns is-multiline">
-            <div class="column is-full"><transactions-history-chart :title="$t('labels.transactionsByDay')" chartEndpoint="transactions/history"></transactions-history-chart></div>
-            <div class="column is-one-half-desktop"><transactions-distribution-chart :title="$t('labels.incomeDistribution')" chartEndpoint="transactions/distribution/credit/categories"></transactions-distribution-chart></div>
-            <div class="column is-one-half-desktop"><transactions-distribution-chart :title="$t('labels.expenseDistribution')" chartEndpoint="transactions/distribution/debit/categories"></transactions-distribution-chart></div>
-            <div v-if="categorySelected.key" class="column is-one-half-desktop"><transactions-distribution-chart :title="$t('labels.incomeDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label" :chartEndpoint="'transactions/distribution/credit/subcategories?value='+categorySelected.key"></transactions-distribution-chart></div>
-            <div v-if="categorySelected.key" class="column is-one-half-desktop"><transactions-distribution-chart :title="$t('labels.expenseDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label" :chartEndpoint="'transactions/distribution/debit/subcategories?value='+categorySelected.key"></transactions-distribution-chart></div>
+            <div class="column is-full">
+              <transactions-history-chart
+              :title="$t('labels.transactionsByDay')"
+              chartEndpoint="transactions/history"
+              :isIndependent="true"
+              :date="date"
+              ></transactions-history-chart>
+            </div>
+            <div class="column is-one-half-desktop">
+              <transactions-distribution-chart
+              :title="$t('labels.incomeDistribution')"
+              chartEndpoint="transactions/distribution/credit/categories"
+              :isIndependent="false"
+              :date="date"
+              ></transactions-distribution-chart>
+            </div>
+            <div class="column is-one-half-desktop">
+              <transactions-distribution-chart
+              :title="$t('labels.expenseDistribution')"
+              chartEndpoint="transactions/distribution/debit/categories"
+              :isIndependent="false"
+              :date="date"
+              ></transactions-distribution-chart>
+            </div>
+            <div v-if="categorySelected.key" class="column is-one-half-desktop">
+              <transactions-distribution-chart
+              :title="$t('labels.incomeDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
+              :chartEndpoint="'transactions/distribution/credit/subcategories?value='+categorySelected.key"
+              :isIndependent="false"
+              :date="date"
+              ></transactions-distribution-chart>
+            </div>
+            <div v-if="categorySelected.key" class="column is-one-half-desktop">
+              <transactions-distribution-chart
+              :title="$t('labels.expenseDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
+              :chartEndpoint="'transactions/distribution/debit/subcategories?value='+categorySelected.key"
+              :isIndependent="false"
+              :date="date"
+              ></transactions-distribution-chart>
+            </div>
           </div>
         </div>
       </div>
@@ -43,9 +78,15 @@ export default {
     Transactions
   },
   data () {
+    const today = new Date()
+    today.setHours(0, 0, 0)
     return {
       categorySelected: { key: null },
-      url: Config.API_URL + 'transactions{/id}'
+      url: Config.API_URL + 'transactions{/id}',
+      date: {
+        periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 90),
+        periodEnd: today
+      }
     }
   },
   mounted: function () {
@@ -59,6 +100,10 @@ export default {
         })
       }
     })
+  },
+  beforeDestroy () {
+    // remove date filter event listener
+    Bus.$off('transactions-date-filtered')
   }
 }
 </script>

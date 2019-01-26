@@ -134,6 +134,7 @@ export default {
   mixins: [CategoriesFactory],
   data () {
     const today = new Date()
+    today.setHours(0, 0, 0)
     return {
       transactions: [],
       isLoading: false,
@@ -272,6 +273,12 @@ export default {
     this.getCategories(true)
     Bus.$on('transactions-updated', () => {
       this.get()
+    })
+    Bus.$on('transactions-date-filtered', (search) => {
+      if ((this.search.endDate.getTime() !== search.periodStart.getTime()) || (this.search.startDate.getTime() !== search.periodEnd.getTime())) {
+        this.search.startDate = search.periodStart
+        this.search.endDate = search.periodEnd
+      }
     })
   }
 }

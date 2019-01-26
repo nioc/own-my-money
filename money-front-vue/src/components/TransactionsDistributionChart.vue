@@ -1,7 +1,7 @@
 <template>
   <div class="box" v-if="isLoaded">
     <p class="title">{{ title }}</p>
-      <div class="field is-grouped is-grouped-multiline is-block-mobile">
+      <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
         <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodStart"></b-datepicker>
       </div>
@@ -9,7 +9,7 @@
         <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodEnd"></b-datepicker>
       </div>
       <div class="control">
-        <button class="button" :class="{ 'is-loading': isLoading }" @click="requestData" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
+        <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
     <doughnut :chartData="chartData" :onClick="onClick"></doughnut>
@@ -34,10 +34,19 @@ export default {
     chartEndpoint: {
       type: String,
       required: true
+    },
+    date: {
+      required: false
+    },
+    isIndependent: {
+      type: Boolean,
+      default: true,
+      required: false
     }
   },
   data () {
     const today = new Date()
+    today.setHours(0, 0, 0)
     return {
       isLoading: false,
       isLoaded: false,
@@ -51,6 +60,10 @@ export default {
     }
   },
   methods: {
+    applyFilter () {
+      Bus.$emit('transactions-date-filtered', this.search)
+      this.requestData()
+    },
     requestData () {
       this.isLoading = true
       let options = {
@@ -116,8 +129,19 @@ export default {
     }
   },
   mounted () {
-    this.requestData()
+    Bus.$on('transactions-date-filtered', (search) => {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
+        this.search.periodStart = search.periodStart
+        this.search.periodEnd = search.periodEnd
+        this.requestData()
+      }
+    })
     this.getCategories(true)
+    if (this.date) {
+      this.search.periodStart = this.date.periodStart
+      this.search.periodEnd = this.date.periodEnd
+    }
+    this.requestData()
   }
 }
 </script>
