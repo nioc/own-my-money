@@ -1,6 +1,6 @@
 {
   "name": "money-front-vue",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Web app for mananging personal bank account",
   "author": "nioc <dev@nioc.eu>",
   "private": true,

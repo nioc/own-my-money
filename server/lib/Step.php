@@ -154,6 +154,7 @@ class Step
             case '0.3.0':
             case '0.3.1':
             case '0.3.2':
+            case '0.3.3':
                 break;
             default:
                 return $lang->getMessage('unknownInstalledVersion');
