@@ -50,6 +50,24 @@ $input-shadow: none;
     border-radius: unset;
   }
 }
+.no-padding-parent-mobile {
+  @include mobile {
+    margin: 0;
+    padding: 0;
+  }
+}
+.no-padding-parent-mobile:last-child {
+  @include mobile {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+.no-padding-mobile {
+  @include mobile {
+    border-radius: unset;
+    padding: 0;
+  }
+}
 
 .has-half-margin-mobile {
   @include mobile {

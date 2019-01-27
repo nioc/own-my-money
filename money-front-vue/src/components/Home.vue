@@ -8,10 +8,10 @@
       </breadcrumb>
     </div>
     <div class="hero-body">
-      <div class="section">
+      <div class="section no-padding-parent-mobile">
         <div class="container">
-          <div class="columns is-multiline">
-            <div class="column is-full">
+          <div class="columns no-padding-parent-mobile is-multiline">
+            <div class="column no-padding-mobile is-full">
               <transactions-history-chart
               :title="$t('labels.transactionsByDay')"
               chartEndpoint="transactions/history"
@@ -19,7 +19,7 @@
               :date="date"
               ></transactions-history-chart>
             </div>
-            <div class="column is-one-half-desktop">
+            <div class="column no-padding-mobile is-one-half-desktop">
               <transactions-distribution-chart
               :title="$t('labels.incomeDistribution')"
               chartEndpoint="transactions/distribution/credit/categories"
@@ -27,7 +27,7 @@
               :date="date"
               ></transactions-distribution-chart>
             </div>
-            <div class="column is-one-half-desktop">
+            <div class="column no-padding-mobile is-one-half-desktop">
               <transactions-distribution-chart
               :title="$t('labels.expenseDistribution')"
               chartEndpoint="transactions/distribution/debit/categories"
@@ -108,3 +108,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .section {
+    padding-top: 0;
+  }
+</style>
