@@ -108,9 +108,6 @@ export default {
           let sum = data.datasets[tooltipItem.datasetIndex].data.reduce((a, b) => a + b, 0)
           let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
           let label = data.labels[tooltipItem.index]
-          if (label === null) {
-            label = vm.$t('labels.uncategorizedTransaction')
-          }
           return label + ': ' + vm.$n(value, 'currency') + ' (' + Math.round(100 * value / sum) + '%)'
         }
         this.chartData = {
@@ -123,7 +120,7 @@ export default {
         }
         let labels
         if (response.data.key === 'categories' || response.data.key === 'subcategories') {
-          labels = values.map(point => this.categoriesAndSubcategoriesLookup[point.key] ? this.categoriesAndSubcategoriesLookup[point.key].label : point.key)
+          labels = values.map(point => this.categoriesAndSubcategoriesLookup[point.key] ? this.categoriesAndSubcategoriesLookup[point.key].label : (point.key === null ? this.$t('labels.uncategorizedTransaction') : point.key))
         } else {
           labels = values.map(point => point.key)
         }
