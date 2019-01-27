@@ -35,7 +35,7 @@
               :date="date"
               ></transactions-distribution-chart>
             </div>
-            <div v-if="categorySelected.key" class="column is-one-half-desktop">
+            <div v-if="categorySelected.key" class="column no-padding-mobile is-one-half-desktop">
               <transactions-distribution-chart
               :title="$t('labels.incomeDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
               :chartEndpoint="'transactions/distribution/credit/subcategories?value='+categorySelected.key"
@@ -43,7 +43,7 @@
               :date="date"
               ></transactions-distribution-chart>
             </div>
-            <div v-if="categorySelected.key" class="column is-one-half-desktop">
+            <div v-if="categorySelected.key" class="column no-padding-mobile is-one-half-desktop">
               <transactions-distribution-chart
               :title="$t('labels.expenseDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
               :chartEndpoint="'transactions/distribution/debit/subcategories?value='+categorySelected.key"
