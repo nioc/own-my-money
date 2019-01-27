@@ -102,7 +102,8 @@ export default {
     })
   },
   beforeDestroy () {
-    // remove date filter event listener
+    // remove events listener
+    Bus.$off('category-selected')
     Bus.$off('transactions-date-filtered')
   }
 }

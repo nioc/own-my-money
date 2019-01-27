@@ -280,6 +280,11 @@ export default {
         this.search.endDate = search.periodEnd
       }
     })
+  },
+  beforeDestroy () {
+    // remove events listener
+    Bus.$off('transactions-updated')
+    Bus.$off('transactions-date-filtered')
   }
 }
 </script>
