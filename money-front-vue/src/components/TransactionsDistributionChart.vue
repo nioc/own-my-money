@@ -91,13 +91,15 @@ export default {
             colors.push('hsla(153, 47%, ' + lightness + '%, 1)')
           }
         }
-        this.onClick = function (evt) {
-          let index = this.chart.getElementsAtEvent(evt)[0]
-          if (index) {
-            let key = values[index._index].key
-            if (key) {
-              // send event for parent update (may be displaying subcategories distribution)
-              Bus.$emit('category-selected', {key: key, label: this.chart.data.labels[index._index]})
+        if (response.data.key === 'categories') {
+          this.onClick = function (evt) {
+            let index = this.chart.getElementsAtEvent(evt)[0]
+            if (index) {
+              let key = values[index._index].key
+              if (key) {
+                // send event for parent update (may be displaying subcategories distribution)
+                Bus.$emit('category-selected', {key: key, label: this.chart.data.labels[index._index]})
+              }
             }
           }
         }
