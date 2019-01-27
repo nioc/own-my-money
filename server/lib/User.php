@@ -318,10 +318,11 @@ class User
      * @param int $periodStart Start timestamp for requesting
      * @param int $periodEnd End timestamp for requesting
      * @param int $timeUnit Time unit (M for monthly, W for weekly, D for daily which is default value)
+     * @param int $budgetedOnly Request only transaction from budgeted categories
      *
      * @return array User transactions history
      */
-    public function getTransactionsHistory($periodStart, $periodEnd, $timeUnit = 'D')
+    public function getTransactionsHistory($periodStart, $periodEnd, $timeUnit = 'D', $budgetedOnly = true)
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
@@ -344,23 +345,25 @@ class User
             break;
         }
         //get debits
-        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted` IS NULL) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
         $query->bindValue(':user', $this->id, PDO::PARAM_INT);
         $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
         $query->bindValue(':type', 'debit', PDO::PARAM_STR);
         $query->bindValue(':format', $sqlFormat, PDO::PARAM_STR);
+        $query->bindValue(':isBudgeted', $budgetedOnly, PDO::PARAM_BOOL);
         if (!$query->execute()) {
             return false;
         }
         $debits = $query->fetchAll(PDO::FETCH_ASSOC);
         //get credits
-        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted` IS NULL) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
         $query->bindValue(':user', $this->id, PDO::PARAM_INT);
         $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
         $query->bindValue(':type', 'credit', PDO::PARAM_STR);
         $query->bindValue(':format', $sqlFormat, PDO::PARAM_STR);
+        $query->bindValue(':isBudgeted', $budgetedOnly, PDO::PARAM_BOOL);
         if (!$query->execute()) {
             return false;
         }
@@ -411,13 +414,14 @@ class User
      * @param string $type Transaction type ('credit' or 'debit')
      * @param string $key Distribution group by field ('category', 'subcategory')
      * @param string|int $value Value for distribution on a specific field (category.id for subcategory distribution)
+     * @param boolean $budgetedOnly Request only budgeted category
      *
      * @return array User transactions distribution
      */
-    public function getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value = null)
+    public function getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value = null, $budgetedOnly = true)
     {
         if ($key === 'categories') {
-            $queryString = 'SELECT `category` AS `key`, SUM(`amount`) AS `amount` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type GROUP BY `category` ORDER BY SUM(ABS(`amount`)) DESC;';
+            $queryString = 'SELECT `category` AS `key`, SUM(`amount`) AS `amount` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted` IS NULL) GROUP BY `category` ORDER BY SUM(ABS(`amount`)) DESC;';
         } elseif ($key === 'subcategories' && $value !== null) {
             $queryString = 'SELECT `subcategory` AS `key`, SUM(`amount`) AS `amount` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `category` =:category AND `type` =:type GROUP BY `subcategory` ORDER BY SUM(ABS(`amount`)) DESC;';
         } else {
@@ -432,6 +436,8 @@ class User
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
         if ($key === 'subcategories') {
             $query->bindValue(':category', $value, PDO::PARAM_INT);
+        } else {
+            $query->bindValue(':isBudgeted', $budgetedOnly, PDO::PARAM_BOOL);
         }
         $query->bindValue(':type', $type, PDO::PARAM_STR);
         if (!$query->execute()) {

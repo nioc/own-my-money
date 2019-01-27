@@ -45,7 +45,7 @@ switch ($api->method) {
                     $timeUnit = 'W';
                 }
                 //request transactions history
-                $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit);
+                $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, true);
                 if (!$values) {
                     $api->output(500, '');
                     //something go wrong
@@ -72,7 +72,7 @@ switch ($api->method) {
                 }
                 $api->checkParameterExists('value', $value);
                 //request transactions distribution
-                $values = $user->getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value);
+                $values = $user->getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value, true);
                 if ($values === false) {
                     $api->output(500, '');
                     //something go wrong
