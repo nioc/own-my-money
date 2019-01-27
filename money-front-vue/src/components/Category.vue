@@ -58,12 +58,30 @@
             </div>
           </div>
 
+          <div class="field is-horizontal" v-if="isCategory">
+            <div class="field-label">
+              <label class="label">{{ $t('fieldnames.isBudgeted') }}</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <b-switch v-model="category.isBudgeted">{{ category.isBudgeted ? $t('labels.isBudgeted') : $t('labels.isNotBudgeted') }}</b-switch>
+                </div>
+                <p class="help">{{ $t('labels.isBudgetedHelp') }}</p>
+              </div>
+            </div>
+          </div>
+
           <div class="field is-horizontal">
             <div class="field-label">
               <label class="label">{{ $t('fieldnames.status') }}</label>
             </div>
             <div class="field-body">
-              <b-switch v-model="category.status">{{ category.status ? $t('labels.active') : $t('labels.disabled') }}</b-switch>
+              <div class="field">
+                <div class="control">
+                  <b-switch v-model="category.status">{{ category.status ? $t('labels.active') : $t('labels.disabled') }}</b-switch>
+                </div>
+              </div>
             </div>
           </div>
 

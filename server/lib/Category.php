@@ -26,6 +26,10 @@ class Category
      */
     public $icon;
     /**
+     * @var boolean Indicate if category (only) is included in budget
+     */
+    public $isBudgeted;
+    /**
      * @var int Parent category (if is subcategory)
      */
     public $parentId;
@@ -42,7 +46,7 @@ class Category
             $this->id = intval($id);
         }
         if ($label !== null) {
-          $this->label = $label;
+            $this->label = $label;
         }
     }
 
@@ -55,10 +59,11 @@ class Category
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `category` (`label`, `status`, `icon`, `parentId`) VALUES ( :label, :status, :icon, :parentId);');
+        $query = $connection->prepare('INSERT INTO `category` (`label`, `status`, `icon`, `isBudgeted`, `parentId`) VALUES ( :label, :status, :icon, :isBudgeted, :parentId);');
         $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':status', $this->status, PDO::PARAM_BOOL);
         $query->bindValue(':icon', $this->icon, PDO::PARAM_STR);
+        $query->bindValue(':isBudgeted', $this->isBudgeted, PDO::PARAM_BOOL);
         $query->bindValue(':parentId', $this->parentId, PDO::PARAM_INT);
         if ($query->execute()) {
             $this->id = $connection->lastInsertId();
@@ -81,10 +86,11 @@ class Category
         $error = '';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('UPDATE `category` SET `label`=:label, `status`=:status, `parentId`=:parentId, `icon`=:icon WHERE `id`=:id;');
+        $query = $connection->prepare('UPDATE `category` SET `label`=:label, `status`=:status, `parentId`=:parentId, `icon`=:icon, `isBudgeted`=:isBudgeted WHERE `id`=:id;');
         $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':status', $this->status, PDO::PARAM_BOOL);
         $query->bindValue(':icon', $this->icon, PDO::PARAM_STR);
+        $query->bindValue(':isBudgeted', $this->isBudgeted, PDO::PARAM_BOOL);
         $query->bindValue(':parentId', $this->parentId, PDO::PARAM_INT);
         $query->bindValue(':id', $this->id, PDO::PARAM_INT);
         if ($query->execute()) {
@@ -135,6 +141,9 @@ class Category
         if (isset($category->parentId)) {
             $category->parentId = (int) $category->parentId;
         }
+        if (isset($category->isBudgeted)) {
+            $category->isBudgeted = (bool) $category->isBudgeted;
+        }
         //return structured category
         return $category;
     }
@@ -152,7 +161,7 @@ class Category
         $connection = new DatabaseConnection();
         $queryString = 'SELECT * FROM `category` ORDER BY `parentId`, `id`;';
         if ($returnActive) {
-          $queryString = 'SELECT * FROM `category` WHERE `status`=1 ORDER BY `parentId`, `id`;';
+            $queryString = 'SELECT * FROM `category` WHERE `status`=1 ORDER BY `parentId`, `id`;';
         }
         $query = $connection->prepare($queryString);
         if ($query->execute()) {
@@ -171,7 +180,7 @@ class Category
                 } else {
                     $category->parentId = (int) $category->parentId;
                     if (array_key_exists($category->parentId, $arr_categories)) {
-                      array_push($arr_categories[$category->parentId]->sub, $category);
+                        array_push($arr_categories[$category->parentId]->sub, $category);
                     }
                 }
             }

@@ -155,6 +155,8 @@ class Step
             case '0.3.1':
             case '0.3.2':
             case '0.3.3':
+            case '0.4.0':
+                $hasDatabaseAlter = true;
                 break;
             default:
                 return $lang->getMessage('unknownInstalledVersion');
@@ -426,6 +428,15 @@ class Step
                 switch ($installedVersion) {
                     case '0.1.0':
                         $sql = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/server/configuration/alter-database-0.2.0.sql');
+                        $connection->exec($sql);
+                        // no break
+                    case '0.2.0':
+                    case '0.3.0':
+                    case '0.3.1':
+                    case '0.3.2':
+                    case '0.3.3':
+                    case '0.4.0':
+                        $sql = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/server/configuration/alter-database-0.5.0.sql');
                         $connection->exec($sql);
 
                         //cumulative scripts, break will be shared
