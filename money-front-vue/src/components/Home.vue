@@ -35,6 +35,14 @@
               :date="date"
               ></transactions-distribution-chart>
             </div>
+            <div v-if="categorySelected.key" class="column no-padding-mobile is-full">
+              <transactions-history-chart
+              :title="$t('labels.transactionsByDay') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
+              :chartEndpoint="'transactions/history?category='+categorySelected.key"
+              :isIndependent="false"
+              :date="date"
+              ></transactions-history-chart>
+            </div>
             <div v-if="categorySelected.key" class="column no-padding-mobile is-one-half-desktop">
               <transactions-distribution-chart
               :title="$t('labels.incomeDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"

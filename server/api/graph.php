@@ -44,8 +44,11 @@ switch ($api->method) {
                 } elseif ($duration > 2678400) {
                     $timeUnit = 'W';
                 }
+                if ($api->checkParameterExists('category', $category)) {
+                    $response->category = $category;
+                }
                 //request transactions history
-                $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, true);
+                $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, true, $category);
                 if (!$values) {
                     $api->output(500, '');
                     //something go wrong

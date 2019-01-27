@@ -322,7 +322,7 @@ class User
      *
      * @return array User transactions history
      */
-    public function getTransactionsHistory($periodStart, $periodEnd, $timeUnit = 'D', $budgetedOnly = true)
+    public function getTransactionsHistory($periodStart, $periodEnd, $timeUnit = 'D', $budgetedOnly = true, $category = null)
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
@@ -345,7 +345,13 @@ class User
             break;
         }
         //get debits
-        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted` IS NULL) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+        if ($category === null) {
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted` IS NULL) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+        } else {
+            //query only transactions in the specific category
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type AND (`category` =:category) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+            $query->bindValue(':category', $category, PDO::PARAM_INT);
+        }
         $query->bindValue(':user', $this->id, PDO::PARAM_INT);
         $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
@@ -357,7 +363,13 @@ class User
         }
         $debits = $query->fetchAll(PDO::FETCH_ASSOC);
         //get credits
-        $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted` IS NULL) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+        if ($category === null) {
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted` IS NULL) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+        } else {
+            //query only transactions in the specific category
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type` =:type AND (`category` =:category) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+            $query->bindValue(':category', $category, PDO::PARAM_INT);
+        }
         $query->bindValue(':user', $this->id, PDO::PARAM_INT);
         $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
