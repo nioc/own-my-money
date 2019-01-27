@@ -12,7 +12,7 @@
         <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
-    <doughnut :chartData="chartData" :onClick="onClick" :labelCallback="labelCallback"></doughnut>
+    <doughnut :chartData="chartData" :options="options"></doughnut>
   </div>
 </template>
 
@@ -51,8 +51,7 @@ export default {
       isLoading: false,
       isLoaded: false,
       chartData: null,
-      onClick: null,
-      labelCallback: null,
+      options: null,
       search: {
         currentDate: today,
         periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
@@ -91,8 +90,9 @@ export default {
             colors.push('hsla(153, 47%, ' + lightness + '%, 1)')
           }
         }
+        let onClick = null
         if (response.data.key === 'categories') {
-          this.onClick = function (evt) {
+          onClick = function (evt) {
             let index = this.chart.getElementsAtEvent(evt)[0]
             if (index) {
               let key = values[index._index].key
@@ -104,7 +104,7 @@ export default {
           }
         }
         let vm = this
-        this.labelCallback = function (tooltipItem, data) {
+        let labelCallback = function (tooltipItem, data) {
           let sum = data.datasets[tooltipItem.datasetIndex].data.reduce((a, b) => a + b, 0)
           let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
           let label = data.labels[tooltipItem.index]
@@ -128,6 +128,19 @@ export default {
           labels = values.map(point => point.key)
         }
         this.chartData.labels = labels
+        this.options = {
+          legend: {
+            display: true
+          },
+          responsive: true,
+          maintainAspectRatio: false,
+          tooltips: {
+            callbacks: {
+              label: labelCallback
+            }
+          },
+          onClick: onClick
+        }
         this.search.periodStart = this.$moment(response.data.periodStart).toDate()
         this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
         this.isLoading = false

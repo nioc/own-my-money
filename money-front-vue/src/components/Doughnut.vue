@@ -10,34 +10,18 @@ export default {
       type: Object,
       required: true
     },
-    labelCallback: {
-      type: Function,
-      required: false
-    },
-    onClick: {
-      type: Function,
-      required: false
-    }
-  },
-  data () {
-    return {
-      options: {
-        legend: {
-          display: true
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        tooltips: {
-          callbacks: {
-            label: this.labelCallback
-          }
-        },
-        onClick: this.onClick
-      }
+    options: {
+      type: Object,
+      required: true
     }
   },
   mounted () {
     this.renderChart(this.chartData, this.options)
+  },
+  watch: {
+    chartData () {
+      this.renderChart(this.chartData, this.options)
+    }
   }
 }
 </script>
