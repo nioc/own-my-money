@@ -100,6 +100,12 @@ export default {
         })
       }
     })
+    Bus.$on('transactions-date-filtered', (search) => {
+      if ((this.date.periodStart.getTime() !== search.periodStart.getTime()) || (this.date.periodEnd.getTime() !== search.periodEnd.getTime())) {
+        this.date.periodStart = search.periodStart
+        this.date.periodEnd = search.periodEnd
+      }
+    })
   },
   beforeDestroy () {
     // remove events listener
