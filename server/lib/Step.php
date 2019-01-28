@@ -148,8 +148,6 @@ class Step
         switch ($installedVersion) {
             //check if there is some database change
             case '0.1.0':
-                $hasDatabaseAlter = true;
-                break;
             case '0.2.0':
             case '0.3.0':
             case '0.3.1':
@@ -157,6 +155,8 @@ class Step
             case '0.3.3':
             case '0.4.0':
                 $hasDatabaseAlter = true;
+                break;
+            case '0.5.0':
                 break;
             default:
                 return $lang->getMessage('unknownInstalledVersion');
