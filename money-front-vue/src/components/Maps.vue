@@ -3,21 +3,21 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: 'Home'},
-          {link: '/maps', icon: 'fa-random', text: 'Transaction mappings', isActive: true}
+          {link: '/', icon: 'fa-home', text: this.$t('labels.home') },
+          {link: '/maps', icon: 'fa-random', text: this.$tc('objects.transactionMapping', 2), isActive: true}
         ]">
       </breadcrumb>
     </div>
     <div class="hero-body">
       <div class="container box">
-        <h1 class="title container">Transaction mappings</h1>
-        <p class="subtitle has-text-grey">Click to edit transaction mapping or add new one</p>
+        <h1 class="title container">{{ $tc('objects.transactionMapping', 2) }}</h1>
+        <p class="subtitle has-text-grey">{{ $t('labels.mapsLabel') }}</p>
         <ul class="menu-list">
           <li v-for="map in maps" :key="map.code">
             <router-link :to="{ name: 'map', params: { code: map.code }}">{{ map.label }}</router-link>
           </li>
           <li>
-            <router-link :to="{ name: 'newMap' }" class="has-text-grey-light"><i class="fa fa-fw fa-plus-square-o"></i>Add a map</router-link>
+            <router-link :to="{ name: 'newMap' }" class="has-text-grey-light"><i class="fa fa-fw fa-plus-square-o"></i>{{ $t('actions.addMap') }}</router-link>
           </li>
         </ul>
         <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>

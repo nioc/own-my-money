@@ -2,22 +2,63 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Auth from './services/Auth'
+import VueI18n from 'vue-i18n'
+import messages from '@/lang/messages'
+import dateTimeFormats from '@/lang/dateTimeFormats'
+import numberFormats from '@/lang/numberFormats'
 import VueMoment from 'vue-moment'
+import 'moment/locale/fr'
+import validationMessagesEn from 'vee-validate/dist/locale/en'
+import validationMessagesFr from 'vee-validate/dist/locale/fr'
 import VueResource from 'vue-resource'
 import VeeValidate from 'vee-validate'
 import Bus from './services/Bus.js'
-import Accounting from 'accounting'
 import Buefy from 'buefy'
 import 'font-awesome/css/font-awesome.min.css'
 import './assets/styles.scss'
 import 'bulma-o-steps/bulma-steps.min.css'
 import Mock from './services/Mock.js'
+const moment = require('moment')
 
 Vue.config.productionTip = false
+Vue.use(VueI18n)
 Vue.use(VueResource)
-Vue.use(VeeValidate)
-Vue.use(VueMoment)
-Vue.use(Buefy, {defaultIconPack: 'fa', defaultFirstDayOfWeek: 1, defaultDateParser: (date) => Vue.moment(date, 'DD-MM-YYYY').toDate()})
+
+let locale = navigator.language
+
+const i18n = new VueI18n({
+  // silentTranslationWarn: true,
+  fallbackLocale: 'en',
+  locale: locale,
+  messages: messages,
+  dateTimeFormats,
+  numberFormats
+})
+Vue.http.headers.common['Accept-Language'] = locale
+document.querySelector('html').setAttribute('lang', locale)
+
+Vue.use(VeeValidate, {
+  i18nRootKey: 'validations',
+  i18n,
+  dictionary: {
+    en: { messages: validationMessagesEn.messages, attributes: messages.en.fieldnames },
+    fr: { messages: validationMessagesFr.messages, attributes: messages.fr.fieldnames }
+  }
+})
+
+Vue.use(VueMoment, {
+  moment
+})
+
+let localeData = Vue.moment.localeData()
+Vue.use(Buefy, {
+  defaultIconPack: 'fa',
+  defaultFirstDayOfWeek: localeData.firstDayOfWeek(),
+  defaultMonthNames: localeData.months(),
+  defaultDayNames: localeData.weekdaysMin(),
+  defaultDateFormatter: (date) => Vue.moment(date, 'L').format('L')
+})
+
 Vue.use(Mock)
 
 // set header at init
@@ -69,21 +110,11 @@ Vue.http.interceptors.push((request, next) => {
   })
 })
 
-// add currency filter for formatting with accounting.js
-Vue.filter('currency', function (value) {
-  return Accounting.formatMoney(value, {
-    symbol: '€',
-    decimal: ',',
-    thousand: ' ',
-    precision: 2,
-    format: '%v %s'
-  })
-})
-
 /* eslint-disable no-new */
 new Vue({
   el: '#money',
   router,
+  i18n,
   components: { App },
   template: '<App/>'
 })

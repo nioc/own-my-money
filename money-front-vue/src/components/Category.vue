@@ -5,13 +5,13 @@
     </div>
     <div class="hero-body">
       <div class="container box">
-        <h1 class="title container">Category</h1>
-        <p class="subtitle has-text-grey">Edit category</p>
+        <h1 class="title container">{{ $tc('objects.category', 1)}}</h1>
+        <p class="subtitle has-text-grey">{{ $t('actions.editCategory') }}</p>
         <form @submit.prevent="validateBeforeSubmit" novalidate class="section is-max-width-form">
 
           <div class="field is-horizontal">
             <div class="field-label is-normal">
-              <label class="label">Label</label>
+              <label class="label">{{ $t('fieldnames.label') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -28,7 +28,7 @@
 
           <div class="field is-horizontal" v-if="!isCategory">
             <div class="field-label is-normal">
-              <label class="label">Parent</label>
+              <label class="label">{{ $t('fieldnames.parent') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -45,7 +45,7 @@
 
           <div class="field is-horizontal" v-if="isCategory">
             <div class="field-label is-normal">
-              <label class="label">Icon</label>
+              <label class="label">{{ $t('fieldnames.icon') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -58,12 +58,30 @@
             </div>
           </div>
 
-          <div class="field is-horizontal">
+          <div class="field is-horizontal" v-if="isCategory">
             <div class="field-label">
-              <label class="label">Status</label>
+              <label class="label">{{ $t('fieldnames.isBudgeted') }}</label>
             </div>
             <div class="field-body">
-              <b-switch v-model="category.status">{{ category.status ? 'Active' : 'Disabled' }}</b-switch>
+              <div class="field">
+                <div class="control">
+                  <b-switch v-model="category.isBudgeted">{{ category.isBudgeted ? $t('labels.isBudgeted') : $t('labels.isNotBudgeted') }}</b-switch>
+                </div>
+                <p class="help">{{ $t('labels.isBudgetedHelp') }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">{{ $t('fieldnames.status') }}</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <b-switch v-model="category.status">{{ category.status ? $t('labels.active') : $t('labels.disabled') }}</b-switch>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -73,10 +91,10 @@
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;Save</button>
+                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
                 </div>
                 <div class="control">
-                  <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;Cancel</a>
+                  <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.cancel') }}</a>
                 </div>
               </div>
             </div>
@@ -247,8 +265,8 @@ export default {
   },
   mounted: function () {
     this.breadcrumbItems = [
-      { link: '/', icon: 'fa-home', text: 'Home' },
-      { link: '/categories', icon: 'fa-folder-open-o', text: 'Categories' }
+      { link: '/', icon: 'fa-home', text: this.$t('labels.home') },
+      { link: '/categories', icon: 'fa-folder-open-o', text: this.$tc('objects.category', 2) }
     ]
     if (this.category.id) {
       // for existing category, get data

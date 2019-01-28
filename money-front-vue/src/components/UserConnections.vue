@@ -1,13 +1,13 @@
 <template>
   <b-table :data=connections :mobile-cards="false" :striped="true" narrowed default-sort="creation" default-sort-direction="desc">
     <template slot-scope="props">
-      <b-table-column field="creation" label="Date" sortable>
-        {{ props.row.creation | moment("DD/MM/YYYY HH:mm:ss") }}
+      <b-table-column field="creation" :label="$t('fieldnames.date')" sortable>
+        {{ props.row.creation | moment("L LTS") }}
       </b-table-column>
-      <b-table-column field="ip" label="IP address" sortable>
+      <b-table-column field="ip" :label="$t('fieldnames.ipAddress')" sortable>
         {{ props.row.ip }}
       </b-table-column>
-      <b-table-column field="userAgent" label="User agent" sortable :title="props.row.userAgent">
+      <b-table-column field="userAgent" :label="$t('fieldnames.userAgent')" sortable :title="props.row.userAgent">
         {{ props.row.browser }} / {{ props.row.os }}<span v-if="props.row.device"> / {{ props.row.device }}</span>
       </b-table-column>
     </template>

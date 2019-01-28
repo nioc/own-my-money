@@ -3,14 +3,14 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: 'Home'},
-          {link: '/about', icon: 'fa-info-circle', text: 'About', isActive: true}
+          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
+          {link: '/about', icon: 'fa-info-circle', text: this.$t('labels.about'), isActive: true}
         ]">
       </breadcrumb>
     </div>
     <div class="hero-body">
       <div class="container box">
-        <h1 class="title container">About</h1>
+        <h1 class="title container">{{ $t('labels.about') }}</h1>
         <p class="subtitle has-text-grey">Own my money</p>
         <div class="content field is-grouped is-grouped-multiline" v-if="isLoaded">
           <div class="control">
@@ -24,14 +24,11 @@
           </div>
         </div>
         <section class="content" v-if="!isUpToDate && this.user.scope.admin">
-          <button class="button is-primary" @click="update" :class="{ 'is-loading': isUpdating }" :disabled="isUpdating"><span class="icon"><i class="fa fa-wrench"/></span><span>Update to {{ version.latest }}</span></button>
+          <button class="button is-primary" @click="update" :class="{ 'is-loading': isUpdating }" :disabled="isUpdating"><span class="icon"><i class="fa fa-wrench"/></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
           <!-- eslint-disable-next-line vue/require-v-for-key-->
           <pre class="section content" v-if="updateLogs"><span class="is-block" v-for="updateLog in updateLogs">{{ updateLog.timestamp | moment("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
         </section>
-        <section class="content">
-          <p>Own my money is a simple way to stay on top of your banking from any web browser.</p>
-          <p>If you have any issues or feature requests, please create an <a href="https://github.com/nioc/own-my-money/issues" target="_blank">issue</a>.</p>
-          <p>This project is licensed under the <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank">GNU Affero General Public License v3.0</a>.</p>
+        <section class="content" v-html="$t('labels.aboutText')">
         </section>
       </div>
     </div>

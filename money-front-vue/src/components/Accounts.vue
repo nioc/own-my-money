@@ -3,14 +3,14 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          { link: '/', icon: 'fa-home', text: 'Home' },
-          { link: '/accounts', icon: 'fa-table', text: 'Accounts', isActive: true }
+          { link: '/', icon: 'fa-home', text: this.$t('labels.home') },
+          { link: '/accounts', icon: 'fa-table', text: this.$tc('objects.account', 2), isActive: true }
         ]">
       </breadcrumb>
     </div>
     <div class="hero-body">
       <div class="container box">
-        <h1 class="title container">Accounts</h1>
+        <h1 class="title container">{{ $tc('objects.account', 2) }}</h1>
         <div class="message is-danger" v-if="error">
           <div class="message-body">
             {{ error }}
@@ -20,37 +20,35 @@
           <table class="table is-striped is-hoverable is-fullwidth">
             <thead>
               <tr>
-                <th>Account</th>
-                <th>Balance</th>
-                <th>Updated</th>
+                <th>{{ $tc('objects.account', 1) }}</th>
+                <th>{{ $t('fieldnames.updated') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="account in accounts" :key="account.id">
                 <td><router-link :to="{ name: 'account', params: { id: account.id }}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link></td>
-                <td>{{ account.balance | currency }}</td>
-                <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("DD/MM/YYYY HH:mm") }}</td><td v-else></td>
+                <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("from", "now") }}</td><td v-else></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div v-else>
-          <p>There is no account yet</p>
+          <p>{{ $t('labels.noAccount') }}</p>
         </div>
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true"><i class="fa fa-plus"/>&nbsp;Add account</button>
+            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true"><i class="fa fa-plus"/>&nbsp;{{ $t('actions.addAccount') }}</button>
           </p>
           <p class="control">
             <b-field class="file">
               <b-upload v-model="upload.file" @input="uploadDataset" :disabled="upload.isUploading">
                 <a class="button is-primary">
                   <b-icon icon="upload"></b-icon>
-                  <span>Upload OFX</span>
+                  <span>{{ $t('actions.uploadOfx') }}</span>
                 </a>
               </b-upload>
               <span class="file-name" v-if="upload.file">
-                {{ upload.file.name }} ({{ upload.file.size }} bytes)
+                {{ upload.file.name }} ({{ $tc('objects.byte', upload.file.size) }})
               </span>
             </b-field>
           </p>
@@ -127,7 +125,7 @@ export default {
       data.append('file', file)
       // check file size
       if (file.size > 80000000) {
-        this.upload.result = 'File too big'
+        this.upload.result = this.$t('labels.fileTooBig')
         return
       }
       // prepare context

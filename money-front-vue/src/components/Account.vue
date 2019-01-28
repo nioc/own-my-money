@@ -3,18 +3,18 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          { link: '/', icon: 'fa-home', text: 'Home' },
-          { link: '/accounts', icon: 'fa-table', text: 'Accounts' },
+          { link: '/', icon: 'fa-home', text: this.$t('labels.home') },
+          { link: '/accounts', icon: 'fa-table', text: this.$tc('objects.account', 2) },
           { link: '/accounts', text: accountTitle, isActive: true }
         ]">
       </breadcrumb>
     </div>
     <div class="hero-body">
       <div class="container box">
-        <h1 class="title container">Account {{ accountTitle }}</h1>
+        <h1 class="title container">{{ $tc('objects.account', 1) }} {{ accountTitle }}</h1>
         <b-tabs type="is-boxed" :animated="false">
 
-          <b-tab-item label="Transactions" icon="file-text-o" class="has-half-margin-mobile">
+          <b-tab-item :label="$tc('objects.transaction', 2)" icon="file-text-o" class="has-half-margin-mobile">
             <transactions v-bind:url="url"/>
 
             <div class="field is-grouped">
@@ -23,11 +23,11 @@
                   <b-upload v-model="upload.file" @input="uploadDataset" :disabled="upload.isUploading">
                     <a class="button is-primary">
                       <b-icon icon="upload"></b-icon>
-                      <span>Upload OFX/JSON</span>
+                      <span>{{ $t('actions.uploadOfxJson') }}</span>
                     </a>
                   </b-upload>
                   <span class="file-name" v-if="upload.file">
-                    {{ upload.file.name }} ({{ upload.file.size }} bytes)
+                    {{ upload.file.name }} ({{ $tc('objects.byte', upload.file.size) }})
                   </span>
                 </b-field>
               </p>
@@ -51,17 +51,17 @@
             </div>
           </b-tab-item>
 
-          <b-tab-item label="Edit" icon="pencil">
+          <b-tab-item :label="$t('actions.edit')" icon="pencil">
             <form @submit.prevent="validateUpdateBeforeSubmit" novalidate class="section is-max-width-form">
               <div class="field is-horizontal">
                 <div class="field-label is-normal">
-                  <label class="label">Bank identifier</label>
+                  <label class="label">{{ $t('fieldnames.bankIdentifier') }}</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
                     <div class="control">
-                      <input type="text" class="input" name="bankId" placeholder="Bank Id" v-model="updatedAccount.bankId" v-validate="'required|alpha_num'" data-vv-as="bank id" :class="{ 'is-danger': errors.has('bankId') }">
-                      <span v-show="errors.has('bankId')" class="help is-danger">{{ errors.first('bankId') }}</span>
+                      <input type="text" class="input" name="bankIdentifier" :placeholder="$t('fieldnames.bankIdentifier')" v-model="updatedAccount.bankId" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('bankIdentifier') }">
+                      <span v-show="errors.has('bankIdentifier')" class="help is-danger">{{ errors.first('bankIdentifier') }}</span>
                     </div>
                   </div>
                 </div>
@@ -69,13 +69,13 @@
 
               <div class="field is-horizontal">
                 <div class="field-label is-normal">
-                  <label class="label">Bank identifier</label>
+                  <label class="label">{{ $t('fieldnames.branchIdentifier') }}</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
                     <p class="control">
-                      <input type="text" class="input" name="BranchId" placeholder="Branch Id" v-model="updatedAccount.branchId" v-validate="'required|alpha_num'" data-vv-as="branch id" :class="{ 'is-danger': errors.has('BranchId') }">
-                      <span v-show="errors.has('BranchId')" class="help is-danger">{{ errors.first('BranchId') }}</span>
+                      <input type="text" class="input" name="branchIdentifier" :placeholder="$t('fieldnames.branchIdentifier')" v-model="updatedAccount.branchId" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('branchIdentifier') }">
+                      <span v-show="errors.has('branchIdentifier')" class="help is-danger">{{ errors.first('branchIdentifier') }}</span>
                     </p>
                   </div>
                 </div>
@@ -83,13 +83,13 @@
 
               <div class="field is-horizontal">
                 <div class="field-label is-normal">
-                  <label class="label">Account identifier</label>
+                  <label class="label">{{ $t('fieldnames.accountIdentifier') }}</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
                     <div class="control">
-                      <input type="text" class="input" name="AccountId" placeholder="Account Id" v-model="updatedAccount.accountId" v-validate="'required|alpha_num'" data-vv-as="account id" :class="{ 'is-danger': errors.has('AccountId') }">
-                      <p v-show="errors.has('AccountId')" class="help is-danger">{{ errors.first('AccountId') }}</p>
+                      <input type="text" class="input" name="accountIdentifier" :placeholder="$t('fieldnames.accountIdentifier')" v-model="updatedAccount.accountId" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('accountIdentifier') }">
+                      <p v-show="errors.has('accountIdentifier')" class="help is-danger">{{ errors.first('accountIdentifier') }}</p>
                     </div>
                   </div>
                 </div>
@@ -97,12 +97,12 @@
 
               <div class="field is-horizontal">
                 <div class="field-label is-normal">
-                  <label class="label">Label</label>
+                  <label class="label">{{ $t('fieldnames.label') }}</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
                     <div class="control">
-                      <input type="text" class="input" name="label" placeholder="Label of your choice" v-model="updatedAccount.label" v-validate="'max:30'" :class="{'is-danger': errors.has('label') }">
+                      <input type="text" class="input" name="label" :placeholder="$t('fieldnames.label')" v-model="updatedAccount.label" v-validate="'max:30'" :class="{'is-danger': errors.has('label') }">
                       <p v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</p>
                     </div>
                   </div>
@@ -114,8 +114,8 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <button type="submit" class="button is-primary" role="button"><i class="fa fa-save"/>&nbsp;Save</button>
-                    <button type="button" class="button is-danger" role="button" v-on:click="deleteAccount"><i class="fa fa-trash"/>&nbsp;Delete</button>
+                    <button type="submit" class="button is-primary" role="button"><i class="fa fa-save"/>&nbsp;{{ $t('actions.save') }}</button>
+                    <button type="button" class="button is-danger" role="button" v-on:click="deleteAccount"><i class="fa fa-trash"/>&nbsp;{{ $t('actions.delete') }}</button>
                   </div>
                 </div>
               </div>
@@ -231,12 +231,13 @@ export default {
     },
     deleteAccount () {
       this.$dialog.confirm({
-        message: 'Are you sure you want to delete this account?<br>All transactions will be deleted too.',
-        title: 'Deleting account',
+        message: this.$t('labels.deleteAccountMsg'),
+        title: this.$t('labels.deleteAccount'),
         type: 'is-danger',
         hasIcon: true,
         icon: 'trash',
-        confirmText: 'Delete account',
+        confirmText: this.$t('actions.deleteAccount'),
+        cancelText: this.$t('actions.cancel'),
         focusOn: 'cancel',
         onConfirm: () => {
           this.isLoading = true
@@ -279,13 +280,13 @@ export default {
       data.append('file', file)
       // check file size
       if (file.size > 80000000) {
-        this.upload.result = 'File too big'
+        this.upload.result = this.$t('labels.fileTooBig')
         return
       }
       let params = {}
       if (file.type === 'application/json') {
         if (!this.upload.map) {
-          this.upload.result = 'Map must be set for uploading a JSON file'
+          this.upload.result = this.$t('labels.mapMustBeSet')
           return
         }
         params = { map: this.upload.map }

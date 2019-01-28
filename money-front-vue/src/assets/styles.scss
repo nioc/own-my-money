@@ -17,6 +17,9 @@ $navbar-item-hover-color: $primary;
   max-width: 800px;
   margin: auto;
 }
+.is-max-width-form .field-body {
+  max-width: 500px;
+}
 
 $card-header-background-color: $white-bis;
 $card-shadow: 0 0 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
@@ -45,6 +48,24 @@ $input-shadow: none;
 .box {
   @include mobile {
     border-radius: unset;
+  }
+}
+.no-padding-parent-mobile {
+  @include mobile {
+    margin: 0;
+    padding: 0;
+  }
+}
+.no-padding-parent-mobile:last-child {
+  @include mobile {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+.no-padding-mobile {
+  @include mobile {
+    border-radius: unset;
+    padding: 0;
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="box" v-if="isLoaded">
     <p class="title">{{ title }}</p>
-      <div class="field is-grouped is-grouped-multiline is-block-mobile">
+      <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
         <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodStart"></b-datepicker>
       </div>
@@ -9,15 +9,16 @@
         <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodEnd"></b-datepicker>
       </div>
       <div class="control">
-        <button class="button" :class="{ 'is-loading': isLoading }" @click="requestData" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>Refresh</span></button>
+        <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
-    <doughnut :chartData="chartData"></doughnut>
+    <doughnut :chartData="chartData" :options="options"></doughnut>
   </div>
 </template>
 
 <script>
 import Config from './../services/Config'
+import Bus from '@/services/Bus'
 import Doughnut from '@/components/Doughnut'
 import CategoriesFactory from './../services/Categories'
 export default {
@@ -33,14 +34,24 @@ export default {
     chartEndpoint: {
       type: String,
       required: true
+    },
+    date: {
+      required: false
+    },
+    isIndependent: {
+      type: Boolean,
+      default: true,
+      required: false
     }
   },
   data () {
     const today = new Date()
+    today.setHours(0, 0, 0)
     return {
       isLoading: false,
       isLoaded: false,
       chartData: null,
+      options: null,
       search: {
         currentDate: today,
         periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
@@ -49,6 +60,10 @@ export default {
     }
   },
   methods: {
+    applyFilter () {
+      Bus.$emit('transactions-date-filtered', this.search)
+      this.requestData()
+    },
     requestData () {
       this.isLoading = true
       let options = {
@@ -75,6 +90,26 @@ export default {
             colors.push('hsla(153, 47%, ' + lightness + '%, 1)')
           }
         }
+        let onClick = null
+        if (response.data.key === 'categories') {
+          onClick = function (evt) {
+            let index = this.chart.getElementsAtEvent(evt)[0]
+            if (index) {
+              let key = values[index._index].key
+              if (key) {
+                // send event for parent update (may be displaying subcategories distribution)
+                Bus.$emit('category-selected', {key: key, label: this.chart.data.labels[index._index]})
+              }
+            }
+          }
+        }
+        let vm = this
+        let labelCallback = function (tooltipItem, data) {
+          let sum = data.datasets[tooltipItem.datasetIndex].data.reduce((a, b) => a + b, 0)
+          let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
+          let label = data.labels[tooltipItem.index]
+          return label + ': ' + vm.$n(value, 'currency') + ' (' + Math.round(100 * value / sum) + '%)'
+        }
         this.chartData = {
           datasets: [
             {
@@ -84,12 +119,25 @@ export default {
           ]
         }
         let labels
-        if (response.data.key === 'categories') {
-          labels = values.map(point => this.categoriesAndSubcategoriesLookup[point.key] ? this.categoriesAndSubcategoriesLookup[point.key].label : point.key)
+        if (response.data.key === 'categories' || response.data.key === 'subcategories') {
+          labels = values.map(point => this.categoriesAndSubcategoriesLookup[point.key] ? this.categoriesAndSubcategoriesLookup[point.key].label : (point.key === null ? this.$t('labels.uncategorizedTransaction') : point.key))
         } else {
           labels = values.map(point => point.key)
         }
         this.chartData.labels = labels
+        this.options = {
+          legend: {
+            display: true
+          },
+          responsive: true,
+          maintainAspectRatio: false,
+          tooltips: {
+            callbacks: {
+              label: labelCallback
+            }
+          },
+          onClick: onClick
+        }
         this.search.periodStart = this.$moment(response.data.periodStart).toDate()
         this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
         this.isLoading = false
@@ -104,8 +152,19 @@ export default {
     }
   },
   mounted () {
-    this.requestData()
+    Bus.$on('transactions-date-filtered', (search) => {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
+        this.search.periodStart = search.periodStart
+        this.search.periodEnd = search.periodEnd
+        this.requestData()
+      }
+    })
     this.getCategories(true)
+    if (this.date) {
+      this.search.periodStart = this.date.periodStart
+      this.search.periodEnd = this.date.periodEnd
+    }
+    this.requestData()
   }
 }
 </script>

@@ -10,26 +10,18 @@ export default {
       type: Object,
       required: true
     },
-    chartLabels: {
-      type: Array,
-      required: false
-    }
-  },
-  data () {
-    return {
-      options: {
-        legend: {
-          display: true
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        elements: {
-        }
-      }
+    options: {
+      type: Object,
+      required: true
     }
   },
   mounted () {
     this.renderChart(this.chartData, this.options)
+  },
+  watch: {
+    chartData () {
+      this.renderChart(this.chartData, this.options)
+    }
   }
 }
 </script>

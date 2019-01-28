@@ -2,34 +2,34 @@
   <form @submit.prevent="validateBeforeSubmit" novalidate>
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">New account</p>
+        <p class="modal-card-title">{{ $t('actions.addAccount') }}</p>
       </header>
       <section class="modal-card-body">
         <div class="field">
-          <label class="label">Bank identifier</label>
+          <label class="label">{{ $t('fieldnames.bankIdentifier') }}</label>
           <div class="control">
-            <input class="input" type="text" name="bankId" placeholder="Bank Id" v-model="account.bankId" v-validate="'required|alpha_num'" data-vv-as="bank id" :class="{ 'is-danger': errors.has('bankId') }">
-            <span v-show="errors.has('bankId')" class="help is-danger">{{ errors.first('bankId') }}</span>
+            <input class="input" type="text" name="bankIdentifier" :placeholder="$t('fieldnames.bankIdentifier')" v-model="account.bankId" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('bankIdentifier') }">
+            <span v-show="errors.has('bankIdentifier')" class="help is-danger">{{ errors.first('bankIdentifier') }}</span>
           </div>
         </div>
         <div class="field">
-          <label class="label">Branch identifier</label>
+          <label class="label">{{ $t('fieldnames.branchIdentifier') }}</label>
           <div class="control">
-            <input class="input" type="text" name="BranchId" placeholder="Branch Id" v-model="account.branchId" v-validate="'required|alpha_num'" data-vv-as="branch id" :class="{ 'is-danger': errors.has('BranchId') }">
-            <span v-show="errors.has('BranchId')" class="help is-danger">{{ errors.first('BranchId') }}</span>
+            <input class="input" type="text" name="branchIdentifier" :placeholder="$t('fieldnames.branchIdentifier')" v-model="account.branchId" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('branchIdentifier') }">
+            <span v-show="errors.has('branchIdentifier')" class="help is-danger">{{ errors.first('branchIdentifier') }}</span>
           </div>
         </div>
         <div class="field">
-          <label class="label">Account identifier</label>
+          <label class="label">{{ $t('fieldnames.accountIdentifier') }}</label>
           <div class="control">
-            <input class="input" type="text" name="AccountId" placeholder="Account Id" v-model="account.accountId" v-validate="'required|alpha_num'" data-vv-as="account id" :class="{ 'is-danger': errors.has('AccountId') }">
-            <span v-show="errors.has('AccountId')" class="help is-danger">{{ errors.first('AccountId') }}</span>
+            <input class="input" type="text" name="accountIdentifier" :placeholder="$t('fieldnames.accountIdentifier')" v-model="account.accountId" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('accountIdentifier') }">
+            <span v-show="errors.has('accountIdentifier')" class="help is-danger">{{ errors.first('accountIdentifier') }}</span>
           </div>
         </div>
         <div class="field">
-          <label class="label">Label</label>
+          <label class="label">{{ $t('fieldnames.label') }}</label>
           <div class="control">
-            <input class="input" type="text" name="label" placeholder="Label of your choice" v-model="account.label" v-validate="'max:30'" :class="{ 'is-danger': errors.has('label') }">
+            <input class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" v-model="account.label" v-validate="'max:30'" :class="{ 'is-danger': errors.has('label') }">
             <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
           </div>
         </div>
@@ -40,8 +40,8 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-primary">Create</button>
-        <button class="button" type="button" @click="$parent.close()">Cancel</button>
+        <button class="button is-primary">{{ $t('actions.create') }}</button>
+        <button class="button" type="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
       </footer>
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
     </div>

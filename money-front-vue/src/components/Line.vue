@@ -10,6 +10,10 @@ export default {
       type: Object,
       required: true
     },
+    labelCallback: {
+      type: Function,
+      required: false
+    },
     chartOptions: {
       type: Object,
       required: false,
@@ -30,16 +34,13 @@ export default {
               propagate: false
             }
           },
+          tooltips: {
+            callbacks: {
+            }
+          },
           scales: {
             xAxes: [{
               type: 'time',
-              time: {
-                displayFormats: {
-                  quarter: 'MMM YYYY'
-                },
-                unit: 'week',
-                unitStepSize: 1
-              },
               ticks: {
                 autoSkip: false,
                 maxRotation: 0
@@ -51,7 +52,15 @@ export default {
     }
   },
   mounted () {
+    if (this.labelCallback !== null && typeof this.labelCallback === 'function') {
+      this.chartOptions.tooltips.callbacks = { label: this.labelCallback }
+    }
     this.renderChart(this.chartData, this.chartOptions)
+  },
+  watch: {
+    chartData () {
+      this.renderChart(this.chartData, this.chartOptions)
+    }
   }
 }
 </script>

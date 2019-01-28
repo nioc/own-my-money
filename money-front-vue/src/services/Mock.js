@@ -2,20 +2,23 @@ import Config from './../services/Config'
 
 export default {
   install (Vue, options) {
+    function returnDateFromNow (duration) {
+      return Vue.moment().subtract(Vue.moment.duration(duration)).format()
+    }
     let transactions = [
-      {id: 1, type: 'CREDIT', datePosted: Vue.moment().subtract(3, 'days'), dateUser: Vue.moment().subtract(3, 'days'), amount: 342, name: 'SUNSHINE AUTOS IMPORT GARAGE', fitid: '5387240011638', memo: '', category: 3, subcategory: 33, note: 'Car selling'},
-      {id: 10, type: 'DEBIT', datePosted: Vue.moment().subtract(4, 'days'), dateUser: Vue.moment().subtract(4, 'days'), amount: -60.5, name: 'ARROW GASOLINE', fitid: '5387600307180', memo: '', category: 1, subcategory: 12, note: 'Gasoil'},
-      {id: 2, type: 'DEBIT', datePosted: Vue.moment().subtract(4, 'days'), dateUser: Vue.moment().subtract(4, 'days'), amount: -39.85, name: 'LOS SANTOS CUSTOMS', fitid: '5387600307178', memo: '', category: 1, subcategory: 14, note: 'Wheels'},
-      {id: 3, type: 'DEBIT', datePosted: Vue.moment().subtract(5, 'days'), dateUser: Vue.moment().subtract(5, 'days'), amount: -17, name: 'PIZZA THIS', fitid: '5387600307179', memo: '', category: 2, subcategory: 20, note: 'Lunch with Trevor'},
-      {id: 5, type: 'CREDIT', datePosted: Vue.moment().subtract(6, 'days'), dateUser: Vue.moment().subtract(6, 'days'), amount: 300, name: 'MERRYWEATHER SECURITY', fitid: '5387600307179', memo: '', category: 3, subcategory: 32, note: ''},
-      {id: 9, type: 'DEBIT', datePosted: Vue.moment().subtract(6, 'days'), dateUser: Vue.moment().subtract(6, 'days'), amount: -39.99, name: 'MORS MUTUAL INSURANCE', fitid: '5387600307180', memo: '', category: 1, subcategory: 13, note: ''},
-      {id: 6, type: 'CREDIT', datePosted: Vue.moment().subtract(8, 'days'), dateUser: Vue.moment().subtract(8, 'days'), amount: 200, name: 'TRANSFER FROM L. CREST', fitid: '5387600307180', memo: '', category: 3, subcategory: 32, note: 'Mission success'},
-      {id: 8, type: 'DEBIT', datePosted: Vue.moment().subtract(8, 'days'), dateUser: Vue.moment().subtract(8, 'days'), amount: -99, name: 'VANILLA UNICORN', fitid: '5387600307179', memo: '', category: 2, subcategory: null, note: ''},
-      {id: 4, type: 'DEBIT', datePosted: Vue.moment().subtract(15, 'days'), dateUser: Vue.moment().subtract(15, 'days'), amount: -28.5, name: 'PONSONBY', fitid: '5387600307180', memo: '', category: 5, subcategory: 51, note: 'hats'},
-      {id: 9, type: 'DEBIT', datePosted: Vue.moment().subtract(18, 'days'), dateUser: Vue.moment().subtract(18, 'days'), amount: -60.5, name: 'ARROW GASOLINE', fitid: '5387600307180', memo: '', category: 1, subcategory: 12, note: 'Gasoil'},
-      {id: 7, type: 'DEBIT', datePosted: Vue.moment().subtract(20, 'days'), dateUser: Vue.moment().subtract(20, 'days'), amount: -250, name: 'PEGASUS', fitid: '5387600307178', memo: '', category: 1, subcategory: 14, note: ''},
-      {id: 9, type: 'DEBIT', datePosted: Vue.moment().subtract(21, 'days'), dateUser: Vue.moment().subtract(21, 'days'), amount: -60.5, name: 'O SHEAS BARBERS SHOP', fitid: '5387600307181', memo: '', category: 5, subcategory: null, note: ''},
-      {id: 9, type: 'CREDIT', datePosted: Vue.moment().subtract(22, 'days'), dateUser: Vue.moment().subtract(22, 'days'), amount: 210, name: 'SUNSHINE AUTOS IMPORT GARAGE', fitid: '5387600307180', memo: '', category: 3, subcategory: 33, note: 'Car selling'}
+      {id: 1, type: 'CREDIT', datePosted: returnDateFromNow('P3D'), dateUser: returnDateFromNow('P3D'), amount: 342, name: 'SUNSHINE AUTOS IMPORT GARAGE', fitid: '5387240011638', memo: '', category: 3, subcategory: 33, note: 'Car selling'},
+      {id: 10, type: 'DEBIT', datePosted: returnDateFromNow('P4D'), dateUser: returnDateFromNow('P4D'), amount: -60.5, name: 'ARROW GASOLINE', fitid: '5387600307180', memo: '', category: 1, subcategory: 12, note: 'Gasoil'},
+      {id: 2, type: 'DEBIT', datePosted: returnDateFromNow('P4D'), dateUser: returnDateFromNow('P4D'), amount: -39.85, name: 'LOS SANTOS CUSTOMS', fitid: '5387600307178', memo: '', category: 1, subcategory: 14, note: 'Wheels'},
+      {id: 3, type: 'DEBIT', datePosted: returnDateFromNow('P5D'), dateUser: returnDateFromNow('P5D'), amount: -17, name: 'PIZZA THIS', fitid: '5387600307179', memo: '', category: 2, subcategory: 20, note: 'Lunch with Trevor'},
+      {id: 5, type: 'CREDIT', datePosted: returnDateFromNow('P6D'), dateUser: returnDateFromNow('P6D'), amount: 300, name: 'MERRYWEATHER SECURITY', fitid: '5387600307179', memo: '', category: 3, subcategory: 32, note: ''},
+      {id: 9, type: 'DEBIT', datePosted: returnDateFromNow('P6D'), dateUser: returnDateFromNow('P6D'), amount: -39.99, name: 'MORS MUTUAL INSURANCE', fitid: '5387600307180', memo: '', category: 1, subcategory: 13, note: ''},
+      {id: 6, type: 'CREDIT', datePosted: returnDateFromNow('P8D'), dateUser: returnDateFromNow('P8D'), amount: 200, name: 'TRANSFER FROM L. CREST', fitid: '5387600307180', memo: '', category: 3, subcategory: 32, note: 'Mission success'},
+      {id: 8, type: 'DEBIT', datePosted: returnDateFromNow('P8D'), dateUser: returnDateFromNow('P8D'), amount: -99, name: 'VANILLA UNICORN', fitid: '5387600307179', memo: '', category: 2, subcategory: null, note: ''},
+      {id: 4, type: 'DEBIT', datePosted: returnDateFromNow('P15D'), dateUser: returnDateFromNow('P15D'), amount: -28.5, name: 'PONSONBY', fitid: '5387600307180', memo: '', category: 5, subcategory: 51, note: 'hats'},
+      {id: 9, type: 'DEBIT', datePosted: returnDateFromNow('P18D'), dateUser: returnDateFromNow('P18D'), amount: -60.5, name: 'ARROW GASOLINE', fitid: '5387600307180', memo: '', category: 1, subcategory: 12, note: 'Gasoil'},
+      {id: 7, type: 'DEBIT', datePosted: returnDateFromNow('P20D'), dateUser: returnDateFromNow('P20D'), amount: -250, name: 'PEGASUS', fitid: '5387600307178', memo: '', category: 1, subcategory: 14, note: ''},
+      {id: 9, type: 'DEBIT', datePosted: returnDateFromNow('P21D'), dateUser: returnDateFromNow('P21D'), amount: -60.5, name: 'O SHEAS BARBERS SHOP', fitid: '5387600307181', memo: '', category: 5, subcategory: null, note: ''},
+      {id: 9, type: 'CREDIT', datePosted: returnDateFromNow('P22D'), dateUser: returnDateFromNow('P22D'), amount: 210, name: 'SUNSHINE AUTOS IMPORT GARAGE', fitid: '5387600307180', memo: '', category: 3, subcategory: 33, note: 'Car selling'}
     ]
     // let history = []
     function groupBy (collection, attribute) {
@@ -28,52 +31,80 @@ export default {
         return acc
       }, {})
     }
-    let dates = []
-    let transactionsByDate = groupBy(transactions, 'datePosted')
-    for (let date in transactionsByDate) {
-      let dateByType = groupBy(transactionsByDate[date], 'type')
-      dates.push({
-        date: Vue.moment(date).format('YYYY-MM-DD'),
-        debit: 'DEBIT' in dateByType ? dateByType['DEBIT'].reduce((a, b) => a + b.amount, 0) : 0,
-        credit: 'CREDIT' in dateByType ? dateByType['CREDIT'].reduce((a, b) => a + b.amount, 0) : 0
-      })
-    }
-    let startDate = Vue.moment().subtract(30, 'days')
-    let endDate = Vue.moment()
-    var dt = startDate
-    let length = dates.length
-    // eslint-disable-next-line
-    while (dt <= endDate) {
-      let dateExists = false
-      for (var i = 0; i < length; i++) {
-        if (dates[i].date === dt.format('YYYY-MM-DD')) {
-          dateExists = true
-          break
-        }
-      }
-      if (!dateExists) {
-        dates.push({
-          date: Vue.moment(dt).format('YYYY-MM-DD'),
-          debit: 0,
-          credit: 0
+    let datesByCategory = []
+
+    function getHistory (collection) {
+      let dateValues = []
+      let transactionsByDate = groupBy(collection, 'datePosted')
+      for (let date in transactionsByDate) {
+        let dateByType = groupBy(transactionsByDate[date], 'type')
+        dateValues.push({
+          date: Vue.moment(date).format('YYYY-MM-DD'),
+          debit: 'DEBIT' in dateByType ? dateByType['DEBIT'].reduce((a, b) => a + b.amount, 0) : 0,
+          credit: 'CREDIT' in dateByType ? dateByType['CREDIT'].reduce((a, b) => a + b.amount, 0) : 0
         })
       }
-      dt.add(1, 'days')
+      let startDate = Vue.moment().subtract(Vue.moment.duration('P1M'))
+      let endDate = Vue.moment()
+      var dt = startDate
+      let length = dateValues.length
+      // eslint-disable-next-line
+      while (dt <= endDate) {
+        let dateExists = false
+        for (var i = 0; i < length; i++) {
+          if (dateValues[i].date === dt.format('YYYY-MM-DD')) {
+            dateExists = true
+            break
+          }
+        }
+        if (!dateExists) {
+          dateValues.push({
+            date: Vue.moment(dt).format('YYYY-MM-DD'),
+            debit: 0,
+            credit: 0
+          })
+        }
+        dt.add(1, 'days')
+      }
+      dateValues.sort(function (a, b) {
+        return Vue.moment(a.date) - Vue.moment(b.date)
+      })
+      return dateValues
     }
-    dates.sort(function (a, b) {
-      return Vue.moment(a.date) - Vue.moment(b.date)
-    })
+    let dates = getHistory(transactions)
 
     let transactionsByType = groupBy(transactions, 'type')
     let debits = groupBy(transactionsByType['DEBIT'], 'category')
     let credits = groupBy(transactionsByType['CREDIT'], 'category')
     let debitsDistribution = []
+    let creditsDistribution = []
+    let debitsDistributionByCategory = []
+    let creditsDistributionByCategory = []
+    let transactionsByCategory = groupBy(transactions, 'category')
+    for (var i = 1; i < 6; i++) {
+      debitsDistributionByCategory[i] = []
+      creditsDistributionByCategory[i] = []
+      datesByCategory[i] = []
+      if (transactionsByCategory[i]) {
+        datesByCategory[i] = getHistory(transactionsByCategory[i])
+      }
+    }
+    // handle debits category distribution
     for (let debit in debits) {
       debitsDistribution.push({key: debit, amount: Math.abs(debits[debit].reduce((a, b) => a + b.amount, 0))})
+
+      let debitsForCategory = groupBy(debits[debit], 'subcategory')
+      for (let debitForCategory in debitsForCategory) {
+        debitsDistributionByCategory[debit].push({key: debitForCategory, amount: Math.abs(debitsForCategory[debitForCategory].reduce((a, b) => a + b.amount, 0))})
+      }
     }
-    let creditsDistribution = []
+    // handle credits category distribution
     for (let credit in credits) {
       creditsDistribution.push({key: credit, amount: Math.abs(credits[credit].reduce((a, b) => a + b.amount, 0))})
+      let creditsForCategory = groupBy(credits[credit], 'subcategory')
+      for (let creditForCategory in creditsForCategory) {
+        creditsDistributionByCategory[credit].push({key: creditForCategory, amount: Math.abs(creditsForCategory[creditForCategory].reduce((a, b) => a + b.amount, 0))})
+      }
     }
     let routes = [
       // login
@@ -111,9 +142,9 @@ export default {
         method: 'GET',
         url: 'users/1/tokens',
         response: [
-          {creation: Vue.moment().subtract(1, 'days'), ip: '10.0.0.2', userAgent: 'Mozilla/5.0 (X11; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0'},
-          {creation: Vue.moment().subtract(41242, 'minutes'), ip: '10.0.0.13', userAgent: 'Mozilla/5.0 (Android 8.0.0; Mobile; rv:63.0) Gecko/63.0 Firefox/63.0'},
-          {creation: Vue.moment().subtract(1044887, 'seconds'), ip: '10.0.0.14', userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53'}
+          {creation: returnDateFromNow('P1D'), ip: '10.0.0.2', userAgent: 'Mozilla/5.0 (X11; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0'},
+          {creation: returnDateFromNow('PT41242M'), ip: '10.0.0.13', userAgent: 'Mozilla/5.0 (Android 8.0.0; Mobile; rv:63.0) Gecko/63.0 Firefox/63.0'},
+          {creation: returnDateFromNow('PT1044887S'), ip: '10.0.0.14', userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 7_0 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) Version/7.0 Mobile/11A465 Safari/9537.53'}
         ]
       },
       // home
@@ -125,31 +156,91 @@ export default {
       {
         method: 'GET',
         url: 'transactions/history',
-        response: { values: dates, periodStart: Vue.moment().subtract(30, 'days'), periodEnd: Vue.moment() }
+        response: { values: dates, periodStart: returnDateFromNow('P1M'), periodEnd: returnDateFromNow('PT1S') }
       },
       {
         method: 'GET',
         url: 'transactions/distribution/credit/categories',
-        response: { values: creditsDistribution, periodStart: Vue.moment().subtract(30, 'days'), periodEnd: Vue.moment(), type: 'credit', key: 'categories' }
+        response: { values: creditsDistribution, periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'credit', key: 'categories' }
       },
       {
         method: 'GET',
         url: 'transactions/distribution/debit/categories',
-        response: { values: debitsDistribution, periodStart: Vue.moment().subtract(30, 'days'), periodEnd: Vue.moment(), type: 'debit', key: 'categories' }
+        response: { values: debitsDistribution, periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'debit', key: 'categories' }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/distribution/credit/subcategories?value=1',
+        response: { values: creditsDistributionByCategory[1], periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'credit', key: 'subcategories' }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/distribution/debit/subcategories?value=1',
+        response: { values: debitsDistributionByCategory[1], periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'debit', key: 'subcategories' }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/history?category=1',
+        response: { values: datesByCategory[1], periodStart: returnDateFromNow('P1M'), periodEnd: returnDateFromNow('PT1S') }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/distribution/credit/subcategories?value=2',
+        response: { values: creditsDistributionByCategory[2], periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'credit', key: 'subcategories' }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/distribution/debit/subcategories?value=2',
+        response: { values: debitsDistributionByCategory[2], periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'debit', key: 'subcategories' }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/history?category=2',
+        response: { values: datesByCategory[2], periodStart: returnDateFromNow('P1M'), periodEnd: returnDateFromNow('PT1S') }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/distribution/credit/subcategories?value=3',
+        response: { values: creditsDistributionByCategory[3], periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'credit', key: 'subcategories' }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/distribution/debit/subcategories?value=3',
+        response: { values: debitsDistributionByCategory[3], periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'debit', key: 'subcategories' }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/history?category=3',
+        response: { values: datesByCategory[3], periodStart: returnDateFromNow('P1M'), periodEnd: returnDateFromNow('PT1S') }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/distribution/credit/subcategories?value=5',
+        response: { values: creditsDistributionByCategory[5], periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'credit', key: 'subcategories' }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/distribution/debit/subcategories?value=5',
+        response: { values: debitsDistributionByCategory[5], periodStart: Vue.moment().subtract(Vue.moment.duration('P1M')), periodEnd: Vue.moment(), type: 'debit', key: 'subcategories' }
+      },
+      {
+        method: 'GET',
+        url: 'transactions/history?category=5',
+        response: { values: datesByCategory[5], periodStart: returnDateFromNow('P1M'), periodEnd: returnDateFromNow('PT1S') }
       },
       // accounts
       {
         method: 'GET',
         url: 'accounts',
         response: [
-          {'id': 1, user: '1', bankId: '14000', branchId: '00170', accountId: '02437797004', label: 'Maze Bank', balance: 1635, lastUpdate: Vue.moment()}
+          {'id': 1, user: '1', bankId: '14000', branchId: '00170', accountId: '02437797004', label: 'Maze Bank', balance: 1635, lastUpdate: returnDateFromNow('PT4H')}
         ]
       },
       // account 1
       {
         method: 'GET',
         url: 'accounts/1',
-        response: {'id': 1, user: '1', bankId: '14000', branchId: '00170', accountId: '02437797004', label: 'Maze Bank', balance: 1635, lastUpdate: Vue.moment()}
+        response: {'id': 1, user: '1', bankId: '14000', branchId: '00170', accountId: '02437797004', label: 'Maze Bank', balance: 1635, lastUpdate: returnDateFromNow('PT4H')}
       },
       // account 1 > transactions
       {
@@ -161,7 +252,7 @@ export default {
       {
         method: 'GET',
         url: 'setup/versions/latest',
-        response: {installed: '0.3.2', latest: '0.3.2'}
+        response: {installed: '0.5.1', latest: '0.5.1'}
       },
       // categories
       {

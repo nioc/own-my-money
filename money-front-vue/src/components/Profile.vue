@@ -3,20 +3,20 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: 'Home'},
-          {link: '/profile', icon: 'fa-user-circle', text: 'Profile', isActive: true}
+          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
+          {link: '/profile', icon: 'fa-user-circle', text: this.$t('labels.profile'), isActive: true}
         ]">
       </breadcrumb>
     </div>
     <div class="hero-body">
       <div class="container box">
-        <h1 class="title container">Profile</h1>
-        <p class="subtitle has-text-grey">Update your money account</p>
+        <h1 class="title container">{{ $t('labels.profile') }}</h1>
+        <p class="subtitle has-text-grey">{{ $t('labels.profileLabel') }}</p>
         <form @submit.prevent="validateBeforeSubmit" novalidate class="section is-max-width-form">
 
           <div class="field is-horizontal">
             <div class="field-label is-normal">
-              <label class="label">Login</label>
+              <label class="label">{{ $t('fieldnames.login') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -36,7 +36,7 @@
 
           <div class="field is-horizontal">
             <div class="field-label is-normal">
-              <label class="label">New password</label>
+              <label class="label">{{ $t('fieldnames.newPassword') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
@@ -56,19 +56,19 @@
 
           <div class="field is-horizontal">
             <div class="field-label is-normal">
-              <label class="label">Mail</label>
+              <label class="label">{{ $t('fieldnames.email') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-left has-icons-right">
-                  <input class="input" type="email" name="mail" placeholder="Type your mail address" v-model="user.mail" v-validate="'required|email'" :class="{'input': true, 'is-danger': errors.has('mail') }">
+                  <input class="input" type="email" name="email" placeholder="Type your mail address" v-model="user.mail" v-validate="'required|email'" :class="{'input': true, 'is-danger': errors.has('email') }">
                   <span class="icon is-small is-left">
                     <i class="fa fa-envelope"></i>
                   </span>
-                  <span class="icon is-small is-right" v-show="errors.has('mail')">
+                  <span class="icon is-small is-right" v-show="errors.has('email')">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
-                  <span v-show="errors.has('mail')" class="help is-danger">{{errors.first('mail')}}</span>
+                  <span v-show="errors.has('email')" class="help is-danger">{{errors.first('email')}}</span>
                 </div>
               </div>
             </div>
@@ -80,10 +80,10 @@
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;Save</button>
+                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
                 </div>
                 <div class="control">
-                  <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;Cancel</a>
+                  <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.cancel') }}</a>
                 </div>
               </div>
             </div>
