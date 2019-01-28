@@ -39,7 +39,7 @@ switch ($api->method) {
                 //determine the best time unit according to requested duration
                 $duration = $periodEnd - $periodStart;
                 $timeUnit = 'D';
-                if ($duration > 32140800) {
+                if ($duration > 15724800) {
                     $timeUnit = 'M';
                 } elseif ($duration > 2678400) {
                     $timeUnit = 'W';

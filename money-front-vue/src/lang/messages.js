@@ -110,6 +110,10 @@ export default {
       user: 'User | Users',
       pattern: 'Pattern | Patterns',
       occurence: 'Occurence | Occurence | Occurences',
+      lastDay: 'Last day | Last {count} days',
+      lastWeek: 'Last week | Last {count} weeks',
+      lastMonth: 'Last month | Last {count} months',
+      lastYear: 'Last year | Last {count} years',
       byte: '1 byte | {count} bytes'
     }
   },
@@ -224,6 +228,10 @@ export default {
       user: 'Utilisateur | Utilisateurs',
       pattern: 'Modèle | Modèles',
       occurence: 'Occurence | Occurence | Occurences',
+      lastDay: 'le jour dernier | Les {count} derniers jours',
+      lastWeek: 'La semaine dernière | Les {count} dernières semaines',
+      lastMonth: 'Le mois dernier | Les {count} derniers mois',
+      lastYear: 'L\'année dernière | Les {count} dernières années',
       byte: '1 octet | {count} octets'
     }
   }

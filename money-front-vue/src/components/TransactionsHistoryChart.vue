@@ -1,7 +1,18 @@
 <template>
   <div class="box" v-if="isLoaded">
     <p class="title">{{ title }}</p>
-      <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
+    <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
+      <div class="control">
+        <div class="select">
+          <select v-model="quickDate">
+            <option value="P1W">{{ $tc('objects.lastWeek', 1) }}</option>
+            <option value="P1M">{{ $tc('objects.lastMonth', 1) }}</option>
+            <option value="P3M">{{ $tc('objects.lastMonth', 3) }}</option>
+            <option value="P6M">{{ $tc('objects.lastMonth', 6) }}</option>
+            <option value="P1Y">{{ $tc('objects.lastYear', 1) }}</option>
+          </select>
+        </div>
+      </div>
       <div class="control">
         <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodStart"></b-datepicker>
       </div>
@@ -50,9 +61,10 @@ export default {
       isLoaded: false,
       chartData: null,
       labelCallback: null,
+      quickDate: 'P3M',
       search: {
         currentDate: today,
-        periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
+        periodStart: this.$moment(today).subtract(this.$moment.duration(this.quickDate)).toDate(),
         periodEnd: today
       }
     }
@@ -105,6 +117,16 @@ export default {
         }
         console.log(response.status + ' - ' + response.statusText)
       })
+    }
+  },
+  watch: {
+    quickDate () {
+      if (this.quickDate) {
+        Bus.$emit('transactions-date-filtered', {
+          periodStart: this.$moment(this.search.currentDate).subtract(this.$moment.duration(this.quickDate)).toDate(),
+          periodEnd: this.search.currentDate
+        })
+      }
     }
   },
   mounted () {

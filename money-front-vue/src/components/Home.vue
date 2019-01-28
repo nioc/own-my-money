@@ -92,7 +92,7 @@ export default {
       categorySelected: { key: null },
       url: Config.API_URL + 'transactions{/id}',
       date: {
-        periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 90),
+        periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
         periodEnd: today
       }
     }
