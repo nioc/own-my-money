@@ -419,12 +419,19 @@ class User
         foreach ($calendar as $date => $value) {
             $point = new stdClass();
             $point->date = $date;
-            $point->debit = $value['debit'];
-            $point->credit = $value['credit'];
-            $point->countDebit = $value['countDebit'];
-            $point->countCredit = $value['countCredit'];
+            $point->debit = key_exists('debit', $value) ? $value['debit'] : 0;
+            $point->credit = key_exists('credit', $value) ? $value['credit'] : 0;
+            $point->countDebit = key_exists('countDebit', $value) ? $value['countDebit'] : 0;
+            $point->countCredit = key_exists('countCredit', $value) ? $value['countCredit'] : 0;
             array_push($points, $point);
         }
+        //order by date
+        function dateCompare($a, $b)
+        {
+            return strcmp($a->date, $b->date);
+        }
+        usort($points, 'dateCompare');
+
         return $points;
     }
 
