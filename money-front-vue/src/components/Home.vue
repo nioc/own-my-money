@@ -101,6 +101,7 @@ export default {
       subcategorySelected: { key: null },
       url: Config.API_URL + 'transactions{/id}',
       date: {
+        timeUnit: '',
         periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
         periodEnd: today
       }
@@ -128,9 +129,12 @@ export default {
       }
     })
     Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.date.periodStart.getTime() !== search.periodStart.getTime()) || (this.date.periodEnd.getTime() !== search.periodEnd.getTime())) {
+      if ((this.date.periodStart.getTime() !== search.periodStart.getTime()) || (this.date.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.date.timeUnit !== search.timeUnit)) {
         this.date.periodStart = search.periodStart
         this.date.periodEnd = search.periodEnd
+        if (search.timeUnit) {
+          this.date.timeUnit = search.timeUnit
+        }
       }
     })
   },

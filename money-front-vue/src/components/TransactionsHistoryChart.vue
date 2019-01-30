@@ -20,6 +20,16 @@
         <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodEnd"></b-datepicker>
       </div>
       <div class="control">
+        <div class="select">
+          <select v-model="search.timeUnit">
+            <option value="">{{ $t('labels.automatic') }}</option>
+            <option value="D">{{ $t('labels.daily') }}</option>
+            <option value="W">{{ $t('labels.weekly') }}</option>
+            <option value="M">{{ $t('labels.monthly') }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="control">
         <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
@@ -63,6 +73,7 @@ export default {
       labelCallback: null,
       quickDate: 'P3M',
       search: {
+        timeUnit: '',
         currentDate: today,
         periodStart: this.$moment(today).subtract(this.$moment.duration(this.quickDate)).toDate(),
         periodEnd: today
@@ -81,6 +92,9 @@ export default {
           periodStart: this.$moment(this.search.periodStart).format('X'),
           periodEnd: this.$moment(this.search.periodEnd).format('X')
         }
+      }
+      if (this.search.timeUnit !== '') {
+        options.params.timeUnit = this.search.timeUnit
       }
       this.$http.get(Config.API_URL + this.chartEndpoint, options).then(response => {
         let vm = this
@@ -131,15 +145,19 @@ export default {
   },
   mounted () {
     Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.timeUnit !== search.timeUnit)) {
         this.search.periodStart = search.periodStart
         this.search.periodEnd = search.periodEnd
+        if (search.timeUnit) {
+          this.search.timeUnit = search.timeUnit
+        }
         this.requestData()
       }
     })
     if (this.date) {
       this.search.periodStart = this.date.periodStart
       this.search.periodEnd = this.date.periodEnd
+      this.search.timeUnit = this.date.timeUnit
     }
     this.requestData()
   }
