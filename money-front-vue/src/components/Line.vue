@@ -56,6 +56,11 @@ export default {
       this.chartOptions.tooltips.callbacks = { label: this.labelCallback }
     }
     this.renderChart(this.chartData, this.chartOptions)
+  },
+  watch: {
+    chartData () {
+      this.renderChart(this.chartData, this.chartOptions)
+    }
   }
 }
 </script>
