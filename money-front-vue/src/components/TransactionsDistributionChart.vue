@@ -1,7 +1,7 @@
 <template>
   <div class="box" v-if="isLoaded">
     <p class="title">{{ title }}</p>
-      <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
+    <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
         <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodStart"></b-datepicker>
       </div>
@@ -99,6 +99,17 @@ export default {
               if (key) {
                 // send event for parent update (may be displaying subcategories distribution)
                 Bus.$emit('category-selected', {key: key, label: this.chart.data.labels[index._index]})
+              }
+            }
+          }
+        } else if (response.data.key === 'subcategories') {
+          onClick = function (evt) {
+            let index = this.chart.getElementsAtEvent(evt)[0]
+            if (index) {
+              let key = values[index._index].key
+              if (key) {
+                // send event for parent update (may be displaying subcategories transaction history)
+                Bus.$emit('subcategory-selected', {key: key, label: this.chart.data.labels[index._index]})
               }
             }
           }

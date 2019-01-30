@@ -47,8 +47,11 @@ switch ($api->method) {
                 if ($api->checkParameterExists('category', $category)) {
                     $response->category = $category;
                 }
+                if ($api->checkParameterExists('subcategory', $subcategory)) {
+                    $response->subcategory = $subcategory;
+                }
                 //request transactions history
-                $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, true, $category);
+                $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, true, $category, $subcategory);
                 if (!$values) {
                     $api->output(500, '');
                     //something go wrong

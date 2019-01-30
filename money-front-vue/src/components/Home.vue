@@ -59,6 +59,14 @@
               :date="date"
               ></transactions-distribution-chart>
             </div>
+            <div v-if="subcategorySelected.key" class="column no-padding-mobile is-full">
+              <transactions-history-chart
+              :title="$t('labels.transactionsByDay') + ' ' + $t('labels.for') + ' ' + subcategorySelected.label"
+              :chartEndpoint="'transactions/history?subcategory='+subcategorySelected.key"
+              :isIndependent="false"
+              :date="date"
+              ></transactions-history-chart>
+            </div>
           </div>
         </div>
       </div>
@@ -90,6 +98,7 @@ export default {
     today.setHours(0, 0, 0)
     return {
       categorySelected: { key: null },
+      subcategorySelected: { key: null },
       url: Config.API_URL + 'transactions{/id}',
       date: {
         periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
@@ -105,6 +114,16 @@ export default {
         this.$nextTick(function () {
           // set category after next DOM update cycle
           this.categorySelected = category
+        })
+      }
+    })
+    Bus.$on('subcategory-selected', (subcategory) => {
+      if (!this.subcategorySelected.key || this.subcategorySelected.key !== subcategory.key) {
+        // clear previous subcategory history
+        this.subcategorySelected.key = null
+        this.$nextTick(function () {
+          // set subcategory after next DOM update cycle
+          this.subcategorySelected = subcategory
         })
       }
     })
