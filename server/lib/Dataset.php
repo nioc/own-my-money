@@ -106,6 +106,11 @@ class Dataset
         //get file content and decode JSON
         $json = file_get_contents($this->filepath);
         $jsTransactions = json_decode($json, true);
+        if ($jsTransactions === null) {
+            error_log(json_last_error_msg());
+            //JSON invalid return empty list
+            return [];
+        }
         //get map
         $map = new Map($mapCode);
         if (!$map->get()) {
