@@ -35,7 +35,7 @@ en {
     accountAlreadyExists { "This account already exists" }
     categoryNotFound { "Category not found" }
     stepNotFound { "Step not found" }
-    creationError { "Error during creation" }
+    creationError { "Error during creation: " }
     categoryIsNotValid { "Category is not valid: " }
     updateError { "Error during update: " }
     fileExtensionMustBeIn { "File extension must be in following list: " }

@@ -57,8 +57,8 @@ switch ($api->method) {
             return;
         }
         //create category
-        if (!$category->insert()) {
-            $api->output(500, $api->getMessage('creationError'));
+        if (!$category->insert($errorMessage)) {
+            $api->output(500, $api->getMessage('creationError') . $errorMessage);
             //something gone wrong :(
             return;
         }

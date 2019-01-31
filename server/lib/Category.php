@@ -53,10 +53,13 @@ class Category
     /**
      * Inserts a category in database.
      *
+     * @param string $error The returned error message
+     *
      * @return bool True on success or false on failure
      */
-    public function insert()
+    public function insert(&$error)
     {
+        $error = '';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
         $query = $connection->prepare('INSERT INTO `category` (`label`, `status`, `icon`, `isBudgeted`, `parentId`) VALUES ( :label, :status, :icon, :isBudgeted, :parentId);');
@@ -70,6 +73,7 @@ class Category
             //returns insertion was successfully processed
             return true;
         }
+        $error = $query->errorInfo()[2];
         //returns insertion has encountered an error
         return false;
     }
@@ -81,7 +85,7 @@ class Category
      *
      * @return bool True on success or false on failure
      */
-    public function update($error)
+    public function update(&$error)
     {
         $error = '';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
@@ -213,6 +217,9 @@ class Category
                 //get provided attribute
                 $this->$key = $category->$key;
             }
+        }
+        if ($this->isBudgeted === null) {
+            $this->isBudgeted = true;
         }
         //check mandatory attributes
         if (!is_string($this->label) || $this->label=== '') {
