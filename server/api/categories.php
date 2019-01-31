@@ -75,7 +75,16 @@ switch ($api->method) {
            //indicate the requester is not allowed to update a category
            return;
        }
-       $category = new Category();
+       if (!$api->checkParameterExists('id', $id)) {
+           $api->output(400, $api->getMessage('categoryIsNotValid') . 'id');
+           //indicate the requester is not allowed to update a category
+           return;
+       }
+       //get previous value
+       $category = new Category($id);
+       $category->get();
+       $previousParentId = $category->parentId;
+       //get provided value
        $requestedCategory = $api->query['body'];
        if (!$category->validateModel($requestedCategory, $errorMessage)) {
            $api->output(400, $api->getMessage('categoryIsNotValid') . $errorMessage);
@@ -87,6 +96,14 @@ switch ($api->method) {
            $api->output(500, $api->getMessage('updateError') . $errorMessage);
            //something gone wrong :(
            return;
+       }
+       //check if parent change
+       if ($category->parentId !== $previousParentId) {
+           require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
+           if (!Transaction::updateFollowingParentSubategoryChange($previousParentId, $category->parentId, $id, $errorMessage)) {
+               $api->output(500, $api->getMessage('updateError') . $errorMessage);
+               return;
+           }
        }
        $api->output(200, $category);
        break;
