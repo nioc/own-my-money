@@ -62,7 +62,7 @@ export default {
   methods: {
     logout () {
       this.user = Auth.logout()
-      this.$router.replace({name: 'login'})
+      this.$router.replace({ name: 'login' })
     },
     toggleMenu (e) {
       e.target.classList.toggle('is-active')

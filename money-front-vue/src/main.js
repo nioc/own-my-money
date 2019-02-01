@@ -101,7 +101,7 @@ Vue.http.interceptors.push((request, next) => {
       // redirect only if page is not already login page (multiples 401 in same time)
       Auth.logout()
       Bus.$emit('user-logged', {})
-      router.replace({name: 'login', query: { redirect: router.currentRoute.fullPath }})
+      router.replace({ name: 'login', query: { redirect: router.currentRoute.fullPath } })
     }
     return response
   })

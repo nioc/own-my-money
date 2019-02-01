@@ -180,7 +180,7 @@ export default {
     // get account informations
     get () {
       this.isLoading = true
-      this.rAccounts.get({id: this.account.id}).then(response => {
+      this.rAccounts.get({ id: this.account.id }).then(response => {
         this.account.bankId = response.body.bankId
         this.account.branchId = response.body.branchId
         this.account.accountId = response.body.accountId
@@ -191,7 +191,7 @@ export default {
       }, response => {
         if (response.status === 403 || response.status === 404) {
           // user does not can access this account, return to home
-          this.$router.replace({name: 'home'})
+          this.$router.replace({ name: 'home' })
           return
         }
         // @TODO : add error handling
@@ -207,7 +207,7 @@ export default {
         if (result) {
           this.isLoading = true
           // if validation is ok, call accounts API
-          this.rAccounts.update({id: this.account.id}, this.updatedAccount)
+          this.rAccounts.update({ id: this.account.id }, this.updatedAccount)
             .then(response => {
               // this.getAccounts()
               this.account.bankId = response.body.bankId
@@ -241,9 +241,9 @@ export default {
         focusOn: 'cancel',
         onConfirm: () => {
           this.isLoading = true
-          this.rAccounts.delete({id: this.account.id})
+          this.rAccounts.delete({ id: this.account.id })
             .then(response => {
-              this.$router.replace({name: 'accounts'})
+              this.$router.replace({ name: 'accounts' })
             }, response => {
               // @TODO : add error handling
               console.error(response)

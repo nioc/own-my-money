@@ -135,7 +135,7 @@ export default {
         if (result) {
           this.isLoading = true
           // if validation is ok, call user API
-          this.rUsers.update({id: this.user.id}, {sub: this.user.id, login: this.user.login, password: this.password, mail: this.user.mail})
+          this.rUsers.update({ id: this.user.id }, { sub: this.user.id, login: this.user.login, password: this.password, mail: this.user.mail })
             .then(response => {
             }, response => {
               if (response.body.message) {

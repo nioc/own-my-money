@@ -98,7 +98,7 @@ export default {
               let key = values[index._index].key
               if (key) {
                 // send event for parent update (may be displaying subcategories distribution)
-                Bus.$emit('category-selected', {key: key, label: this.chart.data.labels[index._index]})
+                Bus.$emit('category-selected', { key: key, label: this.chart.data.labels[index._index] })
               }
             }
           }
@@ -109,7 +109,7 @@ export default {
               let key = values[index._index].key
               if (key) {
                 // send event for parent update (may be displaying subcategories transaction history)
-                Bus.$emit('subcategory-selected', {key: key, label: this.chart.data.labels[index._index]})
+                Bus.$emit('subcategory-selected', { key: key, label: this.chart.data.labels[index._index] })
               }
             }
           }

@@ -37,12 +37,10 @@
 <script>
 import Config from './../services/Config'
 import Breadcrumb from '@/components/Breadcrumb'
-import Category from '@/components/Category'
 export default {
   name: 'categories',
   components: {
-    Breadcrumb,
-    Category
+    Breadcrumb
   },
   data () {
     return {
@@ -54,7 +52,7 @@ export default {
   methods: {
     get () {
       this.isLoading = true
-      this.rCategories.query({status: 'all'})
+      this.rCategories.query({ status: 'all' })
         .then(response => {
           this.categories = response.body
           // put categories in local storage for future usage

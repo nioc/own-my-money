@@ -37,7 +37,7 @@ export default {
       let query = {}
       if (includeInactives) {
         localStorageKey = 'categories'
-        query = {status: 'all'}
+        query = { status: 'all' }
       }
       if (localStorage.getItem(localStorageKey)) {
         this.handleResponse(JSON.parse(localStorage.getItem(localStorageKey)))

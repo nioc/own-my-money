@@ -83,7 +83,7 @@ export default {
         focusOn: 'cancel',
         onConfirm: () => {
           this.isLoading = true
-          this.rPatterns.delete({id: this.pattern.id})
+          this.rPatterns.delete({ id: this.pattern.id })
             .then(response => {
               // close modal and remove deleted pattern
               this.$parent.close()
@@ -143,7 +143,7 @@ export default {
     },
     count () {
       if (this.pattern.label) {
-        this.rTransactions.query({pattern: this.pattern.label}).then(response => {
+        this.rTransactions.query({ pattern: this.pattern.label }).then(response => {
           this.matchingCount = response.body.length
           console.log(response.body.length)
         }, response => {

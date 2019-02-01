@@ -26,7 +26,7 @@ export default {
           return
         }
         // redirect to home
-        context.$router.replace({name: 'home'})
+        context.$router.replace({ name: 'home' })
       }, response => {
         context.isLoading = false
         if (response.body.message) {
