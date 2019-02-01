@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import './registerServiceWorker'
 import Auth from './services/Auth'
 import VueI18n from 'vue-i18n'
 import messages from '@/lang/messages'
@@ -106,11 +107,8 @@ Vue.http.interceptors.push((request, next) => {
   })
 })
 
-/* eslint-disable no-new */
 new Vue({
-  el: '#money',
   router,
   i18n,
-  components: { App },
-  template: '<App/>'
-})
+  render: h => h(App)
+}).$mount('#money')

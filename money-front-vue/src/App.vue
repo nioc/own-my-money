@@ -2,7 +2,7 @@
   <div id="app">
     <nav class="navbar is-dark is-fixed-top" v-if="user.authenticated">
       <div class="navbar-brand">
-        <router-link class="navbar-item" to="/"><img src="/static/icon-whitesmoke.svg">&nbsp;OwnMyMoney</router-link>
+        <router-link class="navbar-item" to="/"><img src="./assets/icon-whitesmoke.svg">&nbsp;OwnMyMoney</router-link>
         <a role="button" id="navbar-burger" class="navbar-burger" @click="toggleMenu" aria-label="menu" aria-expanded="false">
           <span aria-hidden="true" class="is-primary"></span>
           <span aria-hidden="true"></span>

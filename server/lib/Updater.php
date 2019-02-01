@@ -229,9 +229,9 @@ class Updater
 
         //change back-end url
         $domain = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
-        if ($handle = opendir("$this->rootFolder/own-my-money/money-front-vue/dist/static/js/")) {
+        if ($handle = opendir("$this->rootFolder/own-my-money/money-front-vue/dist/js/")) {
             while (false !== ($entry = readdir($handle))) {
-                $current = "$this->rootFolder/own-my-money/money-front-vue/dist/static/js/$entry";
+                $current = "$this->rootFolder/own-my-money/money-front-vue/dist/js/$entry";
                 if (is_file($current)) {
                     $content = file_get_contents($current);
                     $content = str_replace('http://localhost', $domain, $content);
