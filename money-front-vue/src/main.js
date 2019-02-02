@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 import App from './App'
 import router from './router'
 import './registerServiceWorker'
@@ -21,8 +22,16 @@ import 'bulma-o-steps/bulma-steps.min.css'
 const moment = require('moment')
 
 Vue.config.productionTip = false
+Vue.use(Vuex)
 Vue.use(VueI18n)
 Vue.use(VueResource)
+
+const store = new Vuex.Store({
+  state: {
+  },
+  mutations: {
+  }
+})
 
 let locale = navigator.language
 
@@ -110,5 +119,6 @@ Vue.http.interceptors.push((request, next) => {
 new Vue({
   router,
   i18n,
+  store,
   render: h => h(App)
 }).$mount('#money')
