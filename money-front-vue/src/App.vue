@@ -56,6 +56,7 @@ export default {
   name: 'app',
   data () {
     return {
+      isOnline: window.navigator.onLine,
       user: Auth.getProfile()
     }
   },
@@ -67,6 +68,15 @@ export default {
     toggleMenu (e) {
       e.target.classList.toggle('is-active')
       document.getElementById('navbar-menu').classList.toggle('is-active')
+    },
+    notifyConnectivity (event) {
+      this.isOnline = event.type === 'online'
+      let toast = {}
+      toast.message = this.isOnline ? this.$t('labels.isOnline') : this.$t('labels.isOffline')
+      toast.type = this.isOnline ? 'is-success' : 'is-danger'
+      toast.position = 'is-bottom'
+      toast.queue = false
+      this.$toast.open(toast)
     },
     setLocale (locale) {
       Vue.http.headers.common['Accept-Language'] = locale
@@ -87,6 +97,8 @@ export default {
     Bus.$on('user-logged', (user) => {
       this.user = user
     })
+    window.addEventListener('offline', this.notifyConnectivity)
+    window.addEventListener('online', this.notifyConnectivity)
   }
 }
 </script>
