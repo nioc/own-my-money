@@ -71,6 +71,7 @@ export default {
     },
     notifyConnectivity (event) {
       this.isOnline = event.type === 'online'
+      this.$store.commit('setConnectivity', this.isOnline)
       let toast = {}
       toast.message = this.isOnline ? this.$t('labels.isOnline') : this.$t('labels.isOffline')
       toast.type = this.isOnline ? 'is-success' : 'is-danger'
@@ -97,6 +98,7 @@ export default {
     Bus.$on('user-logged', (user) => {
       this.user = user
     })
+    this.$store.commit('setConnectivity', this.isOnline)
     window.addEventListener('offline', this.notifyConnectivity)
     window.addEventListener('online', this.notifyConnectivity)
   }

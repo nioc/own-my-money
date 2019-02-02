@@ -51,7 +51,7 @@
         <user-connections v-if="this.user.sub" v-bind:id="this.user.sub"></user-connections>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-primary">{{ action }}</button>
+        <button class="button is-primary" :disabled="!isOnline">{{ action }}</button>
         <button class="button" type="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
       </footer>
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
@@ -78,6 +78,9 @@ export default {
   },
   computed: {
     isAdmin: {
+      isOnline: function () {
+        return this.$store.state.isOnline
+      },
       get: function () {
         return this.user.scope.includes('admin')
       },

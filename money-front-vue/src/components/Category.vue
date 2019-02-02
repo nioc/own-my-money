@@ -91,7 +91,7 @@
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
+                  <button class="button is-primary" :disabled="!isOnline"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
                 </div>
                 <div class="control">
                   <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.cancel') }}</a>
@@ -143,6 +143,11 @@ export default {
       breadcrumbItems: [],
       isLoading: false,
       error: null
+    }
+  },
+  computed: {
+    isOnline: function () {
+      return this.$store.state.isOnline
     }
   },
   methods: {

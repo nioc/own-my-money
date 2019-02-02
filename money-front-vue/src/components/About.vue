@@ -24,7 +24,7 @@
           </div>
         </div>
         <section class="content" v-if="!isUpToDate && this.user.scope.admin">
-          <button class="button is-primary" @click="update" :class="{ 'is-loading': isUpdating }" :disabled="isUpdating"><span class="icon"><i class="fa fa-wrench"/></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
+          <button class="button is-primary" @click="update" :class="{ 'is-loading': isUpdating }" :disabled="!isOnline || isUpdating"><span class="icon"><i class="fa fa-wrench"/></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
           <!-- eslint-disable-next-line vue/require-v-for-key-->
           <pre class="section content" v-if="updateLogs"><span class="is-block" v-for="updateLog in updateLogs">{{ updateLog.timestamp | moment("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
         </section>
@@ -57,6 +57,11 @@ export default {
       isUpdating: false,
       // resources
       rVersions: this.$resource(Config.API_URL + 'setup/versions/latest')
+    }
+  },
+  computed: {
+    isOnline: function () {
+      return this.$store.state.isOnline
     }
   },
   methods: {

@@ -70,7 +70,7 @@
             </div>
           </div>
           <div class="control">
-            <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-cogs"></i></span><span>{{ $t('actions.apply') }}</span></button>
+            <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="(batch.isLoading || !isOnline)"><span class="icon"><i class="fa fa-cogs"></i></span><span>{{ $t('actions.apply') }}</span></button>
           </div>
           <div class="control">
             <button class="button is-light" @click="selectAll" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-check-square-o"></i></span><span>{{ $t('actions.selectAll') }}</span></button>
@@ -166,6 +166,9 @@ export default {
     }
   },
   computed: {
+    isOnline: function () {
+      return this.$store.state.isOnline
+    },
     displayedTransactions: function () {
       let query = this.search.query
       let startDate = this.search.startDate

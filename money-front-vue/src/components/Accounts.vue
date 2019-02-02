@@ -37,12 +37,12 @@
         </div>
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true"><i class="fa fa-plus"/>&nbsp;{{ $t('actions.addAccount') }}</button>
+            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true" :disabled="!isOnline"><i class="fa fa-plus"/>&nbsp;{{ $t('actions.addAccount') }}</button>
           </p>
           <p class="control">
             <b-field class="file">
-              <b-upload v-model="upload.file" @input="uploadDataset" :disabled="upload.isUploading">
-                <a class="button is-primary">
+              <b-upload v-model="upload.file" @input="uploadDataset" :disabled="(!isOnline || upload.isUploading)">
+                <a class="button is-primary" :disabled="(!isOnline || upload.isUploading)">
                   <b-icon icon="upload"></b-icon>
                   <span>{{ $t('actions.uploadOfx') }}</span>
                 </a>
@@ -96,6 +96,11 @@ export default {
       // resources
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}'),
       rDatasets: this.$resource(Config.API_URL + 'dataset')
+    }
+  },
+  computed: {
+    isOnline: function () {
+      return this.$store.state.isOnline
     }
   },
   methods: {

@@ -28,8 +28,12 @@ Vue.use(VueResource)
 
 const store = new Vuex.Store({
   state: {
+    isOnline: null
   },
   mutations: {
+    setConnectivity (state, isOnline) {
+      state.isOnline = isOnline
+    }
   }
 })
 

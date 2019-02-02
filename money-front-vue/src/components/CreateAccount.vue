@@ -40,7 +40,7 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-primary">{{ $t('actions.create') }}</button>
+        <button class="button is-primary" :disabled="!isOnline">{{ $t('actions.create') }}</button>
         <button class="button" type="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
       </footer>
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
@@ -58,6 +58,11 @@ export default {
       isLoading: false,
       // resources
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}')
+    }
+  },
+  computed: {
+    isOnline: function () {
+      return this.$store.state.isOnline
     }
   },
   methods: {

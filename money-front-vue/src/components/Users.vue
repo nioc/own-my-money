@@ -32,7 +32,7 @@
 
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="create"><i class="fa fa-user-plus"/>&nbsp;{{ $t('actions.addUser') }}</button>
+            <button class="button is-primary" role="button" @click="create" :disabled="!isOnline"><i class="fa fa-user-plus"/>&nbsp;{{ $t('actions.addUser') }}</button>
           </p>
         </div>
         <div class="message is-danger" v-if="error">
@@ -76,6 +76,9 @@ export default {
     }
   },
   computed: {
+    isOnline: function () {
+      return this.$store.state.isOnline
+    },
     displayedUsers: function () {
       // return isAdmin boolean from user scope
       return this.users.slice().map(user => {

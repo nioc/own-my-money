@@ -41,7 +41,7 @@
           </div>
 
           <div class="has-text-centered" v-if="currentStep < steps.length-1">
-            <button class="button is-primary" :disabled="errors.any()"><span class="icon"><i class="fa fa-arrow-circle-right"/></span><span>{{ $t('actions.next') }}</span></button>
+            <button class="button is-primary" :disabled="!isOnline || errors.any()"><span class="icon"><i class="fa fa-arrow-circle-right"/></span><span>{{ $t('actions.next') }}</span></button>
           </div>
 
         </form>
@@ -75,6 +75,11 @@ export default {
       // resources
       rSteps: this.$resource(Config.API_URL + 'setup/steps{/code}'),
       rFields: this.$resource(Config.API_URL + 'setup/steps{/code}/fields')
+    }
+  },
+  computed: {
+    isOnline: function () {
+      return this.$store.state.isOnline
     }
   },
   methods: {

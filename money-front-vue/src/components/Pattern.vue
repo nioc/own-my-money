@@ -46,9 +46,9 @@
       </section>
 
       <footer class="modal-card-foot">
-        <button class="button is-primary"><span class="icon"><i class="fa fa-save"/></span><span>{{ $t('actions.save') }}</span></button>
+        <button class="button is-primary" :disabled="!isOnline"><span class="icon"><i class="fa fa-save"/></span><span>{{ $t('actions.save') }}</span></button>
         <button type="button" class="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
-        <button v-if="pattern.id" type="button" class="button is-danger" @click="deletePattern"><span class="icon"><i class="fa fa-trash"/></span><span>{{ $t('actions.delete') }}</span></button>
+        <button v-if="pattern.id" type="button" class="button is-danger" :disabled="!isOnline" @click="deletePattern"><span class="icon"><i class="fa fa-trash"/></span><span>{{ $t('actions.delete') }}</span></button>
       </footer>
 
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
@@ -69,6 +69,11 @@ export default {
       matchingCount: null,
       rTransactions: this.$resource(Config.API_URL + 'transactions'),
       isLoading: false
+    }
+  },
+  computed: {
+    isOnline: function () {
+      return this.$store.state.isOnline
     }
   },
   methods: {

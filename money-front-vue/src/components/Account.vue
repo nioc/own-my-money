@@ -20,8 +20,8 @@
             <div class="field is-grouped">
               <p class="control">
                 <b-field class="file">
-                  <b-upload v-model="upload.file" @input="uploadDataset" :disabled="upload.isUploading">
-                    <a class="button is-primary">
+                  <b-upload v-model="upload.file" @input="uploadDataset" :disabled="(!isOnline || upload.isUploading)">
+                    <a class="button is-primary" :disabled="(!isOnline || upload.isUploading)">
                       <b-icon icon="upload"></b-icon>
                       <span>{{ $t('actions.uploadOfxJson') }}</span>
                     </a>
@@ -114,8 +114,10 @@
                 </div>
                 <div class="field-body">
                   <div class="field">
-                    <button type="submit" class="button is-primary" role="button"><i class="fa fa-save"/>&nbsp;{{ $t('actions.save') }}</button>
-                    <button type="button" class="button is-danger" role="button" v-on:click="deleteAccount"><i class="fa fa-trash"/>&nbsp;{{ $t('actions.delete') }}</button>
+                    <div class="buttons">
+                      <button type="submit" class="button is-primary" role="button" :disabled="!isOnline"><i class="fa fa-save"/>&nbsp;{{ $t('actions.save') }}</button>
+                      <button type="button" class="button is-danger" role="button" :disabled="!isOnline" v-on:click="deleteAccount"><i class="fa fa-trash"/>&nbsp;{{ $t('actions.delete') }}</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -172,6 +174,9 @@ export default {
     }
   },
   computed: {
+    isOnline: function () {
+      return this.$store.state.isOnline
+    },
     accountTitle: function () {
       return this.account.label ? this.account.label : this.account.bankId + ' ' + this.account.branchId + ' ' + this.account.accountId
     }
