@@ -1,5 +1,10 @@
 module.exports = {
   pwa: {
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      importWorkboxFrom: 'local',
+      swSrc: 'src/service-worker.js'
+    },
     name: 'OwnMyMoney',
     themeColor: '#363636',
     msTileColor: '#363636',
