@@ -6,8 +6,11 @@ node_js:
   - "node"
   - "lts/*"
 
+before install:
+  - cd /home/travis/build/nioc/own-my-money/money-front-vue
+
 before_script:
-  - wget https://cs.symfony.com/download/php-cs-fixer-v2.phar
+  - cd /home/travis/build/nioc/own-my-money && wget https://cs.symfony.com/download/php-cs-fixer-v2.phar
 
 script:
   - cd /home/travis/build/nioc/own-my-money/money-front-vue && npm run lint
