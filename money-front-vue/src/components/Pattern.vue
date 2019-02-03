@@ -72,7 +72,7 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     }
   },
@@ -89,13 +89,13 @@ export default {
         onConfirm: () => {
           this.isLoading = true
           this.rPatterns.delete({ id: this.pattern.id })
-            .then(response => {
+            .then((response) => {
               // close modal and remove deleted pattern
               this.$parent.close()
               let patterns = this.$parent.$parent.patterns
-              let index = patterns.map(pattern => pattern.id).indexOf(this.pattern.id)
+              let index = patterns.map((pattern) => pattern.id).indexOf(this.pattern.id)
               patterns.splice(index, 1)
-            }, response => {
+            }, (response) => {
               // remove loading overlay when API replies
               this.isLoading = false
               if (response.body.message) {
@@ -116,10 +116,10 @@ export default {
           if (!this.pattern.id) {
             // create new pattern
             this.rPatterns.save(this.pattern)
-              .then(response => {
+              .then((response) => {
                 this.pattern.id = response.body.id
                 this.$parent.close()
-              }, response => {
+              }, (response) => {
                 // remove loading overlay when API replies
                 this.isLoading = false
                 if (response.body.message) {
@@ -132,9 +132,9 @@ export default {
           }
           this.rPatterns.update({ id: this.pattern.id }, this.pattern)
             // update existing pattern
-            .then(response => {
+            .then((response) => {
               this.$parent.close()
-            }, response => {
+            }, (response) => {
               // remove loading overlay when API replies
               this.isLoading = false
               if (response.body.message) {
@@ -148,10 +148,10 @@ export default {
     },
     count () {
       if (this.pattern.label) {
-        this.rTransactions.query({ pattern: this.pattern.label }).then(response => {
+        this.rTransactions.query({ pattern: this.pattern.label }).then((response) => {
           this.matchingCount = response.body.length
           console.log(response.body.length)
-        }, response => {
+        }, (response) => {
           // @TODO : add error handling
           console.error(response)
         })
@@ -159,12 +159,12 @@ export default {
     }
   },
   watch: {
-    'pattern.category': function () {
+    'pattern.category' () {
       // clear subcategory field if category has changed
       this.pattern.subcategory = ''
     }
   },
-  mounted: function () {
+  mounted () {
     this.getCategories(false)
   }
 }

@@ -15,7 +15,7 @@ export default {
   // send a request to the login URL and save the returned JWT
   login (context, creds, redirect) {
     context.$http.post(Config.API_URL + 'users/tokens', creds)
-      .then(response => {
+      .then((response) => {
         // store token
         this.handleToken(response.body)
         // send event for updating UI
@@ -27,7 +27,7 @@ export default {
         }
         // redirect to home
         context.$router.replace({ name: 'home' })
-      }, response => {
+      }, (response) => {
         context.isLoading = false
         if (response.body.message) {
           context.error = response.body.message

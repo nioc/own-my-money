@@ -85,14 +85,14 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     },
     dateUser: {
-      get: function () {
+      get () {
         return this.$moment(this.transaction.dateUser).toDate()
       },
-      set: function (newValue) {
+      set (newValue) {
         this.transaction.dateUser = this.$moment(newValue).format()
       }
     }
@@ -106,9 +106,9 @@ export default {
           this.isLoading = true
           this.transaction.amount = parseFloat(this.transaction.amount)
           this.rTransactions.update({ id: this.transaction.id }, this.transaction)
-            .then(response => {
+            .then((response) => {
               this.$parent.close()
-            }, response => {
+            }, (response) => {
               // remove loading overlay when API replies
               this.isLoading = false
               if (response.body.message) {
@@ -122,12 +122,12 @@ export default {
     }
   },
   watch: {
-    'transaction.category': function () {
+    'transaction.category' () {
       // clear subcategory field if category has changed
       this.transaction.subcategory = ''
     }
   },
-  mounted: function () {
+  mounted () {
     this.getCategories(false)
   }
 }

@@ -170,17 +170,17 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     },
-    displayedTransactions: function () {
+    displayedTransactions () {
       let query = this.search.query
       let startDate = this.search.startDate
       let endDate = this.search.endDate
       let category = this.search.category
       let subcategory = this.search.subcategory
       let transactions = this.transactions
-      transactions.map(t => {
+      transactions.map((t) => {
         t.categoryLabel = (t.category in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.category].label : null
         t.subcategoryLabel = (t.subcategory in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.subcategory].label : null
         t.fullname = (t.memo) ? t.memo + ' ' + t.name : t.name
@@ -194,7 +194,7 @@ export default {
         (!subcategory || transaction.subcategory === subcategory)
       })
     },
-    transactionsCheckedSum: function () {
+    transactionsCheckedSum () {
       return this.batch.checkedTransactions.length > 0 ? this.batch.checkedTransactions.reduce((sum, transaction) => sum + transaction.amount, 0) : 0
     }
   },
@@ -202,9 +202,9 @@ export default {
     // get transactions
     get () {
       this.isLoading = true
-      this.rTransactions.query({}).then(response => {
+      this.rTransactions.query({}).then((response) => {
         this.transactions = response.body
-      }, response => {
+      }, (response) => {
         // @TODO : add error handling
         console.error(response)
       }).finally(function () {
@@ -228,7 +228,7 @@ export default {
       }
     },
     downloadData () {
-      let transactions = JSON.parse(JSON.stringify(this.displayedTransactions)).map(t => {
+      let transactions = JSON.parse(JSON.stringify(this.displayedTransactions)).map((t) => {
         t.amount = this.$n(t.amount, { style: 'decimal', useGrouping: false })
         t.datePosted = this.$moment(t.datePosted).format('L')
         t.dateUser = this.$moment(t.dateUser).format('L')
@@ -264,8 +264,8 @@ export default {
             }
           }
           this.rTransactions.update({ id: transaction.id }, transaction)
-            .then(response => {
-            }, response => {
+            .then((response) => {
+            }, (response) => {
               if (response.body.message) {
                 this.batch.result += transaction.id + ' : ' + response.body.message + '. '
                 return
@@ -290,12 +290,12 @@ export default {
     }
   },
   watch: {
-    'search.category': function () {
+    'search.category' () {
       // clear subcategory search field if category has changed
       this.search.subcategory = ''
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
     this.getCategories(true)
     Bus.$on('transactions-updated', () => {

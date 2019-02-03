@@ -94,7 +94,7 @@ export default {
       })
     }
   },
-  mounted: function () {
+  mounted () {
     Bus.$on('user-logged', (user) => {
       this.user = user
     })

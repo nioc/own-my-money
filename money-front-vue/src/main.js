@@ -124,5 +124,5 @@ new Vue({
   router,
   i18n,
   store,
-  render: h => h(App)
+  render: (h) => h(App)
 }).$mount('#money')

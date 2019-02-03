@@ -53,11 +53,11 @@ export default {
     get () {
       this.isLoading = true
       this.rCategories.query({ status: 'all' })
-        .then(response => {
+        .then((response) => {
           this.categories = response.body
           // put categories in local storage for future usage
           localStorage.setItem('categories', JSON.stringify(this.categories))
-        }, response => {
+        }, (response) => {
         // @TODO : add error handling
           console.error(response)
         })
@@ -67,7 +67,7 @@ export default {
         })
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
   }
 }

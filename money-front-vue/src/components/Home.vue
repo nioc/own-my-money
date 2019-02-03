@@ -107,7 +107,7 @@ export default {
       }
     }
   },
-  mounted: function () {
+  mounted () {
     Bus.$on('category-selected', (category) => {
       if (!this.categorySelected.key || this.categorySelected.key !== category.key) {
         // clear previous subcategory pies

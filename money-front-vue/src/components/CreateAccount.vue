@@ -61,7 +61,7 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     }
   },
@@ -73,10 +73,10 @@ export default {
           this.isLoading = true
           // if validation is ok, call accounts API
           this.rAccounts.save(this.account)
-            .then(response => {
+            .then((response) => {
               this.$parent.$parent.getAccounts()
               this.$parent.close()
-            }, response => {
+            }, (response) => {
               if (response.body.message) {
                 this.error = response.body.message
                 return

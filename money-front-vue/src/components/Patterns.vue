@@ -101,7 +101,7 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     }
   },
@@ -109,9 +109,9 @@ export default {
     get () {
       this.isLoading = true
       this.rPatterns.query()
-        .then(response => {
+        .then((response) => {
           this.patterns = response.body
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -136,9 +136,9 @@ export default {
     suggest () {
       this.isLoading = true
       this.rTransactionsPatterns.query()
-        .then(response => {
+        .then((response) => {
           this.suggestedPatterns = response.body
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -156,7 +156,7 @@ export default {
       this.edit(pattern)
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
     this.getCategories()
   }

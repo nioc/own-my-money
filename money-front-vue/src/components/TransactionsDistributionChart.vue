@@ -72,7 +72,7 @@ export default {
           periodEnd: this.$moment(this.search.periodEnd).format('X')
         }
       }
-      this.$http.get(Config.API_URL + this.chartEndpoint, options).then(response => {
+      this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
         let values = response.data.values
         let colors = ['#42b983', '#292f36', '#4ecdc4', '#0b3954', '#ff6663', '#7d7c84', '#7180ac', '#2b4570', '#c84630', '#81a684', '#466060', '#c9cba3', '#e26d5c', '#2a4747', '#157a6e', '#ee6c4d']
         let count = values.length
@@ -125,15 +125,15 @@ export default {
           datasets: [
             {
               backgroundColor: colors,
-              data: values.map(point => point.amount)
+              data: values.map((point) => point.amount)
             }
           ]
         }
         let labels
         if (response.data.key === 'categories' || response.data.key === 'subcategories') {
-          labels = values.map(point => this.categoriesAndSubcategoriesLookup[point.key] ? this.categoriesAndSubcategoriesLookup[point.key].label : (point.key === null ? this.$t('labels.uncategorizedTransaction') : point.key))
+          labels = values.map((point) => this.categoriesAndSubcategoriesLookup[point.key] ? this.categoriesAndSubcategoriesLookup[point.key].label : (point.key === null ? this.$t('labels.uncategorizedTransaction') : point.key))
         } else {
-          labels = values.map(point => point.key)
+          labels = values.map((point) => point.key)
         }
         this.chartData.labels = labels
         this.options = {
@@ -153,7 +153,7 @@ export default {
         this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
         this.isLoading = false
         this.isLoaded = true
-      }, response => {
+      }, (response) => {
         if (response.body.message) {
           console.log(response.body.message)
           return

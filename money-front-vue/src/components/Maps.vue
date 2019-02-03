@@ -45,11 +45,11 @@ export default {
     get () {
       this.isLoading = true
       this.rMaps.query({})
-        .then(response => {
+        .then((response) => {
           this.maps = response.body
           // put maps in local storage for future usage
           localStorage.setItem('maps', JSON.stringify(this.maps))
-        }, response => {
+        }, (response) => {
         // @TODO : add error handling
           console.error(response)
         })
@@ -59,7 +59,7 @@ export default {
         })
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
   }
 }

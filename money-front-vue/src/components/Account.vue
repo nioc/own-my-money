@@ -174,10 +174,10 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     },
-    accountTitle: function () {
+    accountTitle () {
       return this.account.label ? this.account.label : this.account.bankId + ' ' + this.account.branchId + ' ' + this.account.accountId
     }
   },
@@ -185,7 +185,7 @@ export default {
     // get account informations
     get () {
       this.isLoading = true
-      this.rAccounts.get({ id: this.account.id }).then(response => {
+      this.rAccounts.get({ id: this.account.id }).then((response) => {
         this.account.bankId = response.body.bankId
         this.account.branchId = response.body.branchId
         this.account.accountId = response.body.accountId
@@ -193,7 +193,7 @@ export default {
         this.account.label = response.body.label
         this.updatedAccount = JSON.parse(JSON.stringify(this.account))
         delete (this.updatedAccount.transactions)
-      }, response => {
+      }, (response) => {
         if (response.status === 403 || response.status === 404) {
           // user does not can access this account, return to home
           this.$router.replace({ name: 'home' })
@@ -213,14 +213,14 @@ export default {
           this.isLoading = true
           // if validation is ok, call accounts API
           this.rAccounts.update({ id: this.account.id }, this.updatedAccount)
-            .then(response => {
+            .then((response) => {
               // this.getAccounts()
               this.account.bankId = response.body.bankId
               this.account.branchId = response.body.branchId
               this.account.accountId = response.body.accountId
               this.account.balance = response.body.balance
               this.account.label = response.body.label
-            }, response => {
+            }, (response) => {
               if (response.body.message) {
                 this.error = response.body.message
                 return
@@ -247,9 +247,9 @@ export default {
         onConfirm: () => {
           this.isLoading = true
           this.rAccounts.delete({ id: this.account.id })
-            .then(response => {
+            .then((response) => {
               this.$router.replace({ name: 'accounts' })
-            }, response => {
+            }, (response) => {
               // @TODO : add error handling
               console.error(response)
             })
@@ -267,11 +267,11 @@ export default {
         this.maps = JSON.parse(localStorage.getItem('maps'))
         return
       }
-      this.rMaps.get().then(response => {
+      this.rMaps.get().then((response) => {
         this.maps = response.body
         // put maps in local storage for future usage
         localStorage.setItem('maps', JSON.stringify(this.maps))
-      }, response => {
+      }, (response) => {
         // @TODO : add error handling
         console.error(response)
       })
@@ -301,12 +301,12 @@ export default {
       this.isLoading = true
       // call API
       this.rDatasets.save(params, data)
-        .then(response => {
+        .then((response) => {
           if (response.body.message) {
             this.upload.result = response.body.message
           }
           Bus.$emit('transactions-updated', {})
-        }, response => {
+        }, (response) => {
         // upload failed, inform user
           if (response.body.message) {
             this.upload.result = response.body.message
@@ -321,7 +321,7 @@ export default {
         })
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
     this.getMaps()
   }

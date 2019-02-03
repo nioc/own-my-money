@@ -76,12 +76,12 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     },
-    displayedUsers: function () {
+    displayedUsers () {
       // return isAdmin boolean from user scope
-      return this.users.slice().map(user => {
+      return this.users.slice().map((user) => {
         user.isAdmin = user.scope.includes('admin')
         return user
       })
@@ -91,9 +91,9 @@ export default {
     get () {
       this.isLoading = true
       this.rUsers.query()
-        .then(response => {
+        .then((response) => {
           this.users = response.body
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -117,7 +117,7 @@ export default {
       this.modalUser.isActive = true
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
   }
 }

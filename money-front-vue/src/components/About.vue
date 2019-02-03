@@ -60,19 +60,19 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     }
   },
   methods: {
     get () {
       this.rVersions.query()
-        .then(response => {
+        .then((response) => {
           this.version = response.body
           if (this.version.installed !== this.version.latest) {
             this.isUpToDate = false
           }
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             console.log(response.body.message)
             return
@@ -88,10 +88,10 @@ export default {
       this.updateLogs = ''
       this.isUpdating = true
       this.rVersions.save()
-        .then(response => {
+        .then((response) => {
           this.updateLogs = response.body
           this.get()
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.updateLogs = response.body.message
             return
@@ -104,7 +104,7 @@ export default {
         })
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
   }
 }

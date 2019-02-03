@@ -129,7 +129,7 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     }
   },
@@ -141,8 +141,8 @@ export default {
           this.isLoading = true
           // if validation is ok, call user API
           this.rUsers.update({ id: this.user.id }, { sub: this.user.id, login: this.user.login, password: this.password, mail: this.user.mail })
-            .then(response => {
-            }, response => {
+            .then((response) => {
+            }, (response) => {
               if (response.body.message) {
                 this.error = response.body.message
                 return

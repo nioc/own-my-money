@@ -77,11 +77,11 @@ export default {
     }
   },
   computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    },
     isAdmin: {
-      isOnline: function () {
-        return this.$store.state.isOnline
-      },
-      get: function () {
+      get () {
         return this.user.scope.includes('admin')
       },
       set: function (isAdmin) {
@@ -104,9 +104,9 @@ export default {
           if (!this.user.sub) {
             // creating new user
             this.rUsers.save(this.user)
-              .then(response => {
+              .then((response) => {
                 this.$parent.close()
-              }, response => {
+              }, (response) => {
                 if (response.body.message) {
                   this.error = response.body.message
                   return
@@ -121,9 +121,9 @@ export default {
           }
           // updating user
           this.rUsers.update({ id: this.user.sub }, this.user)
-            .then(response => {
+            .then((response) => {
               this.$parent.close()
-            }, response => {
+            }, (response) => {
               if (response.body.message) {
                 this.error = response.body.message
                 return
@@ -138,7 +138,7 @@ export default {
       })
     }
   },
-  mounted: function () {
+  mounted () {
     this.action = this.user.sub ? this.$t('actions.update') : this.$t('actions.create')
   }
 }

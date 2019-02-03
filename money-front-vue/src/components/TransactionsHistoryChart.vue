@@ -96,7 +96,7 @@ export default {
       if (this.search.timeUnit !== '') {
         options.params.timeUnit = this.search.timeUnit
       }
-      this.$http.get(Config.API_URL + this.chartEndpoint, options).then(response => {
+      this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
         let vm = this
         this.labelCallback = function (tooltipItem, data) {
           return data.datasets[tooltipItem.datasetIndex].label + ': ' + vm.$n(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index], 'currency')
@@ -104,27 +104,27 @@ export default {
         this.chartData = {
           datasets: [
             {
-              data: response.data.values.map(point => point.debit),
+              data: response.data.values.map((point) => point.debit),
               label: this.$t('labels.debits'),
               backgroundColor: 'rgba(255, 99, 132, 0.5)',
               borderColor: 'rgb(255, 99, 132)',
               pointBackgroundColor: 'rgba(255, 99, 132, 0.8)'
             },
             {
-              data: response.data.values.map(point => point.credit),
+              data: response.data.values.map((point) => point.credit),
               label: this.$t('labels.credits'),
               backgroundColor: 'rgba(66, 185, 131, 0.5)',
               borderColor: 'rgb(66, 185, 131)',
               pointBackgroundColor: 'rgba(66, 185, 131, 0.8)'
             }
           ],
-          labels: response.data.values.map(point => this.$moment(point.date))
+          labels: response.data.values.map((point) => this.$moment(point.date))
         }
         this.search.periodStart = this.$moment(response.data.periodStart).toDate()
         this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
         this.isLoading = false
         this.isLoaded = true
-      }, response => {
+      }, (response) => {
         if (response.body.message) {
           console.log(response.body.message)
           return

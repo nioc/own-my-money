@@ -217,7 +217,7 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     }
   },
@@ -226,9 +226,9 @@ export default {
     get () {
       this.isLoading = true
       this.rMaps.get({ code: this.$route.params.code })
-        .then(response => {
+        .then((response) => {
           this.map = response.body
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -253,10 +253,10 @@ export default {
         onConfirm: () => {
           this.isLoading = true
           this.rMaps.delete({ code: this.$route.params.code })
-            .then(response => {
+            .then((response) => {
               localStorage.removeItem('maps')
               this.$router.replace({ name: 'maps' })
-            }, response => {
+            }, (response) => {
               // remove loading overlay when API replies
               this.isLoading = false
               if (response.body.message) {
@@ -278,11 +278,11 @@ export default {
           if (this.isNew) {
             // creating new map
             this.rMaps.save(this.map)
-              .then(response => {
+              .then((response) => {
                 // return to maps
                 localStorage.removeItem('maps')
                 this.$router.replace({ name: 'maps' })
-              }, response => {
+              }, (response) => {
                 // remove loading overlay when API replies
                 this.isLoading = false
                 if (response.body.message) {
@@ -295,11 +295,11 @@ export default {
           }
           // updating map
           this.rMaps.update({ code: this.$route.params.code }, this.map)
-            .then(response => {
+            .then((response) => {
               // return to maps
               localStorage.removeItem('maps')
               this.$router.replace({ name: 'maps' })
-            }, response => {
+            }, (response) => {
               // remove loading overlay when API replies
               this.isLoading = false
               if (response.body.message) {
@@ -312,7 +312,7 @@ export default {
       })
     }
   },
-  mounted: function () {
+  mounted () {
     if (!this.isNew) {
       // for existing map, get data
       this.get()

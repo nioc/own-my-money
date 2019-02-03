@@ -99,7 +99,7 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     }
   },
@@ -107,9 +107,9 @@ export default {
     getAccounts () {
       this.isLoading = true
       this.rAccounts.query()
-        .then(response => {
+        .then((response) => {
           this.accounts = response.body
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -138,12 +138,12 @@ export default {
       this.isLoading = true
       // call API
       this.rDatasets.save({}, data)
-        .then(response => {
+        .then((response) => {
           if (response.body.message) {
             this.upload.result = response.body.message
           }
           this.getAccounts()
-        }, response => {
+        }, (response) => {
         // upload failed, inform user
           if (response.body.message) {
             this.upload.result = response.body.message
@@ -158,7 +158,7 @@ export default {
         })
     }
   },
-  mounted: function () {
+  mounted () {
     this.getAccounts()
   }
 }

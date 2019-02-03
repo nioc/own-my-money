@@ -61,15 +61,15 @@ export default {
     }
   },
   computed: {
-    isOnline: function () {
+    isOnline () {
       return this.$store.state.isOnline
     },
-    isDisabled: function () {
+    isDisabled () {
       return !this.isOnline || this.isLoading || this.errors.any()
     }
   },
   methods: {
-    submit: function (e) {
+    submit (e) {
       // prevent form submit
       e.preventDefault()
       // call the async validator
