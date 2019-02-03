@@ -25,7 +25,7 @@ In order to contribute to the VueJS frontend:
   - Vue-cli `npm install -g vue-cli,`
 1. Access the frontend folder in a shell `cd /var/www/money/money-front-vue`
 2. Build the project `npm install` and wait for the downloads
-3. Start the node server `npm run dev`
+3. Start the node server `npm run serve`
 4. Edit the code!
 
 #### Translations
