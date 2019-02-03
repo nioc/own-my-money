@@ -114,6 +114,9 @@
             </div>
         </section>
       </template>
+      <template slot="bottom-left">
+        <a class="button is-light" @click="downloadData"><span class="icon"><i class="fa fa-download fa-lg"></i></span><span>{{ $t('actions.download') }}</span></a>
+      </template>
     </b-table>
     <b-modal :active.sync="modalTransaction.isActive" has-modal-card scroll="keep">
       <transaction v-bind:transaction="modalTransaction.transaction" v-bind:rTransactions="rTransactions"></transaction>
@@ -125,6 +128,7 @@
 import Bus from './../services/Bus'
 import Transaction from '@/components/Transaction'
 import CategoriesFactory from './../services/Categories'
+import exportFromJSON from 'export-from-json'
 export default {
   name: 'transactions',
   components: {
@@ -222,6 +226,26 @@ export default {
           this.batch.checkedTransactions.push(item)
         }
       }
+    },
+    downloadData () {
+      let transactions = JSON.parse(JSON.stringify(this.displayedTransactions)).map(t => {
+        t.amount = this.$n(t.amount, { style: 'decimal', useGrouping: false })
+        t.datePosted = this.$moment(t.datePosted).format('L')
+        t.dateUser = this.$moment(t.dateUser).format('L')
+        delete (t.id)
+        delete (t.fitid)
+        delete (t.type)
+        delete (t.category)
+        delete (t.subcategory)
+        delete (t.fullname)
+        for (var property in t) {
+          if (t[property] === null) {
+            t[property] = ''
+          }
+        }
+        return t
+      })
+      exportFromJSON({ data: transactions, fileName: 'transactions', exportType: exportFromJSON.types.csv, withBOM: true })
     },
     processBatchUpdate () {
       let length = this.batch.checkedTransactions.length

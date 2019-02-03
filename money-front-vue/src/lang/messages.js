@@ -52,6 +52,7 @@ export default {
       deleteMap: 'Delete mapping',
       addAccount: 'Add account',
       deleteAccount: 'Delete account',
+      download: 'Download',
       uploadOfxJson: 'Upload OFX/JSON',
       uploadOfx: 'Upload OFX',
       updateTo: 'Update to'
@@ -176,6 +177,7 @@ export default {
       deleteMap: 'Supprimer la correspondance',
       addAccount: 'Ajouter un compte',
       deleteAccount: 'Supprimer le compte',
+      download: 'Télécharger',
       uploadOfxJson: 'Téléverser OFX/JSON',
       uploadOfx: 'Téléverser OFX',
       updateTo: 'Mise à jour vers'
