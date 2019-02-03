@@ -3,6 +3,7 @@
 [![license: AGPLv3](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![GitHub release](https://img.shields.io/github/release/nioc/own-my-money.svg)](https://github.com/nioc/own-my-money/releases/latest)
 [![Codacy grade](https://img.shields.io/codacy/grade/dcddd6d1c1284ea496b9a1015e775b2d.svg)](https://www.codacy.com/app/nioc/own-my-money)
+[![Build Status](https://travis-ci.org/nioc/own-my-money.svg?branch=master)](https://travis-ci.org/nioc/own-my-money)
 
 Own my money is a simple way to stay on top of your banking from any web browser.
 
@@ -13,6 +14,8 @@ Own my money is a simple way to stay on top of your banking from any web browser
 - transactions classification (manual and automatic using data mining),
 - budget repartition analysis,
 - transactions annotations for your memory,
+- export transactions to CSV,
+- progressive web app (offline access),
 - internationalized and localized.
 
 [Live demo](https://nioc.github.io/own-my-money).
