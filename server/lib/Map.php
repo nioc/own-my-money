@@ -83,7 +83,7 @@ class Map
         $query->bindValue(':code', $this->code, PDO::PARAM_STR);
         if ($query->execute()) {
             //return array of attributes
-            $this->attributes = array_map('reset',$query->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP));
+            $this->attributes = array_map('reset', $query->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP));
             return $this->attributes;
         }
         return [];
