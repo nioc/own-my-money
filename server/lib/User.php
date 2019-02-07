@@ -34,6 +34,10 @@ class User
      */
     public $scope;
     /**
+     * @var string User language
+     */
+    public $language;
+    /**
      * @var int User login attempts failed
      */
     public $loginAttemptFailed;
@@ -228,12 +232,13 @@ class User
         if (is_int($this->id)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
             $connection = new DatabaseConnection();
-            $query = $connection->prepare('UPDATE `user` SET `login`=:login, `scope`=:scope, `status`=:status, `mail`=:mail WHERE `id`=:id;');
+            $query = $connection->prepare('UPDATE `user` SET `login`=:login, `scope`=:scope, `status`=:status, `mail`=:mail, `language`=:language WHERE `id`=:id;');
             $query->bindValue(':id', $this->id, PDO::PARAM_INT);
             $query->bindValue(':login', $this->login, PDO::PARAM_STR);
             $query->bindValue(':scope', $this->scope, PDO::PARAM_STR);
             $query->bindValue(':status', $this->status, PDO::PARAM_BOOL);
             $query->bindValue(':mail', $this->mail, PDO::PARAM_STR);
+            $query->bindValue(':language', $this->language, PDO::PARAM_STR);
             if ($query->execute()) {
                 //return true to indicate a successful user update
                 return true;
@@ -604,6 +609,7 @@ class User
         $user->login = $this->login;
         $user->status = (bool) $this->status;
         $user->mail = $this->mail;
+        $user->language = $this->language;
         //get user scope as a list of space-delimited strings (see https://tools.ietf.org/html/rfc6749#section-3.3)
         $user->scope = $this->scope;
         //returns the user public profile

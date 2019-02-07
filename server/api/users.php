@@ -129,6 +129,7 @@ switch ($api->method) {
         if ($api->checkParameterExists('status', $postedUser->status)) {
             $postedUser->status = boolval($postedUser->status);
         }
+        $api->checkParameterExists('language', $postedUser->language);
         $user = new User($postedUser->id);
         if (!$user->get()) {
             $api->output(404, $api->getMessage('userNotFound'));

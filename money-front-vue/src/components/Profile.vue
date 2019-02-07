@@ -76,6 +76,25 @@
 
           <div class="field is-horizontal">
             <div class="field-label is-normal">
+              <label class="label">{{ $t('fieldnames.language') }}</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <div class="select">
+                    <select name="language" v-model="user.language">
+                      <option value="">{{ $t('labels.automatic') }}</option>
+                      <option value="fr">Français</option>
+                      <option value="en">English</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
             </div>
             <div class="field-body">
               <div class="field is-grouped">
@@ -140,7 +159,7 @@ export default {
         if (result) {
           this.isLoading = true
           // if validation is ok, call user API
-          this.rUsers.update({ id: this.user.id }, { sub: this.user.id, login: this.user.login, password: this.password, mail: this.user.mail })
+          this.rUsers.update({ id: this.user.id }, { sub: this.user.id, login: this.user.login, password: this.password, mail: this.user.mail, language: this.user.language })
             .then((response) => {
             }, (response) => {
               if (response.body.message) {

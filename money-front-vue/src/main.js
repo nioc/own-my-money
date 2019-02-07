@@ -38,6 +38,9 @@ const store = new Vuex.Store({
 })
 
 let locale = navigator.language
+if (Auth.getProfile() && Auth.user.language) {
+  locale = Auth.user.language
+}
 
 const i18n = new VueI18n({
   fallbackLocale: 'en',

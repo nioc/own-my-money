@@ -62,6 +62,7 @@ export default {
       this.user.id = payload.id
       this.user.login = payload.login
       this.user.mail = payload.mail
+      this.user.language = payload.language
       let scope = {}
       if (payload.scope) {
         payload.scope.split(' ').forEach(function (role) { scope[role] = true })

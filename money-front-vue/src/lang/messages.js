@@ -25,6 +25,7 @@ export default {
       ipAddress: 'IP address',
       userAgent: 'User agent',
       admin: 'Admin',
+      language: 'Language',
       balance: 'Balance',
       updated: 'Updated'
     },
@@ -150,6 +151,7 @@ export default {
       ipAddress: 'Adresse IP',
       userAgent: 'User agent',
       admin: 'Admin',
+      language: 'Langue',
       balance: 'Solde',
       updated: 'Mise à jour'
     },
