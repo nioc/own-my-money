@@ -102,6 +102,15 @@ switch ($api->method) {
         if ($api->checkParameterExists('label', $label)) {
             $account->label = $label;
         }
+        if ($api->checkParameterExists('duration', $duration)) {
+            try {
+                new DateInterval($duration);
+                $account->duration = $duration;
+            } catch (Exception $e) {
+                $api->output(400, $api->getMessage('invalidDuration'));
+                return;
+            }
+        }
         if ($account->update()) {
             $api->output(200, $account->structureData());
             return;

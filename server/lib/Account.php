@@ -34,6 +34,10 @@ class Account
      */
     public $label;
     /**
+     * @var string Transactions query default duration
+     */
+    public $duration;
+    /**
      * @var float Current account balance
      */
     public $balance;
@@ -93,12 +97,13 @@ class Account
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('UPDATE `account` SET `bankId`=:bankId, `branchId`=:branchId, `accountId`=:accountId, `label`=:label, `balance`=:balance, `lastUpdate`=UNIX_TIMESTAMP() WHERE `id`=:id;');
+        $query = $connection->prepare('UPDATE `account` SET `bankId`=:bankId, `branchId`=:branchId, `accountId`=:accountId, `label`=:label, `duration`=:duration, `balance`=:balance, `lastUpdate`=UNIX_TIMESTAMP() WHERE `id`=:id;');
         $query->bindValue(':id', $this->id, PDO::PARAM_INT);
         $query->bindValue(':bankId', $this->bankId, PDO::PARAM_STR);
         $query->bindValue(':branchId', $this->branchId, PDO::PARAM_STR);
         $query->bindValue(':accountId', $this->accountId, PDO::PARAM_STR);
         $query->bindValue(':label', $this->label, PDO::PARAM_STR);
+        $query->bindValue(':duration', $this->duration, PDO::PARAM_STR);
         $query->bindValue(':balance', $this->balance, PDO::PARAM_INT);
         if ($query->execute()) {
             //returns update was successfully processed

@@ -60,6 +60,7 @@ en {
     mapUpdateError { "Error during map update" }
     mapAttributesUpdateError { "Error during attributes update" }
     patternUpdateError { "Error during pattern update" }
+    invalidDuration { "Invalid duration" }
     unknownInstalledVersion { "Unknown installed version" }
     stepSetupDataAccess { "Setup database access" }
     stepCreateDatabase { "Create database" }

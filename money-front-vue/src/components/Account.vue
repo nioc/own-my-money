@@ -15,7 +15,7 @@
         <b-tabs type="is-boxed" :animated="false">
 
           <b-tab-item :label="$tc('objects.transaction', 2)" icon="file-text-o" class="has-half-margin-mobile">
-            <transactions v-bind:url="url"/>
+            <transactions :url="url" :duration="account.duration"/>
 
             <div class="field is-grouped">
               <p class="control">
@@ -111,6 +111,27 @@
 
               <div class="field is-horizontal">
                 <div class="field-label is-normal">
+                  <label class="label">{{ $t('fieldnames.duration') }}</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <div class="control">
+                      <div class="select">
+                        <select v-model="updatedAccount.duration">
+                          <option value="P1M">{{ $tc('objects.lastMonth', 1) }}</option>
+                          <option value="P3M">{{ $tc('objects.lastMonth', 3) }}</option>
+                          <option value="P6M">{{ $tc('objects.lastMonth', 6) }}</option>
+                          <option value="P1Y">{{ $tc('objects.lastYear', 1) }}</option>
+                          <option value="P2Y">{{ $tc('objects.lastYear', 2) }}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field is-horizontal">
+                <div class="field-label is-normal">
                 </div>
                 <div class="field-body">
                   <div class="field">
@@ -152,6 +173,7 @@ export default {
         accountId: '',
         label: '',
         balance: 0,
+        duration: 'P3M',
         transactions: []
       },
       isLoading: false,
@@ -191,6 +213,7 @@ export default {
         this.account.accountId = response.body.accountId
         this.account.balance = response.body.balance
         this.account.label = response.body.label
+        this.account.duration = response.body.duration
         this.updatedAccount = JSON.parse(JSON.stringify(this.account))
         delete (this.updatedAccount.transactions)
       }, (response) => {

@@ -60,6 +60,7 @@ fr {
     mapUpdateError { "Erreur lors de la mise à jour de la correspondance" }
     mapAttributesUpdateError { "Erreur lors de la mise à jour des attributs de la correspondance" }
     patternUpdateError { "Erreur lors de la mise à jour du modèle" }
+    invalidDuration { "La durée n'est pas valide" }
     unknownInstalledVersion { "La version installée est inconnue" }
     stepSetupDataAccess { "Mise en place base de données" }
     stepCreateDatabase { "Création schéma base de données" }

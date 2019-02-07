@@ -134,7 +134,17 @@ export default {
   components: {
     Transaction
   },
-  props: ['url'],
+  props: {
+    url: {
+      required: true,
+      type: String
+    },
+    duration: {
+      required: false,
+      type: String,
+      default: 'P3M'
+    }
+  },
   mixins: [CategoriesFactory],
   data () {
     const today = new Date()
@@ -156,7 +166,7 @@ export default {
         isActive: false,
         query: '',
         currentDate: today,
-        startDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
+        startDate: this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate(),
         endDate: today,
         category: '',
         subcategory: ''
@@ -293,6 +303,11 @@ export default {
     'search.category' () {
       // clear subcategory search field if category has changed
       this.search.subcategory = ''
+    },
+    duration () {
+      const today = new Date()
+      today.setHours(0, 0, 0)
+      this.search.startDate = this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate()
     }
   },
   mounted () {
