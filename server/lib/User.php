@@ -301,14 +301,22 @@ class User
     /**
      * Return all user transactions.
      *
+     * @param int $periodStart Start timestamp for requesting
+     * @param int $periodEnd End timestamp for requesting
+     *
      * @return array User transactions
      */
-    public function getTransactions()
+    public function getTransactions($periodStart = 0, $periodEnd = null)
     {
+        if ($periodEnd === null) {
+            $periodEnd = time();
+        }
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT `transaction`.*, `account`.`hasIcon`, `account`.`label` AS `accountLabel` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user;');
+        $query = $connection->prepare('SELECT `transaction`.*, `account`.`hasIcon`, `account`.`label` AS `accountLabel` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd;');
         $query->bindValue(':user', $this->id, PDO::PARAM_STR);
+        $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
+        $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
         if ($query->execute()) {
             //return array of accounts
             return $query->fetchAll(PDO::FETCH_CLASS, 'Transaction');

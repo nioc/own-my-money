@@ -16,10 +16,10 @@
               </span>
             </div>
             <div class="control">
-              <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodStart"></b-datepicker>
+              <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodStart" @input="get()"></b-datepicker>
             </div>
             <div class="control">
-              <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodEnd"></b-datepicker>
+              <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodEnd" @input="get()"></b-datepicker>
             </div>
             <div class="control">
               <div class="select">
@@ -223,7 +223,11 @@ export default {
     // get transactions
     get () {
       this.isLoading = true
-      this.rTransactions.query({}).then((response) => {
+      let params = {
+        periodStart: this.$moment(this.search.periodStart).format('X'),
+        periodEnd: this.$moment(this.search.periodEnd).format('X')
+      }
+      this.rTransactions.query(params).then((response) => {
         this.transactions = response.body
         this.transactions.map((transaction) => {
           transaction.iconUrl = transaction.iconUrl ? Config.API_URL + transaction.iconUrl : null

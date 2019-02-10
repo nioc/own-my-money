@@ -179,15 +179,23 @@ class Account
     /**
      * Return all account transactions.
      *
+     * @param int $periodStart Start timestamp for requesting
+     * @param int $periodEnd End timestamp for requesting
+     *
      * @return array All account transactions
      */
-    public function getTransactions()
+    public function getTransactions($periodStart = 0, $periodEnd = null)
     {
+        if ($periodEnd === null) {
+            $periodEnd = time();
+        }
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT * FROM `transaction` WHERE `aid` = :aid ORDER BY `datePosted` DESC;');
+        $query = $connection->prepare('SELECT * FROM `transaction` WHERE `aid` = :aid AND `datePosted` > :periodStart AND `datePosted` < :periodEnd ORDER BY `datePosted` DESC;');
         $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
+        $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
         if ($query->execute()) {
             //return array of transactions
             return $query->fetchAll(PDO::FETCH_CLASS, 'Transaction');

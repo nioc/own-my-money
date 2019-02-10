@@ -18,6 +18,8 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
+        $api->checkParameterExists('periodStart', $periodStart);
+        $api->checkParameterExists('periodEnd', $periodEnd);
         if (!$api->checkParameterExists('aid', $aid)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
             $user = new User($api->requesterId);
@@ -30,8 +32,8 @@ switch ($api->method) {
                     return;
                 }
             } else {
-                //return all user transactions
-                $transactionsList = $user->getTransactions();
+                //return all user transactions (in date interval)
+                $transactionsList = $user->getTransactions($periodStart, $periodEnd);
             }
             $transactions = array();
             foreach ($transactionsList as $transaction) {
@@ -61,8 +63,8 @@ switch ($api->method) {
             //return requested transaction
             return;
         }
-        //Request all transactions of the account
-        $transactionsList = $account->getTransactions();
+        //Request all transactions of the account (in date interval)
+        $transactionsList = $account->getTransactions($periodStart, $periodEnd);
         $transactions = array();
         foreach ($transactionsList as $transaction) {
             array_push($transactions, $transaction->structureData());
