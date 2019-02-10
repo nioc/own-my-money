@@ -107,6 +107,7 @@
           {{ props.row.datePosted | moment("L") }}
         </b-table-column>
         <b-table-column field="category" :label="$tc('objects.category', 1)" sortable>
+          <span class="icon" v-if="props.row.categoryIcon"><i class="fa fa-fw" :class="props.row.categoryIcon"></i></span>
           {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
         </b-table-column>
       </template>
@@ -201,6 +202,7 @@ export default {
       let transactions = this.transactions
       transactions.map((t) => {
         t.categoryLabel = (t.category in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.category].label : null
+        t.categoryIcon = (t.category in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.category].icon : null
         t.subcategoryLabel = (t.subcategory in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.subcategory].label : null
         t.fullname = (t.memo) ? t.memo + ' ' + t.name : t.name
         return t
