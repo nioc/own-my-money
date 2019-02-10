@@ -95,7 +95,7 @@
     <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" @select="edit" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
       <template slot-scope="props">
         <b-table-column field="icon" v-if="displayAccount">
-          <div class="icon-account"><img v-if="props.row.iconUrl" :src="props.row.iconUrl"></div>
+          <span class="icon-transactions-account"><img v-if="props.row.iconUrl" :src="props.row.iconUrl" :title="props.row.accountLabel" height="24" width="24"><span class="is-hidden-tablet">{{ props.row.accountLabel }}</span></span>
         </b-table-column>
         <b-table-column field="amount" :label="$t('fieldnames.amount')" sortable numeric>
           <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
