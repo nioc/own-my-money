@@ -292,7 +292,9 @@ class Transaction
             $transaction->subcategory= (int) $transaction->subcategory;
         }
         if (isset($transaction->hasIcon)) {
-            $transaction->iconUrl= "/accounts/$transaction->aid/icons";
+            if ($transaction->hasIcon) {
+                $transaction->iconUrl= "accounts/$transaction->aid/icons";
+            }
             unset($transaction->hasIcon);
         }
         unset($transaction->aid);

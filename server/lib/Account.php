@@ -348,7 +348,7 @@ class Account
             $account->lastUpdate= date('c', $account->lastUpdate);
         }
         if ($this->hasIcon) {
-            $account->iconUrl = "/accounts/$this->id/icons";
+            $account->iconUrl = "accounts/$this->id/icons";
         }
         unset($account->hasIcon);
         unset($account->transactions);
