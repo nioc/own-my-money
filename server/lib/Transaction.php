@@ -291,6 +291,10 @@ class Transaction
         if (isset($transaction->subcategory)) {
             $transaction->subcategory= (int) $transaction->subcategory;
         }
+        if (isset($transaction->hasIcon)) {
+            $transaction->iconUrl= "/accounts/$transaction->aid/icons";
+            unset($transaction->hasIcon);
+        }
         unset($transaction->aid);
         //return structured transaction
         return $transaction;

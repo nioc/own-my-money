@@ -94,6 +94,9 @@
 
     <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" @select="edit" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
       <template slot-scope="props">
+        <b-table-column field="icon" v-if="displayAccount">
+          <div class="icon-account"><img v-if="props.row.iconUrl" :src="props.row.iconUrl"></div>
+        </b-table-column>
         <b-table-column field="amount" :label="$t('fieldnames.amount')" sortable numeric>
           <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
         </b-table-column>
@@ -129,6 +132,7 @@ import Bus from './../services/Bus'
 import Transaction from '@/components/Transaction'
 import CategoriesFactory from './../services/Categories'
 import exportFromJSON from 'export-from-json'
+import Config from './../services/Config'
 export default {
   name: 'transactions',
   components: {
@@ -138,6 +142,11 @@ export default {
     url: {
       required: true,
       type: String
+    },
+    displayAccount: {
+      required: false,
+      type: Boolean,
+      default: false
     },
     duration: {
       required: false,
@@ -214,6 +223,10 @@ export default {
       this.isLoading = true
       this.rTransactions.query({}).then((response) => {
         this.transactions = response.body
+        this.transactions.map((transaction) => {
+          transaction.iconUrl = transaction.iconUrl ? Config.API_URL + transaction.iconUrl : null
+          return transaction
+        })
       }, (response) => {
         // @TODO : add error handling
         console.error(response)

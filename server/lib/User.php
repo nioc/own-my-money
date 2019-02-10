@@ -307,7 +307,7 @@ class User
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT `transaction`.* FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user;');
+        $query = $connection->prepare('SELECT `transaction`.*, `account`.`hasIcon` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user;');
         $query->bindValue(':user', $this->id, PDO::PARAM_STR);
         if ($query->execute()) {
             //return array of accounts

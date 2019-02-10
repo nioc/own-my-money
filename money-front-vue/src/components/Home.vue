@@ -72,7 +72,7 @@
       </div>
       <div class="container box">
         <h1 class="title">{{ $tc('objects.transaction', 2) }}</h1>
-        <transactions v-bind:url="url"/>
+        <transactions :url="url" :displayAccount="true"/>
       </div>
     </div>
   </section>
