@@ -16,10 +16,10 @@
               </span>
             </div>
             <div class="control">
-              <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" v-model="search.startDate"></b-datepicker>
+              <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodStart"></b-datepicker>
             </div>
             <div class="control">
-              <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" v-model="search.endDate"></b-datepicker>
+              <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodEnd"></b-datepicker>
             </div>
             <div class="control">
               <div class="select">
@@ -176,8 +176,8 @@ export default {
         isActive: false,
         query: '',
         currentDate: today,
-        startDate: this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate(),
-        endDate: today,
+        periodStart: this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate(),
+        periodEnd: today,
         category: '',
         subcategory: ''
       },
@@ -195,8 +195,8 @@ export default {
     },
     displayedTransactions () {
       let query = this.search.query
-      let startDate = this.search.startDate
-      let endDate = this.search.endDate
+      let periodStart = this.search.periodStart
+      let periodEnd = this.search.periodEnd
       let category = this.search.category
       let subcategory = this.search.subcategory
       let transactions = this.transactions
@@ -209,8 +209,8 @@ export default {
       })
       return transactions.filter(function (transaction) {
         return (transaction.note + transaction.fullname).toLowerCase().indexOf(query.toLowerCase()) > -1 &
-        new Date(Date.parse(transaction.datePosted)) >= startDate &
-        new Date(Date.parse(transaction.datePosted)) <= endDate &
+        new Date(Date.parse(transaction.datePosted)) >= periodStart &
+        new Date(Date.parse(transaction.datePosted)) <= periodEnd &
         (!category || transaction.category === category) &
         (!subcategory || transaction.subcategory === subcategory)
       })
@@ -322,7 +322,7 @@ export default {
     duration () {
       const today = new Date()
       today.setHours(0, 0, 0)
-      this.search.startDate = this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate()
+      this.search.periodStart = this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate()
     }
   },
   mounted () {
@@ -332,9 +332,9 @@ export default {
       this.get()
     })
     Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.endDate.getTime() !== search.periodStart.getTime()) || (this.search.startDate.getTime() !== search.periodEnd.getTime())) {
-        this.search.startDate = search.periodStart
-        this.search.endDate = search.periodEnd
+      if ((this.search.periodEnd.getTime() !== search.periodStart.getTime()) || (this.search.periodStart.getTime() !== search.periodEnd.getTime())) {
+        this.search.periodStart = search.periodStart
+        this.search.periodEnd = search.periodEnd
       }
     })
   },
