@@ -76,3 +76,20 @@ $input-shadow: none;
 }
 
 @import "~buefy/src/scss/buefy";
+
+td.icon-account {
+  padding: 0 0 0 12px;
+  vertical-align: middle;
+  width: 36px;
+  img {
+    vertical-align: middle;
+  }
+}
+
+.icon-account-admin {
+  border-width: 1px 0 1px 1px;
+  border-radius: 4px 0 0 4px;
+  height: 36px;
+  border-color: rgb(219, 219, 219);
+  border-style: solid;
+}

@@ -132,6 +132,39 @@
 
               <div class="field is-horizontal">
                 <div class="field-label is-normal">
+                  <label class="label">{{ $t('fieldnames.icon') }}</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <div class="control">
+                      <b-field class="file">
+                      <img v-if="account.iconUrl" :src="account.iconUrl" class="icon-account-admin"/>
+                        <b-upload v-model="icon.file" @input="uploadIcon" :disabled="(!isOnline || icon.isUploading)" accept="image/*">
+                          <a class="button" :disabled="(!isOnline || icon.isUploading)">
+                            <b-icon icon="upload"></b-icon>
+                            <span>{{ $t('actions.uploadIcon') }}</span>
+                          </a>
+                        </b-upload>
+                        <span class="file-name" v-if="icon.file">
+                          {{ icon.file.name }} ({{ $tc('objects.byte', icon.file.size) }})
+                        </span>
+                      </b-field>
+                    </div>
+                    <div class="field is-horizontal" >
+                      <div class="field-body">
+                        <div class="message is-danger"  v-if="icon.result">
+                          <div class="message-body">
+                            {{ icon.result }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field is-horizontal">
+                <div class="field-label is-normal">
                 </div>
                 <div class="field-body">
                   <div class="field">
@@ -174,7 +207,13 @@ export default {
         label: '',
         balance: 0,
         duration: 'P3M',
+        iconUrl: null,
         transactions: []
+      },
+      icon: {
+        file: null,
+        isUploading: false,
+        result: null
       },
       isLoading: false,
       updatedAccount: {
@@ -191,6 +230,7 @@ export default {
       // resources
       url: Config.API_URL + 'accounts/' + parseInt(this.$route.params.id) + '/transactions{/id}',
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}'),
+      rAccountIcons: this.$resource(Config.API_URL + 'accounts/' + parseInt(this.$route.params.id) + '/icons'),
       rMaps: this.$resource(Config.API_URL + 'maps'),
       rDatasets: this.$resource(Config.API_URL + 'accounts/' + parseInt(this.$route.params.id) + '/dataset')
     }
@@ -214,6 +254,9 @@ export default {
         this.account.balance = response.body.balance
         this.account.label = response.body.label
         this.account.duration = response.body.duration
+        if (response.body.iconUrl) {
+          this.account.iconUrl = Config.API_URL + response.body.iconUrl
+        }
         this.updatedAccount = JSON.parse(JSON.stringify(this.account))
         delete (this.updatedAccount.transactions)
       }, (response) => {
@@ -256,6 +299,47 @@ export default {
             })
         }
       })
+    },
+    uploadIcon () {
+      this.icon.result = ''
+      // get file
+      let file = this.icon.file
+      var data = new FormData()
+      data.append('Content-Type', file.type || 'application/octet-stream')
+      data.append('file', file)
+      // check file size
+      if (file.size > 800000) {
+        this.icon.result = this.$t('labels.fileTooBig')
+        return
+      }
+      let params = {}
+      // prepare context
+      this.icon.isUploading = true
+      this.isLoading = true
+      this.account.iconUrl = null
+      // call API
+      this.rAccountIcons.save(params, data)
+        .then((response) => {
+          this.icon.file = null
+          if (response.body.iconUrl) {
+            this.account.iconUrl = Config.API_URL + response.body.iconUrl + '?' + this.$moment()
+          }
+          if (response.body.message) {
+            this.icon.result = response.body.message
+          }
+        }, (response) => {
+        // upload failed, inform user
+          if (response.body.message) {
+            this.icon.result = response.body.message
+            return
+          }
+          this.icon.result = response.status + ' - ' + response.statusText
+        })
+        .finally(function () {
+          // remove loading overlay when API replies
+          this.icon.isUploading = false
+          this.isLoading = false
+        })
     },
     deleteAccount () {
       this.$dialog.confirm({

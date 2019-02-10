@@ -20,12 +20,14 @@
           <table class="table is-striped is-hoverable is-fullwidth">
             <thead>
               <tr>
+                <th></th>
                 <th>{{ $tc('objects.account', 1) }}</th>
                 <th>{{ $t('fieldnames.updated') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="account in accounts" :key="account.id">
+                <td class="icon-account"><img v-if="account.iconUrl" :src="account.iconUrl" height="24" width="24"></td>
                 <td><router-link :to="{ name: 'account', params: { id: account.id }}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link></td>
                 <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("from", "now") }}</td><td v-else></td>
               </tr>
@@ -109,6 +111,10 @@ export default {
       this.rAccounts.query()
         .then((response) => {
           this.accounts = response.body
+          this.accounts.map((account) => {
+            account.iconUrl = account.iconUrl ? Config.API_URL + account.iconUrl : null
+            return account
+          })
         }, (response) => {
           if (response.body.message) {
             this.error = response.body.message

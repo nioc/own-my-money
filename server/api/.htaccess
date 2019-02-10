@@ -10,6 +10,7 @@ RewriteRule ^transactions/([0-9]+)/?$                           transactions.php
 RewriteRule ^transactions/?$                                    transactions.php [L]
 RewriteRule ^accounts/([0-9]+)/?$                               accounts.php?id=$1 [L]
 RewriteRule ^accounts/?$                                        accounts.php [L]
+RewriteRule ^accounts/([0-9]+)/icons/?$                         accountIcons.php?aid=$1 [L]
 RewriteRule ^accounts/([0-9]+)/transactions/?$                  transactions.php?aid=$1 [L]
 RewriteRule ^accounts/([0-9]+)/transactions/([0-9]+)/?$         transactions.php?aid=$1&id=$2 [L]
 RewriteRule ^categories/?$                                      categories.php [L]

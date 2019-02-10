@@ -38,6 +38,14 @@ class Account
      */
     public $duration;
     /**
+     * @var boolean Account has an icon
+     */
+    public $hasIcon;
+    /**
+     * @var string URL for account icon
+     */
+    public $iconUrl;
+    /**
      * @var float Current account balance
      */
     public $balance;
@@ -189,6 +197,122 @@ class Account
     }
 
     /**
+     * Store account icon.
+     *
+     * @param string $file Icon filename
+     *
+     * @return boolean True on success or false on failure
+     */
+    public function setIcon($file)
+    {
+        //get image type
+        $type = exif_imagetype($file);
+        switch ($type) {
+            case IMAGETYPE_JPEG:
+                $img = imagecreatefromjpeg($file);
+            break;
+            case IMAGETYPE_GIF:
+                $img = imagecreatefromgif($file);
+            break;
+            case IMAGETYPE_PNG:
+                $img = imagecreatefrompng($file);
+            break;
+            default:
+                return false;
+            break;
+        }
+        //resize icon to max allowed
+        $iconMaxSize = 64;
+        $x = imagesx($img);
+        $y = imagesy($img);
+        if ($x>$iconMaxSize or $y>$iconMaxSize) {
+            if ($x>$y) {
+                $nx = $iconMaxSize;
+                $ny = $y/($x/$iconMaxSize);
+            } else {
+                $nx = $x/($y/$iconMaxSize);
+                $ny = $iconMaxSize;
+            }
+        } else {
+            $nx = $x;
+            $ny = $y;
+        }
+        //create sampled image
+        $img_sampled = imagecreatetruecolor($nx, $ny);
+        //transparency
+        if ($type === IMAGETYPE_PNG) {
+            imagealphablending($img_sampled, false);
+        }
+        //progressive
+        imageinterlace($img_sampled, true);
+        imagecopyresampled($img_sampled, $img, 0, 0, 0, 0, $nx, $ny, $x, $y);
+        imagedestroy($img);
+        //output buffering
+        ob_start();
+        switch ($type) {
+            case IMAGETYPE_JPEG:
+                //output buffering jpeg in quality 92%
+                $boo_return = imagejpeg($img_sampled, null, 92);
+                break;
+            case IMAGETYPE_GIF:
+                //output buffering gif
+                $boo_return = imagegif($img_sampled, null);
+                break;
+            case IMAGETYPE_PNG:
+                //output buffering png in quality 0 (best)
+                imagesavealpha($img_sampled, true);
+                $boo_return = imagepng($img_sampled, null, 0);
+                break;
+            default:
+                $boo_return = false;
+                break;
+        }
+        $icon = ob_get_contents();
+        ob_end_clean();
+        if (!$boo_return) {
+            return false;
+        }
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('REPLACE INTO `account_icon` (`aid`, `mime_type`, `icon`) VALUES (:aid, :mime_type, :icon);');
+        $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':mime_type', $type, PDO::PARAM_STR);
+        $query->bindValue(':icon', $icon, PDO::PARAM_STR);
+        if ($query->execute()) {
+            //set account has icon
+            $this->hasIcon = true;
+            $query = $connection->prepare('UPDATE `account` SET `hasIcon`=:hasIcon WHERE `id`=:id;');
+            $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+            $query->bindValue(':hasIcon', $this->hasIcon, PDO::PARAM_BOOL);
+            $query->execute();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Return account icon.
+     *
+     * @return string Account icon content or false on failure
+     */
+    public function getIcon()
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT `icon`, `mime_type` FROM `account_icon` WHERE `aid` = :aid;');
+        $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
+        if (!$query->execute()) {
+            //indicate there is a problem during querying
+            return false;
+        }
+        $icon = $query->fetch(PDO::FETCH_ASSOC);
+        if (count($icon) === 0) {
+            return false;
+        }
+        return $icon;
+    }
+
+    /**
      * Delete an account from database.
      *
      * @return bool True on success or false on failure
@@ -223,6 +347,10 @@ class Account
         if (isset($account->lastUpdate)) {
             $account->lastUpdate= date('c', $account->lastUpdate);
         }
+        if ($this->hasIcon) {
+            $account->iconUrl = "/accounts/$this->id/icons";
+        }
+        unset($account->hasIcon);
         unset($account->transactions);
         //return structured account
         return $account;

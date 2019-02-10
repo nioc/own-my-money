@@ -57,6 +57,7 @@ export default {
       download: 'Download',
       uploadOfxJson: 'Upload OFX/JSON',
       uploadOfx: 'Upload OFX',
+      uploadIcon: 'Upload icon',
       updateTo: 'Update to'
     },
     labels: {
@@ -184,6 +185,7 @@ export default {
       download: 'Télécharger',
       uploadOfxJson: 'Téléverser OFX/JSON',
       uploadOfx: 'Téléverser OFX',
+      uploadIcon: 'Téléverser icône',
       updateTo: 'Mise à jour vers'
     },
     labels: {
