@@ -11,18 +11,18 @@
   },
   "dependencies": {
     "buefy": "^0.7.2",
-    "bulma": "^0.7.2",
+    "bulma": "^0.7.4",
     "bulma-o-steps": "^1.0.9",
     "chart.js": "^2.7.3",
     "export-from-json": "^1.1.1",
     "font-awesome": "^4.7.0",
     "font-awesome-picker": "^1.1.6",
-    "register-service-worker": "^1.5.2",
+    "register-service-worker": "^1.6.0",
     "ua-parser-js": "^0.7.19",
     "vee-validate": "^2.1.7",
-    "vue": "^2.5.22",
+    "vue": "^2.6.4",
     "vue-chartjs": "^3.4.0",
-    "vue-i18n": "^8.8.0",
+    "vue-i18n": "^8.8.1",
     "vue-moment": "^4.0.0",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.2",
@@ -39,6 +39,6 @@
     "eslint-plugin-vue": "^5.0.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.6.4"
   }
 }
