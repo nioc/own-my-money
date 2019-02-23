@@ -109,16 +109,19 @@ switch ($api->method) {
                     //something gone wrong :(
                     return;
                 }
+                $sum = 0;
                 foreach ($transactions as $transaction) {
                     $result['processed']++;
                     $transaction->applyPatterns($api->requesterId);
                     if ($transaction->insert()) {
+                        $sum += $transaction->amount;
                         $result['inserted']++;
                     }
                 }
-                //update timestamp
+                //update timestamp and balance
                 $account = new Account($accountId);
                 if ($account->get()) {
+                    $account->balance += $sum;
                     $account->update();
                 }
                 break;
