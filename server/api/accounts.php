@@ -111,6 +111,9 @@ switch ($api->method) {
                 return;
             }
         }
+        if ($api->checkParameterExists('balance', $balance)) {
+            $account->balance = $balance;
+        }
         if ($account->update()) {
             $api->output(200, $account->structureData());
             return;

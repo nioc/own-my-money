@@ -165,6 +165,20 @@
 
               <div class="field is-horizontal">
                 <div class="field-label is-normal">
+                  <label class="label">{{ $t('fieldnames.balance') }}</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <div class="control">
+                      <input type="number" step="0.01" class="input" name="balance" :placeholder="$t('fieldnames.balance')" v-model="updatedAccount.balance" v-validate="'required|decimal:2'" :class="{'is-danger': errors.has('balance') }">
+                      <p v-show="errors.has('balance')" class="help is-danger">{{ errors.first('balance') }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field is-horizontal">
+                <div class="field-label is-normal">
                 </div>
                 <div class="field-body">
                   <div class="field">
@@ -278,6 +292,7 @@ export default {
         if (result) {
           this.isLoading = true
           // if validation is ok, call accounts API
+          this.updatedAccount.balance = parseFloat(this.updatedAccount.balance)
           this.rAccounts.update({ id: this.account.id }, this.updatedAccount)
             .then((response) => {
               // this.getAccounts()
