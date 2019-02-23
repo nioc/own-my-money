@@ -44,16 +44,22 @@
         </div>
       </div>
     </nav>
-    <router-view :key="$route.fullPath"></router-view>
+    <transition-router>
+      <router-view :key="$route.fullPath"></router-view>
+    </transition-router>
   </div>
 </template>
 
 <script>
 import Auth from './services/Auth'
 import Bus from './services/Bus'
+import TransitionRouter from '@/components/TransitionRouter'
 import Vue from 'vue'
 export default {
   name: 'app',
+  components: {
+    TransitionRouter
+  },
   data () {
     return {
       isOnline: window.navigator.onLine,
