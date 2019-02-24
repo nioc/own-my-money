@@ -326,6 +326,40 @@ class User
     }
 
     /**
+     * Return user balance.
+     *
+     * @param int $period Timestamp of the requested balance
+     * @param int $budgetedOnly Handle only transaction from budgeted categories
+     *
+     * @return float Balance at requested period
+     */
+    public function getBalance($period = null, $budgetedOnly = true)
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT SUM(`balance`) AS `balance` FROM `account` WHERE `account`.`user` =:user;');
+        $query->bindValue(':user', $this->id, PDO::PARAM_INT);
+        if (!$query->execute()) {
+            return false;
+        }
+        $lastBalance = $query->fetch(PDO::FETCH_ASSOC);
+        $balance = floatval($lastBalance['balance']);
+        if ($period === null) {
+            return $balance;
+        }
+        $query = $connection->prepare('SELECT SUM(`amount`) AS `balance` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :period AND (`isBudgeted` =:isBudgeted OR `isBudgeted` IS NULL);');
+        $query->bindValue(':user', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':period', $period, PDO::PARAM_INT);
+        $query->bindValue(':isBudgeted', $budgetedOnly, PDO::PARAM_BOOL);
+        if (!$query->execute()) {
+            return false;
+        }
+        $deltaBalance = $query->fetch(PDO::FETCH_ASSOC);
+        $balance = $balance - floatval($deltaBalance['balance']);
+        return $balance;
+    }
+
+    /**
      * Return user transactions history.
      *
      * @param int $periodStart Start timestamp for requesting
@@ -427,6 +461,17 @@ class User
             $calendar[$point['date']]['countCredit'] = intval($point['countCredit']);
         }
 
+        //get balances (get balance at end period, then remove transactions sum for each date)
+        if ($category === null && $subcategory === null) {
+            $balance = $this->getBalance($periodEnd, $budgetedOnly);
+            $calendar = array_reverse($calendar);
+            foreach ($calendar as $date => $value) {
+                $calendar[$date]['balance'] = $balance;
+                $balance = $balance - $value['debit'] - $value['credit'];
+            }
+            $calendar = array_reverse($calendar);
+        }
+
         //format in array
         $points = [];
         foreach ($calendar as $date => $value) {
@@ -436,6 +481,9 @@ class User
             $point->credit = key_exists('credit', $value) ? $value['credit'] : 0;
             $point->countDebit = key_exists('countDebit', $value) ? $value['countDebit'] : 0;
             $point->countCredit = key_exists('countCredit', $value) ? $value['countCredit'] : 0;
+            if ($category === null && $subcategory === null) {
+                $point->balance = $value['balance'];
+            }
             array_push($points, $point);
         }
         //order by date
