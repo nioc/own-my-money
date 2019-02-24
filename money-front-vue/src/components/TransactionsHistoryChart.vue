@@ -104,18 +104,31 @@ export default {
         this.chartData = {
           datasets: [
             {
+              data: response.data.values.map((point) => point.balance),
+              label: this.$t('labels.balances'),
+              type: 'line',
+              backgroundColor: 'rgba(0, 0, 0, 0)',
+              borderColor: 'rgb(122, 122, 122)',
+              pointBackgroundColor: 'rgba(122, 122, 122, 0.8)',
+              radius: 2,
+              lineTension: 0.1,
+              yAxisID: 'y-axis-2'
+            },
+            {
               data: response.data.values.map((point) => point.debit),
               label: this.$t('labels.debits'),
-              backgroundColor: 'rgba(255, 99, 132, 0.5)',
+              type: 'bar',
+              backgroundColor: 'rgba(255, 99, 132, 0.7)',
               borderColor: 'rgb(255, 99, 132)',
-              pointBackgroundColor: 'rgba(255, 99, 132, 0.8)'
+              yAxisID: 'y-axis-1'
             },
             {
               data: response.data.values.map((point) => point.credit),
               label: this.$t('labels.credits'),
-              backgroundColor: 'rgba(66, 185, 131, 0.5)',
+              type: 'bar',
+              backgroundColor: 'rgba(66, 185, 131, 0.7)',
               borderColor: 'rgb(66, 185, 131)',
-              pointBackgroundColor: 'rgba(66, 185, 131, 0.8)'
+              yAxisID: 'y-axis-1'
             }
           ],
           labels: response.data.values.map((point) => this.$moment(point.date))

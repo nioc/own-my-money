@@ -1,9 +1,9 @@
 <script>
-import { Line, mixins } from 'vue-chartjs'
+import { Bar, mixins } from 'vue-chartjs'
 const { reactiveProp } = mixins
 
 export default {
-  extends: Line,
+  extends: Bar,
   mixins: [reactiveProp],
   props: {
     chartData: {
@@ -41,9 +41,19 @@ export default {
           scales: {
             xAxes: [{
               type: 'time',
+              stacked: true,
               ticks: {
                 autoSkip: false,
                 maxRotation: 0
+              },
+              gridLines: {
+                offsetGridLines: true
+              }
+            }],
+            yAxes: [{
+              id: 'y-axis-1',
+              type: 'linear',
+              ticks: {
               }
             }]
           }
@@ -55,6 +65,21 @@ export default {
     if (this.labelCallback !== null && typeof this.labelCallback === 'function') {
       this.chartOptions.tooltips.callbacks = { label: this.labelCallback }
     }
+    this.chartData.datasets.forEach((dataset) => {
+      if (dataset.yAxisID === 'y-axis-2' && this.chartOptions.scales.yAxes.length < 2) {
+        this.chartOptions.scales.yAxes.push({
+          id: 'y-axis-2',
+          type: 'linear',
+          position: 'right',
+          ticks: {
+            beginAtZero: true
+          },
+          gridLines: {
+            drawOnChartArea: false
+          }
+        })
+      }
+    })
     this.renderChart(this.chartData, this.chartOptions)
   },
   watch: {
