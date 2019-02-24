@@ -419,11 +419,11 @@ class User
 
         //put amount in calendar
         foreach ($debits as $point) {
-            $calendar[$point['date']]['debit'] = intval($point['debit']);
+            $calendar[$point['date']]['debit'] = floatval($point['debit']);
             $calendar[$point['date']]['countDebit'] = intval($point['countDebit']);
         }
         foreach ($credits as $point) {
-            $calendar[$point['date']]['credit'] = intval($point['credit']);
+            $calendar[$point['date']]['credit'] = floatval($point['credit']);
             $calendar[$point['date']]['countCredit'] = intval($point['countCredit']);
         }
 
