@@ -205,6 +205,177 @@ class Account
     }
 
     /**
+     * Return account balance.
+     *
+     * @param int $period Timestamp of the requested balance
+     * @param int $budgetedOnly Handle only transaction from budgeted categories
+     *
+     * @return float Balance at requested period
+     */
+    public function getBalance($period = null, $budgetedOnly = true)
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT `balance` FROM `account` WHERE `account`.`id`=:id;');
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        if (!$query->execute()) {
+            return false;
+        }
+        $lastBalance = $query->fetch(PDO::FETCH_ASSOC);
+        $balance = floatval($lastBalance['balance']);
+        if ($period === null) {
+            return $balance;
+        }
+        $query = $connection->prepare('SELECT SUM(`amount`) AS `balance` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id` WHERE `transaction`.`aid`=:id AND `datePosted` > :period AND (`isBudgeted`=:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL);');
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':period', $period, PDO::PARAM_INT);
+        $query->bindValue(':isBudgeted', $budgetedOnly, PDO::PARAM_BOOL);
+        if (!$query->execute()) {
+            return false;
+        }
+        $deltaBalance = $query->fetch(PDO::FETCH_ASSOC);
+        $balance = $balance - floatval($deltaBalance['balance']);
+        return $balance;
+    }
+
+    /**
+     * Return account transactions history.
+     *
+     * @param int $periodStart Start timestamp for requesting
+     * @param int $periodEnd End timestamp for requesting
+     * @param int $timeUnit Time unit (M for monthly, W for weekly, D for daily which is default value)
+     * @param int $budgetedOnly Request only transaction from budgeted categories
+     * @param int $category Category identifier
+     * @param int $subcategory Subcategory identifier
+     *
+     * @return array User transactions history
+     */
+    public function getTransactionsHistory($periodStart, $periodEnd, $timeUnit = 'D', $budgetedOnly = true, $category = null, $subcategory = null)
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        switch ($timeUnit) {
+          case 'M':
+            $sqlFormat = '%Y-%m';
+            $dateInterval = 'P1M';
+            $resultFormat = 'Y-m';
+            break;
+          case 'W':
+            $sqlFormat = '%xW%v';
+            $dateInterval = 'P1W';
+            $resultFormat = 'o\WW';
+            break;
+          case 'D':
+          default:
+            $sqlFormat = '%Y-%m-%d';
+            $dateInterval = 'P1D';
+            $resultFormat = 'Y-m-d';
+            break;
+        }
+        //get debits
+        if ($category === null && $subcategory === null) {
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id` WHERE `transaction`.`aid`=:id AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND (`isBudgeted`=:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+        } elseif ($subcategory === null) {
+            //query only transactions in the specific category
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction` WHERE `transaction`.`aid`=:id AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND `category`=:category GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+            $query->bindValue(':category', $category, PDO::PARAM_INT);
+        } else {
+            //query only transactions in the specific subcategory
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `debit`, COUNT(1) AS `countDebit` FROM `transaction` WHERE `transaction`.`aid`=:id AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND `subcategory`=:subcategory GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+            $query->bindValue(':subcategory', $subcategory, PDO::PARAM_INT);
+        }
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
+        $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
+        $query->bindValue(':type', 'debit', PDO::PARAM_STR);
+        $query->bindValue(':format', $sqlFormat, PDO::PARAM_STR);
+        $query->bindValue(':isBudgeted', $budgetedOnly, PDO::PARAM_BOOL);
+        if (!$query->execute()) {
+            return false;
+        }
+        $debits = $query->fetchAll(PDO::FETCH_ASSOC);
+        //get credits
+        if ($category === null && $subcategory === null) {
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id` WHERE `transaction`.`aid`=:id AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND (`isBudgeted`=:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+        } elseif ($subcategory === null) {
+            //query only transactions in the specific category
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction` WHERE `transaction`.`aid`=:id AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND `category`=:category GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+            $query->bindValue(':category', $category, PDO::PARAM_INT);
+        } else {
+            //query only transactions in the specific category
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS `credit`, COUNT(1) AS `countCredit` FROM `transaction` WHERE `transaction`.`aid`=:id AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND `subcategory`=:subcategory GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+            $query->bindValue(':subcategory', $subcategory, PDO::PARAM_INT);
+        }
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
+        $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
+        $query->bindValue(':type', 'credit', PDO::PARAM_STR);
+        $query->bindValue(':format', $sqlFormat, PDO::PARAM_STR);
+        $query->bindValue(':isBudgeted', $budgetedOnly, PDO::PARAM_BOOL);
+        if (!$query->execute()) {
+            return false;
+        }
+        $credits = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        //create calendar for returning each days
+        $calendar = [];
+        $dateTime = new DateTime();
+        $dateTime->setTimestamp($periodStart);
+        do {
+            $date = $dateTime->format($resultFormat);
+            $calendar[$date]['debit'] = 0;
+            $calendar[$date]['credit'] = 0;
+            $calendar[$date]['countCredit'] = 0;
+            $calendar[$date]['countDebit'] = 0;
+            $dateTime->add(new DateInterval($dateInterval));
+        } while ($dateTime->getTimestamp() <= $periodEnd);
+
+        //put amount in calendar
+        foreach ($debits as $point) {
+            $calendar[$point['date']]['debit'] = floatval($point['debit']);
+            $calendar[$point['date']]['countDebit'] = intval($point['countDebit']);
+        }
+        foreach ($credits as $point) {
+            $calendar[$point['date']]['credit'] = floatval($point['credit']);
+            $calendar[$point['date']]['countCredit'] = intval($point['countCredit']);
+        }
+
+        //get balances (get balance at end period, then remove transactions sum for each date)
+        if ($category === null && $subcategory === null) {
+            $balance = $this->getBalance($periodEnd, $budgetedOnly);
+            $calendar = array_reverse($calendar);
+            foreach ($calendar as $date => $value) {
+                $calendar[$date]['balance'] = $balance;
+                $balance = $balance - $value['debit'] - $value['credit'];
+            }
+            $calendar = array_reverse($calendar);
+        }
+
+        //format in array
+        $points = [];
+        foreach ($calendar as $date => $value) {
+            $point = new stdClass();
+            $point->date = $date;
+            $point->debit = key_exists('debit', $value) ? $value['debit'] : 0;
+            $point->credit = key_exists('credit', $value) ? $value['credit'] : 0;
+            $point->countDebit = key_exists('countDebit', $value) ? $value['countDebit'] : 0;
+            $point->countCredit = key_exists('countCredit', $value) ? $value['countCredit'] : 0;
+            if ($category === null && $subcategory === null) {
+                $point->balance = $value['balance'];
+            }
+            array_push($points, $point);
+        }
+        //order by date
+        function dateCompare($a, $b)
+        {
+            return strcmp($a->date, $b->date);
+        }
+        usort($points, 'dateCompare');
+
+        return $points;
+    }
+
+    /**
      * Store account icon.
      *
      * @param string $file Icon filename

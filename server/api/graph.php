@@ -11,6 +11,7 @@
  */
 require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Api.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Account.php';
 $api = new Api('json', ['GET']);
 switch ($api->method) {
     case 'GET':
@@ -53,7 +54,24 @@ switch ($api->method) {
                     $response->subcategory = $subcategory;
                 }
                 //request transactions history
-                $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, true, $category, $subcategory);
+                if ($api->checkParameterExists('aid', $aid)) {
+                    //specific account
+                    $account = new Account($aid);
+                    if (!$account->get()) {
+                        $api->output(404, $api->getMessage('accountNotFound'));
+                        //indicate the requester is not the account owner and is not allowed to query it
+                        return;
+                    }
+                    if ($account->user !== $api->requesterId) {
+                        $api->output(403, $api->getMessage('transactionsCanBeQueriedByAccountOwnerOnly'));
+                        //indicate the requester is not the account owner and is not allowed to query it
+                        return;
+                    }
+                    $values = $account->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, false, $category, $subcategory);
+                } else {
+                    //all user accounts
+                    $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, true, $category, $subcategory);
+                }
                 if (!$values) {
                     $api->output(500, '');
                     //something go wrong
