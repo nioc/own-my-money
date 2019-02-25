@@ -52,9 +52,9 @@ class Dataset
                     $account->bankId = $bankAccount->routingNumber;
                     $account->branchId = $bankAccount->agencyNumber;
                     $account->accountId = $bankAccount->accountNumber;
-                    $account->balance = floatval($bankAccount->balance);
                     $account->lastUpdate = time();
                 }
+                $account->balance = floatval($bankAccount->balance);
                 $account->transactions = $bankAccount->statement->transactions;
                 array_push($accounts, $account);
             }
