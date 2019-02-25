@@ -138,6 +138,7 @@ export default {
         this.isLoading = false
         this.isLoaded = true
       }, (response) => {
+        this.isLoading = false
         if (response.body.message) {
           console.log(response.body.message)
           return
