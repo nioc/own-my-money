@@ -47,6 +47,7 @@ export default {
   data () {
     const today = new Date()
     today.setHours(0, 0, 0)
+    today.setMilliseconds(0)
     return {
       isLoading: false,
       isLoaded: false,

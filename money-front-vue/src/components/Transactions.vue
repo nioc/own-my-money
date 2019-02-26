@@ -159,6 +159,7 @@ export default {
   data () {
     const today = new Date()
     today.setHours(0, 0, 0)
+    today.setMilliseconds(0)
     return {
       transactions: [],
       isLoading: false,
@@ -326,6 +327,7 @@ export default {
     duration () {
       const today = new Date()
       today.setHours(0, 0, 0)
+      today.setMilliseconds(0)
       this.search.periodStart = this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate()
     }
   },
@@ -336,7 +338,7 @@ export default {
       this.get()
     })
     Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.periodEnd.getTime() !== search.periodStart.getTime()) || (this.search.periodStart.getTime() !== search.periodEnd.getTime())) {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
         this.search.periodStart = search.periodStart
         this.search.periodEnd = search.periodEnd
       }

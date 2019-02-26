@@ -96,6 +96,7 @@ export default {
   data () {
     const today = new Date()
     today.setHours(0, 0, 0)
+    today.setMilliseconds(0)
     return {
       categorySelected: { key: null },
       subcategorySelected: { key: null },
