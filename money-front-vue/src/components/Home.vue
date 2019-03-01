@@ -103,6 +103,7 @@ export default {
       url: Config.API_URL + 'transactions{/id}',
       date: {
         timeUnit: '',
+        duration: 'P3M',
         periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
         periodEnd: today
       }
@@ -135,6 +136,9 @@ export default {
         this.date.periodEnd = search.periodEnd
         if (search.timeUnit) {
           this.date.timeUnit = search.timeUnit
+        }
+        if (search.duration) {
+          this.date.duration = search.duration
         }
       }
     })

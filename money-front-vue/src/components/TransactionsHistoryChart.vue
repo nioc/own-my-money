@@ -4,7 +4,7 @@
     <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
         <div class="select">
-          <select v-model="quickDate">
+          <select v-model="search.duration">
             <option value="P1W">{{ $tc('objects.lastWeek', 1) }}</option>
             <option value="P1M">{{ $tc('objects.lastMonth', 1) }}</option>
             <option value="P3M">{{ $tc('objects.lastMonth', 3) }}</option>
@@ -72,11 +72,11 @@ export default {
       isLoaded: false,
       chartData: null,
       labelCallback: null,
-      quickDate: 'P3M',
       search: {
+        duration: 'P3M',
         timeUnit: '',
         currentDate: today,
-        periodStart: this.$moment(today).subtract(this.$moment.duration(this.quickDate)).toDate(),
+        periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
         periodEnd: today
       }
     }
@@ -149,10 +149,12 @@ export default {
     }
   },
   watch: {
-    quickDate () {
-      if (this.quickDate) {
+    'search.duration' () {
+      if (this.search.duration) {
         Bus.$emit('transactions-date-filtered', {
-          periodStart: this.$moment(this.search.currentDate).subtract(this.$moment.duration(this.quickDate)).toDate(),
+          duration: this.search.duration,
+          timeUnit: this.search.timeUnit,
+          periodStart: this.$moment(this.search.currentDate).subtract(this.$moment.duration(this.search.duration)).toDate(),
           periodEnd: this.search.currentDate
         })
       }
@@ -160,6 +162,9 @@ export default {
   },
   mounted () {
     Bus.$on('transactions-date-filtered', (search) => {
+      if (search.duration) {
+        this.search.duration = search.duration
+      }
       if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.timeUnit !== search.timeUnit)) {
         this.search.periodStart = search.periodStart
         this.search.periodEnd = search.periodEnd
@@ -170,6 +175,7 @@ export default {
       }
     })
     if (this.date) {
+      this.search.duration = this.date.duration
       this.search.periodStart = this.date.periodStart
       this.search.periodEnd = this.date.periodEnd
       this.search.timeUnit = this.date.timeUnit
