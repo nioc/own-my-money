@@ -15,6 +15,16 @@
         <b-tabs type="is-boxed" :animated="false">
 
           <b-tab-item :label="$tc('objects.transaction', 2)" icon="file-text-o" class="has-half-margin-mobile">
+            <div class="columns no-padding-parent-mobile is-multiline" v-if="isLoaded">
+              <div class="column no-padding-mobile is-full">
+                <transactions-history-chart
+                :title="$t('labels.transactionsByDay')"
+                :chartEndpoint="'accounts/' + this.account.id + '/transactions/history'"
+                :isIndependent="true"
+                :date="date"
+                ></transactions-history-chart>
+              </div>
+            </div>
             <transactions :url="url" :duration="account.duration" v-if="isLoaded"/>
 
             <div class="field is-grouped">
@@ -204,13 +214,18 @@ import Config from './../services/Config'
 import Bus from './../services/Bus'
 import Breadcrumb from '@/components/Breadcrumb'
 import Transactions from '@/components/Transactions'
+import TransactionsHistoryChart from '@/components/TransactionsHistoryChart'
 export default {
   name: 'account',
   components: {
     Breadcrumb,
+    TransactionsHistoryChart,
     Transactions
   },
   data () {
+    const today = new Date()
+    today.setHours(0, 0, 0)
+    today.setMilliseconds(0)
     return {
       // account
       account: {
@@ -241,6 +256,13 @@ export default {
         map: '',
         isUploading: false,
         result: ''
+      },
+      date: {
+        timeUnit: '',
+        currentDate: today,
+        duration: 'P3M',
+        periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
+        periodEnd: today
       },
       // resources
       url: Config.API_URL + 'accounts/' + parseInt(this.$route.params.id) + '/transactions{/id}',
@@ -274,6 +296,8 @@ export default {
         }
         this.updatedAccount = JSON.parse(JSON.stringify(this.account))
         delete (this.updatedAccount.transactions)
+        this.date.duration = this.account.duration
+        this.date.periodStart = this.$moment(this.date.currentDate).subtract(this.$moment.duration(this.account.duration)).toDate()
         this.isLoaded = true
       }, (response) => {
         if (response.status === 403 || response.status === 404) {
@@ -448,6 +472,22 @@ export default {
   mounted () {
     this.get()
     this.getMaps()
+    Bus.$on('transactions-date-filtered', (search) => {
+      if ((this.date.periodStart.getTime() !== search.periodStart.getTime()) || (this.date.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.date.timeUnit !== search.timeUnit)) {
+        this.date.periodStart = search.periodStart
+        this.date.periodEnd = search.periodEnd
+        if (search.timeUnit) {
+          this.date.timeUnit = search.timeUnit
+        }
+        if (search.duration) {
+          this.date.duration = search.duration
+        }
+      }
+    })
+  },
+  beforeDestroy () {
+    // remove events listener
+    Bus.$off('transactions-date-filtered')
   }
 }
 </script>
