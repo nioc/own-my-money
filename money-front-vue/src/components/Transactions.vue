@@ -223,6 +223,10 @@ export default {
   methods: {
     // get transactions
     get () {
+      if (this.isLoading) {
+        // exit if already loading
+        return
+      }
       this.isLoading = true
       let params = {
         periodStart: this.$moment(this.search.periodStart).format('X'),

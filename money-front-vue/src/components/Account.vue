@@ -15,7 +15,7 @@
         <b-tabs type="is-boxed" :animated="false">
 
           <b-tab-item :label="$tc('objects.transaction', 2)" icon="file-text-o" class="has-half-margin-mobile">
-            <transactions :url="url" :duration="account.duration"/>
+            <transactions :url="url" :duration="account.duration" v-if="isLoaded"/>
 
             <div class="field is-grouped">
               <p class="control">
@@ -230,6 +230,7 @@ export default {
         result: null
       },
       isLoading: false,
+      isLoaded: false,
       updatedAccount: {
       },
       // maps
@@ -273,6 +274,7 @@ export default {
         }
         this.updatedAccount = JSON.parse(JSON.stringify(this.account))
         delete (this.updatedAccount.transactions)
+        this.isLoaded = true
       }, (response) => {
         if (response.status === 403 || response.status === 404) {
           // user does not can access this account, return to home
