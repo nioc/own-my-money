@@ -99,7 +99,7 @@ export default {
               let key = values[index._index].key
               if (key) {
                 // send event for parent update (may be displaying subcategories distribution)
-                Bus.$emit('category-selected', { key: key, label: this.chart.data.labels[index._index] })
+                Bus.$emit('category-selected', { key: key, label: this.chart.data.labels[index._index].replace(/[^ -~]+ /g, '') })
               }
             }
           }
@@ -119,7 +119,7 @@ export default {
         let labelCallback = function (tooltipItem, data) {
           let sum = data.datasets[tooltipItem.datasetIndex].data.reduce((a, b) => a + b, 0)
           let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
-          let label = data.labels[tooltipItem.index]
+          let label = data.labels[tooltipItem.index].replace(/[^ -~]+ /g, '')
           return label + ': ' + vm.$n(value, 'currency') + ' (' + Math.round(100 * value / sum) + '%)'
         }
         this.chartData = {
@@ -132,7 +132,25 @@ export default {
         }
         let labels
         if (response.data.key === 'categories' || response.data.key === 'subcategories') {
-          labels = values.map((point) => this.categoriesAndSubcategoriesLookup[point.key] ? this.categoriesAndSubcategoriesLookup[point.key].label : (point.key === null ? this.$t('labels.uncategorizedTransaction') : point.key))
+          labels = values.map((point) => {
+            let unicodeContent = ''
+            if (this.categoriesAndSubcategoriesLookup[point.key]) {
+              if (this.categoriesAndSubcategoriesLookup[point.key].icon) {
+                // to get unicode content from CSS class, create a styled element then get content and remove it
+                let icon = this.categoriesAndSubcategoriesLookup[point.key].icon
+                let tempElement = document.createElement('i')
+                tempElement.className = icon
+                document.body.appendChild(tempElement)
+                unicodeContent = window.getComputedStyle(tempElement, ':before').content.replace(/'|"/g, '') + ' '
+                tempElement.remove()
+              }
+              return unicodeContent + this.categoriesAndSubcategoriesLookup[point.key].label
+            }
+            if (point.key === null) {
+              return this.$t('labels.uncategorizedTransaction')
+            }
+            return point.key
+          })
         } else {
           labels = values.map((point) => point.key)
         }
