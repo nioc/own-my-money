@@ -1,7 +1,7 @@
 <template>
   <div class="box" v-if="isLoaded">
     <p class="title">{{ title }}</p>
-      <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
+    <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
         <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodStart"></b-datepicker>
       </div>
@@ -47,6 +47,7 @@ export default {
   data () {
     const today = new Date()
     today.setHours(0, 0, 0)
+    today.setMilliseconds(0)
     return {
       isLoading: false,
       isLoaded: false,
@@ -66,13 +67,15 @@ export default {
     },
     requestData () {
       this.isLoading = true
+      // eslint-disable-next-line no-unused-vars
       let options = {
         params: {
-          // periodStart: this.$moment(this.search.periodStart).format('X'),
-          // periodEnd: this.$moment(this.search.periodEnd).format('X')
+          periodStart: this.$moment(this.search.periodStart).format('X'),
+          periodEnd: this.$moment(this.search.periodEnd).format('X')
         }
       }
-      this.$http.get(Config.API_URL + this.chartEndpoint, options).then(response => {
+      // this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
+      this.$http.get(Config.API_URL + this.chartEndpoint, {}).then((response) => {
         let values = response.data.values
         let colors = ['#42b983', '#292f36', '#4ecdc4', '#0b3954', '#ff6663', '#7d7c84', '#7180ac', '#2b4570', '#c84630', '#81a684', '#466060', '#c9cba3', '#e26d5c', '#2a4747', '#157a6e', '#ee6c4d']
         let count = values.length
@@ -98,7 +101,18 @@ export default {
               let key = values[index._index].key
               if (key) {
                 // send event for parent update (may be displaying subcategories distribution)
-                Bus.$emit('category-selected', {key: key, label: this.chart.data.labels[index._index]})
+                Bus.$emit('category-selected', { key: key, label: this.chart.data.labels[index._index].replace(/[^ -~]+ /g, '') })
+              }
+            }
+          }
+        } else if (response.data.key === 'subcategories') {
+          onClick = function (evt) {
+            let index = this.chart.getElementsAtEvent(evt)[0]
+            if (index) {
+              let key = values[index._index].key
+              if (key) {
+                // send event for parent update (may be displaying subcategories transaction history)
+                Bus.$emit('subcategory-selected', { key: key, label: this.chart.data.labels[index._index] })
               }
             }
           }
@@ -107,22 +121,40 @@ export default {
         let labelCallback = function (tooltipItem, data) {
           let sum = data.datasets[tooltipItem.datasetIndex].data.reduce((a, b) => a + b, 0)
           let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
-          let label = data.labels[tooltipItem.index]
+          let label = data.labels[tooltipItem.index].replace(/[^ -~]+ /g, '')
           return label + ': ' + vm.$n(value, 'currency') + ' (' + Math.round(100 * value / sum) + '%)'
         }
         this.chartData = {
           datasets: [
             {
               backgroundColor: colors,
-              data: values.map(point => point.amount)
+              data: values.map((point) => point.amount)
             }
           ]
         }
         let labels
         if (response.data.key === 'categories' || response.data.key === 'subcategories') {
-          labels = values.map(point => this.categoriesAndSubcategoriesLookup[point.key] ? this.categoriesAndSubcategoriesLookup[point.key].label : (point.key === null ? this.$t('labels.uncategorizedTransaction') : point.key))
+          labels = values.map((point) => {
+            let unicodeContent = ''
+            if (this.categoriesAndSubcategoriesLookup[point.key]) {
+              if (this.categoriesAndSubcategoriesLookup[point.key].icon) {
+                // to get unicode content from CSS class, create a styled element then get content and remove it
+                let icon = this.categoriesAndSubcategoriesLookup[point.key].icon
+                let tempElement = document.createElement('i')
+                tempElement.className = icon
+                document.body.appendChild(tempElement)
+                unicodeContent = window.getComputedStyle(tempElement, ':before').content.replace(/'|"/g, '') + ' '
+                tempElement.remove()
+              }
+              return unicodeContent + this.categoriesAndSubcategoriesLookup[point.key].label
+            }
+            if (point.key === null) {
+              return this.$t('labels.uncategorizedTransaction')
+            }
+            return point.key
+          })
         } else {
-          labels = values.map(point => point.key)
+          labels = values.map((point) => point.key)
         }
         this.chartData.labels = labels
         this.options = {
@@ -142,7 +174,8 @@ export default {
         this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
         this.isLoading = false
         this.isLoaded = true
-      }, response => {
+      }, (response) => {
+        this.isLoading = false
         if (response.body.message) {
           console.log(response.body.message)
           return

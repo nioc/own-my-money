@@ -1,5 +1,5 @@
 module.exports = {
-  publicPath: '/own-my-money',
+  publicPath: '/own-my-money/',
   pwa: {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {

@@ -44,29 +44,46 @@
         </div>
       </div>
     </nav>
-    <router-view :key="$route.fullPath"></router-view>
+    <transition-router>
+      <router-view :key="$route.fullPath"></router-view>
+    </transition-router>
   </div>
 </template>
 
 <script>
 import Auth from './services/Auth'
 import Bus from './services/Bus'
+import TransitionRouter from '@/components/TransitionRouter'
 import Vue from 'vue'
 export default {
   name: 'app',
+  components: {
+    TransitionRouter
+  },
   data () {
     return {
+      isOnline: window.navigator.onLine,
       user: Auth.getProfile()
     }
   },
   methods: {
     logout () {
       this.user = Auth.logout()
-      this.$router.replace({name: 'login'})
+      this.$router.replace({ name: 'login' })
     },
     toggleMenu (e) {
       e.target.classList.toggle('is-active')
       document.getElementById('navbar-menu').classList.toggle('is-active')
+    },
+    notifyConnectivity (event) {
+      this.isOnline = event.type === 'online'
+      this.$store.commit('setConnectivity', this.isOnline)
+      let toast = {}
+      toast.message = this.isOnline ? this.$t('labels.isOnline') : this.$t('labels.isOffline')
+      toast.type = this.isOnline ? 'is-success' : 'is-danger'
+      toast.position = 'is-bottom'
+      toast.queue = false
+      this.$toast.open(toast)
     },
     setLocale (locale) {
       Vue.http.headers.common['Accept-Language'] = locale
@@ -83,10 +100,13 @@ export default {
       })
     }
   },
-  mounted: function () {
+  mounted () {
     Bus.$on('user-logged', (user) => {
       this.user = user
     })
+    this.$store.commit('setConnectivity', this.isOnline)
+    window.addEventListener('offline', this.notifyConnectivity)
+    window.addEventListener('online', this.notifyConnectivity)
   }
 }
 </script>

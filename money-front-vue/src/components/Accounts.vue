@@ -20,13 +20,17 @@
           <table class="table is-striped is-hoverable is-fullwidth">
             <thead>
               <tr>
+                <th></th>
                 <th>{{ $tc('objects.account', 1) }}</th>
+                <th>{{ $t('fieldnames.balance') }}</th>
                 <th>{{ $t('fieldnames.updated') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="account in accounts" :key="account.id">
+                <td class="icon-account"><img v-if="account.iconUrl" :src="account.iconUrl" height="24" width="24"></td>
                 <td><router-link :to="{ name: 'account', params: { id: account.id }}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link></td>
+                <td>{{ $n(account.balance, 'currency') }}</td>
                 <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("from", "now") }}</td><td v-else></td>
               </tr>
             </tbody>
@@ -37,12 +41,12 @@
         </div>
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true"><i class="fa fa-plus"/>&nbsp;{{ $t('actions.addAccount') }}</button>
+            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true" :disabled="!isOnline"><i class="fa fa-plus"/>&nbsp;{{ $t('actions.addAccount') }}</button>
           </p>
           <p class="control">
             <b-field class="file">
-              <b-upload v-model="upload.file" @input="uploadDataset" :disabled="upload.isUploading">
-                <a class="button is-primary">
+              <b-upload v-model="upload.file" @input="uploadDataset" :disabled="(!isOnline || upload.isUploading)">
+                <a class="button is-primary" :disabled="(!isOnline || upload.isUploading)">
                   <b-icon icon="upload"></b-icon>
                   <span>{{ $t('actions.uploadOfx') }}</span>
                 </a>
@@ -55,7 +59,7 @@
         </div>
         <div class="field is-horizontal" >
           <div class="field-body">
-            <div class="message is-danger"  v-if="upload.result">
+            <div class="message is-danger" v-if="upload.result">
               <div class="message-body">
                 {{ upload.result }}
               </div>
@@ -98,13 +102,23 @@ export default {
       rDatasets: this.$resource(Config.API_URL + 'dataset')
     }
   },
+  computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    }
+  },
   methods: {
     getAccounts () {
       this.isLoading = true
       this.rAccounts.query()
-        .then(response => {
+        .then((response) => {
           this.accounts = response.body
-        }, response => {
+          this.accounts.map((account) => {
+            // account.iconUrl = account.iconUrl ? Config.API_URL + account.iconUrl : null
+            account.iconUrl = account.iconUrl ? account.iconUrl : null
+            return account
+          })
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -133,12 +147,12 @@ export default {
       this.isLoading = true
       // call API
       this.rDatasets.save({}, data)
-        .then(response => {
+        .then((response) => {
           if (response.body.message) {
             this.upload.result = response.body.message
           }
           this.getAccounts()
-        }, response => {
+        }, (response) => {
         // upload failed, inform user
           if (response.body.message) {
             this.upload.result = response.body.message
@@ -153,7 +167,7 @@ export default {
         })
     }
   },
-  mounted: function () {
+  mounted () {
     this.getAccounts()
   }
 }

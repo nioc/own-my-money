@@ -1,6 +1,6 @@
 {
   "name": "money-front-vue",
-  "version": "0.5.1",
+  "version": "0.8.0",
   "description": "Web app for mananging personal bank account",
   "author": "nioc <dev@nioc.eu>",
   "private": true,
@@ -14,8 +14,10 @@
     "bulma": "^0.7.4",
     "bulma-o-steps": "^1.0.9",
     "chart.js": "^2.7.3",
+    "export-from-json": "^1.1.1",
     "font-awesome": "^4.7.0",
     "font-awesome-picker": "^1.1.6",
+    "register-service-worker": "^1.6.2",
     "ua-parser-js": "^0.7.19",
     "vee-validate": "^2.1.7",
     "vue": "^2.6.8",
@@ -23,7 +25,8 @@
     "vue-i18n": "^8.8.2",
     "vue-moment": "^4.0.0",
     "vue-resource": "^1.5.1",
-    "vue-router": "^3.0.2"
+    "vue-router": "^3.0.2",
+    "vuex": "^3.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.4.1",

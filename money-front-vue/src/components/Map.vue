@@ -156,13 +156,13 @@
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
+                  <button class="button is-primary" :disabled="!isOnline"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
                 </div>
                 <div class="control">
                   <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.cancel') }}</a>
                 </div>
                 <div class="control">
-                  <button type="button" class="button is-danger" role="button" v-on:click="deleteMap"><i class="fa fa-trash"/>&nbsp;{{ $t('actions.delete') }}</button>
+                  <button type="button" class="button is-danger" role="button" v-on:click="deleteMap" :disabled="!isOnline" v-if="!isNew"><i class="fa fa-trash"/>&nbsp;{{ $t('actions.delete') }}</button>
                 </div>
               </div>
             </div>
@@ -216,14 +216,19 @@ export default {
       error: null
     }
   },
+  computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    }
+  },
   methods: {
     // get map informations
     get () {
       this.isLoading = true
       this.rMaps.get({ code: this.$route.params.code })
-        .then(response => {
+        .then((response) => {
           this.map = response.body
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -248,10 +253,10 @@ export default {
         onConfirm: () => {
           this.isLoading = true
           this.rMaps.delete({ code: this.$route.params.code })
-            .then(response => {
+            .then((response) => {
               localStorage.removeItem('maps')
               this.$router.replace({ name: 'maps' })
-            }, response => {
+            }, (response) => {
               // remove loading overlay when API replies
               this.isLoading = false
               if (response.body.message) {
@@ -273,11 +278,11 @@ export default {
           if (this.isNew) {
             // creating new map
             this.rMaps.save(this.map)
-              .then(response => {
+              .then((response) => {
                 // return to maps
                 localStorage.removeItem('maps')
                 this.$router.replace({ name: 'maps' })
-              }, response => {
+              }, (response) => {
                 // remove loading overlay when API replies
                 this.isLoading = false
                 if (response.body.message) {
@@ -290,11 +295,11 @@ export default {
           }
           // updating map
           this.rMaps.update({ code: this.$route.params.code }, this.map)
-            .then(response => {
+            .then((response) => {
               // return to maps
               localStorage.removeItem('maps')
               this.$router.replace({ name: 'maps' })
-            }, response => {
+            }, (response) => {
               // remove loading overlay when API replies
               this.isLoading = false
               if (response.body.message) {
@@ -307,7 +312,7 @@ export default {
       })
     }
   },
-  mounted: function () {
+  mounted () {
     if (!this.isNew) {
       // for existing map, get data
       this.get()

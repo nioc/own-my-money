@@ -1,6 +1,8 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 import App from './App'
 import router from './router'
+import './registerServiceWorker'
 import Auth from './services/Auth'
 import VueI18n from 'vue-i18n'
 import messages from '@/lang/messages'
@@ -21,13 +23,27 @@ import Mock from './services/Mock.js'
 const moment = require('moment')
 
 Vue.config.productionTip = false
+Vue.use(Vuex)
 Vue.use(VueI18n)
 Vue.use(VueResource)
 
+const store = new Vuex.Store({
+  state: {
+    isOnline: null
+  },
+  mutations: {
+    setConnectivity (state, isOnline) {
+      state.isOnline = isOnline
+    }
+  }
+})
+
 let locale = navigator.language
+if (Auth.getProfile() && Auth.user.language) {
+  locale = Auth.user.language
+}
 
 const i18n = new VueI18n({
-  // silentTranslationWarn: true,
   fallbackLocale: 'en',
   locale: locale,
   messages: messages,
@@ -104,7 +120,7 @@ Vue.http.interceptors.push((request, next) => {
       // redirect only if page is not already login page (multiples 401 in same time)
       Auth.logout()
       Bus.$emit('user-logged', {})
-      router.replace({name: 'login', query: { redirect: router.currentRoute.fullPath }})
+      router.replace({ name: 'login', query: { redirect: router.currentRoute.fullPath } })
     }
     return response
   })
@@ -113,5 +129,6 @@ Vue.http.interceptors.push((request, next) => {
 new Vue({
   router,
   i18n,
+  store,
   render: (h) => h(App)
 }).$mount('#money')

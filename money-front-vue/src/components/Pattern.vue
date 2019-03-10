@@ -46,9 +46,9 @@
       </section>
 
       <footer class="modal-card-foot">
-        <button class="button is-primary"><span class="icon"><i class="fa fa-save"/></span><span>{{ $t('actions.save') }}</span></button>
+        <button class="button is-primary" :disabled="!isOnline"><span class="icon"><i class="fa fa-save"/></span><span>{{ $t('actions.save') }}</span></button>
         <button type="button" class="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
-        <button v-if="pattern.id" type="button" class="button is-danger" @click="deletePattern"><span class="icon"><i class="fa fa-trash"/></span><span>{{ $t('actions.delete') }}</span></button>
+        <button v-if="pattern.id" type="button" class="button is-danger" :disabled="!isOnline" @click="deletePattern"><span class="icon"><i class="fa fa-trash"/></span><span>{{ $t('actions.delete') }}</span></button>
       </footer>
 
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
@@ -71,6 +71,11 @@ export default {
       isLoading: false
     }
   },
+  computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    }
+  },
   methods: {
     deletePattern () {
       this.$dialog.confirm({
@@ -83,14 +88,14 @@ export default {
         focusOn: 'cancel',
         onConfirm: () => {
           this.isLoading = true
-          this.rPatterns.delete({id: this.pattern.id})
-            .then(response => {
+          this.rPatterns.delete({ id: this.pattern.id })
+            .then((response) => {
               // close modal and remove deleted pattern
               this.$parent.close()
               let patterns = this.$parent.$parent.patterns
-              let index = patterns.map(pattern => pattern.id).indexOf(this.pattern.id)
+              let index = patterns.map((pattern) => pattern.id).indexOf(this.pattern.id)
               patterns.splice(index, 1)
-            }, response => {
+            }, (response) => {
               // remove loading overlay when API replies
               this.isLoading = false
               if (response.body.message) {
@@ -111,10 +116,10 @@ export default {
           if (!this.pattern.id) {
             // create new pattern
             this.rPatterns.save(this.pattern)
-              .then(response => {
+              .then((response) => {
                 this.pattern.id = response.body.id
                 this.$parent.close()
-              }, response => {
+              }, (response) => {
                 // remove loading overlay when API replies
                 this.isLoading = false
                 if (response.body.message) {
@@ -127,9 +132,9 @@ export default {
           }
           this.rPatterns.update({ id: this.pattern.id }, this.pattern)
             // update existing pattern
-            .then(response => {
+            .then((response) => {
               this.$parent.close()
-            }, response => {
+            }, (response) => {
               // remove loading overlay when API replies
               this.isLoading = false
               if (response.body.message) {
@@ -143,10 +148,10 @@ export default {
     },
     count () {
       if (this.pattern.label) {
-        this.rTransactions.query({pattern: this.pattern.label}).then(response => {
+        this.rTransactions.query({ pattern: this.pattern.label }).then((response) => {
           this.matchingCount = response.body.length
           console.log(response.body.length)
-        }, response => {
+        }, (response) => {
           // @TODO : add error handling
           console.error(response)
         })
@@ -154,12 +159,12 @@ export default {
     }
   },
   watch: {
-    'pattern.category': function () {
+    'pattern.category' () {
       // clear subcategory field if category has changed
       this.pattern.subcategory = ''
     }
   },
-  mounted: function () {
+  mounted () {
     this.getCategories(false)
   }
 }

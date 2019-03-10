@@ -24,7 +24,7 @@
           </div>
         </div>
         <section class="content" v-if="!isUpToDate && this.user.scope.admin">
-          <button class="button is-primary" @click="update" :class="{ 'is-loading': isUpdating }" :disabled="isUpdating"><span class="icon"><i class="fa fa-wrench"/></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
+          <button class="button is-primary" @click="update" :class="{ 'is-loading': isUpdating }" :disabled="!isOnline || isUpdating"><span class="icon"><i class="fa fa-wrench"/></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
           <!-- eslint-disable-next-line vue/require-v-for-key-->
           <pre class="section content" v-if="updateLogs"><span class="is-block" v-for="updateLog in updateLogs">{{ updateLog.timestamp | moment("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
         </section>
@@ -59,15 +59,20 @@ export default {
       rVersions: this.$resource(Config.API_URL + 'setup/versions/latest')
     }
   },
+  computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    }
+  },
   methods: {
     get () {
       this.rVersions.query()
-        .then(response => {
+        .then((response) => {
           this.version = response.body
           if (this.version.installed !== this.version.latest) {
             this.isUpToDate = false
           }
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             console.log(response.body.message)
             return
@@ -83,10 +88,10 @@ export default {
       this.updateLogs = ''
       this.isUpdating = true
       this.rVersions.save()
-        .then(response => {
+        .then((response) => {
           this.updateLogs = response.body
           this.get()
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.updateLogs = response.body.message
             return
@@ -99,7 +104,7 @@ export default {
         })
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
   }
 }

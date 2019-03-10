@@ -3,16 +3,7 @@ import Router from 'vue-router'
 import Accounts from '@/components/Accounts'
 import Account from '@/components/Account'
 import Login from '@/components/Login'
-import Profile from '@/components/Profile'
-import Patterns from '@/components/Patterns'
-import Users from '@/components/Users'
-import Categories from '@/components/Categories'
-import Categorie from '@/components/Category'
-import Mappings from '@/components/Maps'
-import Mapping from '@/components/Map'
 import Home from '@/components/Home'
-import Setup from '@/components/Setup'
-import About from '@/components/About'
 Vue.use(Router)
 
 export default new Router({
@@ -21,95 +12,130 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
-      meta: {title: 'Home'}
+      meta: {
+        title: 'Home'
+      }
     },
     {
       path: '/setup',
       name: 'setup',
-      component: Setup,
-      meta: {title: 'Setup server'}
+      component: () => import(/* webpackChunkName: "user-settings" */ '@/components/Setup'),
+      meta: {
+        title: 'Setup server'
+      }
     },
     {
       path: '/about',
       name: 'about',
-      component: About,
-      meta: {title: 'About'}
+      component: () => import(/* webpackChunkName: "user-settings" */ '@/components/About'),
+      meta: {
+        title: 'About'
+      }
     },
     {
       path: '/accounts',
       name: 'accounts',
       component: Accounts,
-      meta: {title: 'Accounts'}
+      meta: {
+        title: 'Accounts'
+      }
     },
     {
       path: '/accounts/:id',
       name: 'account',
       component: Account,
-      meta: {title: 'Account :id'}
+      meta: {
+        transitionName: 'slide',
+        title: 'Account :id'
+      }
     },
     {
       path: '/login',
       name: 'login',
       component: Login,
-      meta: {title: 'Login'}
+      meta: {
+        title: 'Login'
+      }
     },
     {
       path: '/profile',
       name: 'profile',
-      component: Profile,
-      meta: {title: 'Profile'}
+      component: () => import(/* webpackChunkName: "user-settings" */ '@/components/Profile'),
+      meta: {
+        title: 'Profile'
+      }
     },
     {
       path: '/patterns',
       name: 'patterns',
-      component: Patterns,
-      meta: {title: 'Patterns'}
+      component: () => import(/* webpackChunkName: "user-settings" */ '@/components/Patterns'),
+      meta: {
+        title: 'Patterns'
+      }
     },
     {
       path: '/users',
       name: 'users',
-      component: Users,
-      meta: {title: 'Manage users'}
+      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Users'),
+      meta: {
+        title: 'Manage users'
+      }
     },
     {
       path: '/maps',
       name: 'maps',
-      component: Mappings,
-      meta: {title: 'Edit maps'}
+      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Maps'),
+      meta: {
+        title: 'Edit maps'
+      }
     },
     {
       path: '/maps/new',
       name: 'newMap',
-      component: Mapping,
+      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Map'),
       props: { isNew: true },
-      meta: {title: 'Edit map :code'}
+      meta: {
+        transitionName: 'slide',
+        title: 'Edit map :code'
+      }
     },
     {
       path: '/maps/:code',
       name: 'map',
-      component: Mapping,
+      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Map'),
       props: { isNew: false },
-      meta: {title: 'Edit map :code'}
+      meta: {
+        transitionName: 'slide',
+        title: 'Edit map :code'
+      }
     },
     {
       path: '/categories',
       name: 'categories',
-      component: Categories,
-      meta: {title: 'Edit categories and subcategories'}
+      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Categories'),
+      meta: {
+        title: 'Edit categories and subcategories'
+      }
     },
     {
       path: '/categories/:id',
       name: 'category',
-      component: Categorie,
+      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Category'),
       props: { isCategory: true },
-      meta: {title: 'Edit categorie :id'}
+      meta: {
+        transitionName: 'slide',
+        title: 'Edit category :id'
+      }
     },
     {
       path: '/categories/:pid/subcategories/:id',
       name: 'subcategory',
-      component: Categorie,
+      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Category'),
       props: { isCategory: false },
-      meta: {title: 'Edit subcategorie :id'}
+      meta: {
+        transitionName: 'slide',
+        title: 'Edit subcategory :id'
+      }
     }
   ]
 })

@@ -34,7 +34,7 @@ export default {
   methods: {
     get () {
       this.rConnections.query()
-        .then(response => {
+        .then((response) => {
           this.connections = response.body
           let parser = new UAParser()
           this.connections.forEach(function (connection) {
@@ -46,7 +46,7 @@ export default {
               connection.device = userAgent.device.model
             }
           })
-        }, response => {
+        }, (response) => {
           // @todo : handle error
           if (response.body.message) {
             console.log(response.body.message)
@@ -56,7 +56,7 @@ export default {
         })
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
   }
 }

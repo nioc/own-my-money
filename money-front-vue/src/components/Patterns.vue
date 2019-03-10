@@ -31,10 +31,10 @@
 
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="create"><span class="icon"><i class="fa fa-plus"/></span><span>{{ $t('actions.addPattern') }}</span></button>
+            <button class="button is-primary" role="button" @click="create" :disabled="!isOnline"><span class="icon"><i class="fa fa-plus"/></span><span>{{ $t('actions.addPattern') }}</span></button>
           </p>
           <p class="control">
-            <button class="button is-primary" role="button" @click="suggest"><span class="icon"><i class="fa fa-cogs"/></span><span>{{ $t('actions.suggestPatterns') }}</span></button>
+            <button class="button is-primary" role="button" @click="suggest" :disabled="!isOnline"><span class="icon"><i class="fa fa-cogs"/></span><span>{{ $t('actions.suggestPatterns') }}</span></button>
           </p>
         </div>
 
@@ -100,13 +100,18 @@ export default {
       rTransactionsPatterns: this.$resource(Config.API_URL + 'transactions/patterns')
     }
   },
+  computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    }
+  },
   methods: {
     get () {
       this.isLoading = true
       this.rPatterns.query()
-        .then(response => {
+        .then((response) => {
           this.patterns = response.body
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -131,9 +136,9 @@ export default {
     suggest () {
       this.isLoading = true
       this.rTransactionsPatterns.query()
-        .then(response => {
+        .then((response) => {
           this.suggestedPatterns = response.body
-        }, response => {
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -151,7 +156,7 @@ export default {
       this.edit(pattern)
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
     this.getCategories()
   }

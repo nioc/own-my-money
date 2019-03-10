@@ -16,10 +16,10 @@
               </span>
             </div>
             <div class="control">
-              <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" v-model="search.startDate"></b-datepicker>
+              <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodStart" @input="get()"></b-datepicker>
             </div>
             <div class="control">
-              <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" v-model="search.endDate"></b-datepicker>
+              <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodEnd" @input="get()"></b-datepicker>
             </div>
             <div class="control">
               <div class="select">
@@ -70,7 +70,7 @@
             </div>
           </div>
           <div class="control">
-            <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-cogs"></i></span><span>{{ $t('actions.apply') }}</span></button>
+            <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="(batch.isLoading || !isOnline)"><span class="icon"><i class="fa fa-cogs"></i></span><span>{{ $t('actions.apply') }}</span></button>
           </div>
           <div class="control">
             <button class="button is-light" @click="selectAll" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-check-square-o"></i></span><span>{{ $t('actions.selectAll') }}</span></button>
@@ -94,6 +94,9 @@
 
     <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" @select="edit" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
       <template slot-scope="props">
+        <b-table-column field="icon" v-if="displayAccount">
+          <span class="icon-transactions-account"><img v-if="props.row.iconUrl" :src="props.row.iconUrl" :title="props.row.accountLabel" height="24" width="24"><span class="is-hidden-tablet">{{ props.row.accountLabel }}</span></span>
+        </b-table-column>
         <b-table-column field="amount" :label="$t('fieldnames.amount')" sortable numeric>
           <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
         </b-table-column>
@@ -104,6 +107,7 @@
           {{ props.row.datePosted | moment("L") }}
         </b-table-column>
         <b-table-column field="category" :label="$tc('objects.category', 1)" sortable>
+          <span class="icon" v-if="props.row.categoryIcon"><i class="fa fa-fw" :class="props.row.categoryIcon"></i></span>
           {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
         </b-table-column>
       </template>
@@ -113,6 +117,9 @@
                 <p>{{ $t('labels.nothingToDisplay') }}</p>
             </div>
         </section>
+      </template>
+      <template slot="bottom-left">
+        <a class="button is-light" @click="downloadData"><span class="icon"><i class="fa fa-download fa-lg"></i></span><span>{{ $t('actions.download') }}</span></a>
       </template>
     </b-table>
     <b-modal :active.sync="modalTransaction.isActive" has-modal-card scroll="keep">
@@ -125,16 +132,34 @@
 import Bus from './../services/Bus'
 import Transaction from '@/components/Transaction'
 import CategoriesFactory from './../services/Categories'
+import exportFromJSON from 'export-from-json'
+// import Config from './../services/Config'
 export default {
   name: 'transactions',
   components: {
     Transaction
   },
-  props: ['url'],
+  props: {
+    url: {
+      required: true,
+      type: String
+    },
+    displayAccount: {
+      required: false,
+      type: Boolean,
+      default: false
+    },
+    duration: {
+      required: false,
+      type: String,
+      default: 'P3M'
+    }
+  },
   mixins: [CategoriesFactory],
   data () {
     const today = new Date()
     today.setHours(0, 0, 0)
+    today.setMilliseconds(0)
     return {
       transactions: [],
       isLoading: false,
@@ -152,8 +177,8 @@ export default {
         isActive: false,
         query: '',
         currentDate: today,
-        startDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
-        endDate: today,
+        periodStart: this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate(),
+        periodEnd: today,
         category: '',
         subcategory: ''
       },
@@ -166,38 +191,57 @@ export default {
     }
   },
   computed: {
-    displayedTransactions: function () {
+    isOnline () {
+      return this.$store.state.isOnline
+    },
+    displayedTransactions () {
       let query = this.search.query
-      let startDate = this.search.startDate
-      let endDate = this.search.endDate
+      let periodStart = this.search.periodStart
+      let periodEnd = this.search.periodEnd
       let category = this.search.category
       let subcategory = this.search.subcategory
       let transactions = this.transactions
-      transactions.map(t => {
+      transactions.map((t) => {
         t.categoryLabel = (t.category in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.category].label : null
+        t.categoryIcon = (t.category in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.category].icon : null
         t.subcategoryLabel = (t.subcategory in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.subcategory].label : null
         t.fullname = (t.memo) ? t.memo + ' ' + t.name : t.name
         return t
       })
       return transactions.filter(function (transaction) {
         return (transaction.note + transaction.fullname).toLowerCase().indexOf(query.toLowerCase()) > -1 &
-        new Date(Date.parse(transaction.datePosted)) >= startDate &
-        new Date(Date.parse(transaction.datePosted)) <= endDate &
+        new Date(Date.parse(transaction.datePosted)) >= periodStart &
+        new Date(Date.parse(transaction.datePosted)) <= periodEnd &
         (!category || transaction.category === category) &
         (!subcategory || transaction.subcategory === subcategory)
       })
     },
-    transactionsCheckedSum: function () {
+    transactionsCheckedSum () {
       return this.batch.checkedTransactions.length > 0 ? this.batch.checkedTransactions.reduce((sum, transaction) => sum + transaction.amount, 0) : 0
     }
   },
   methods: {
     // get transactions
     get () {
+      if (this.isLoading) {
+        // exit if already loading
+        return
+      }
       this.isLoading = true
-      this.rTransactions.query({}).then(response => {
+      // eslint-disable-next-line no-unused-vars
+      let params = {
+        periodStart: this.$moment(this.search.periodStart).format('X'),
+        periodEnd: this.$moment(this.search.periodEnd).format('X')
+      }
+      // this.rTransactions.query(params).then((response) => {
+      this.rTransactions.query({}).then((response) => {
         this.transactions = response.body
-      }, response => {
+        this.transactions.map((transaction) => {
+          // transaction.iconUrl = transaction.iconUrl ? Config.API_URL + transaction.iconUrl : null
+          transaction.iconUrl = transaction.iconUrl ? transaction.iconUrl : null
+          return transaction
+        })
+      }, (response) => {
         // @TODO : add error handling
         console.error(response)
       }).finally(function () {
@@ -220,6 +264,26 @@ export default {
         }
       }
     },
+    downloadData () {
+      let transactions = JSON.parse(JSON.stringify(this.displayedTransactions)).map((t) => {
+        t.amount = this.$n(t.amount, { style: 'decimal', useGrouping: false })
+        t.datePosted = this.$moment(t.datePosted).format('L')
+        t.dateUser = this.$moment(t.dateUser).format('L')
+        delete (t.id)
+        delete (t.fitid)
+        delete (t.type)
+        delete (t.category)
+        delete (t.subcategory)
+        delete (t.fullname)
+        for (var property in t) {
+          if (t[property] === null) {
+            t[property] = ''
+          }
+        }
+        return t
+      })
+      exportFromJSON({ data: transactions, fileName: 'transactions', exportType: exportFromJSON.types.csv, withBOM: true })
+    },
     processBatchUpdate () {
       let length = this.batch.checkedTransactions.length
       if (length > 0) {
@@ -237,8 +301,8 @@ export default {
             }
           }
           this.rTransactions.update({ id: transaction.id }, transaction)
-            .then(response => {
-            }, response => {
+            .then((response) => {
+            }, (response) => {
               if (response.body.message) {
                 this.batch.result += transaction.id + ' : ' + response.body.message + '. '
                 return
@@ -263,21 +327,27 @@ export default {
     }
   },
   watch: {
-    'search.category': function () {
+    'search.category' () {
       // clear subcategory search field if category has changed
       this.search.subcategory = ''
+    },
+    duration () {
+      const today = new Date()
+      today.setHours(0, 0, 0)
+      today.setMilliseconds(0)
+      this.search.periodStart = this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate()
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
     this.getCategories(true)
     Bus.$on('transactions-updated', () => {
       this.get()
     })
     Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.endDate.getTime() !== search.periodStart.getTime()) || (this.search.startDate.getTime() !== search.periodEnd.getTime())) {
-        this.search.startDate = search.periodStart
-        this.search.endDate = search.periodEnd
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
+        this.search.periodStart = search.periodStart
+        this.search.periodEnd = search.periodEnd
       }
     })
   },

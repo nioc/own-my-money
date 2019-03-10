@@ -40,7 +40,7 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-primary">{{ $t('actions.create') }}</button>
+        <button class="button is-primary" :disabled="!isOnline">{{ $t('actions.create') }}</button>
         <button class="button" type="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
       </footer>
       <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
@@ -60,6 +60,11 @@ export default {
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}')
     }
   },
+  computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    }
+  },
   methods: {
     validateBeforeSubmit () {
       // call the async validator
@@ -68,10 +73,10 @@ export default {
           this.isLoading = true
           // if validation is ok, call accounts API
           this.rAccounts.save(this.account)
-            .then(response => {
+            .then((response) => {
               this.$parent.$parent.getAccounts()
               this.$parent.close()
-            }, response => {
+            }, (response) => {
               if (response.body.message) {
                 this.error = response.body.message
                 return

@@ -91,7 +91,7 @@
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
+                  <button class="button is-primary" :disabled="!isOnline"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
                 </div>
                 <div class="control">
                   <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.cancel') }}</a>
@@ -145,15 +145,20 @@ export default {
       error: null
     }
   },
+  computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    }
+  },
   methods: {
     // get category informations
     get () {
       this.isLoading = true
       this.rCategories.get({ id: this.category.id })
-        .then(response => {
+        .then((response) => {
           this.category = response.body
           this.updateBreadcrumbItems()
-        }, response => {
+        }, (response) => {
         // @TODO : add error handling
           console.error(response)
         })
@@ -173,7 +178,7 @@ export default {
           // parent is kwnow, try to find it
           var label = this.category.parentId
           if (this.parentCategories.length > 0) {
-            let parent = this.parentCategories.filter(pcategory => pcategory.id === parseInt(this.category.parentId))
+            let parent = this.parentCategories.filter((pcategory) => pcategory.id === parseInt(this.category.parentId))
             if (parent.length > 0) {
               // parent is found, update the breadcrumb
               label = parent[0].label
@@ -198,10 +203,10 @@ export default {
       }
       // categories was not found in local storage, call API
       this.rCategories.query({ status: 'all' })
-        .then(response => {
+        .then((response) => {
           this.parentCategories = response.body
           this.updateBreadcrumbItems()
-        }, response => {
+        }, (response) => {
         // @TODO : add error handling
           console.error(response)
         })
@@ -223,12 +228,12 @@ export default {
           if (!this.category.id) {
             // creating new (sub)category
             this.rCategories.save(this.category)
-              .then(response => {
+              .then((response) => {
                 localStorage.removeItem('categoriesActives')
                 localStorage.removeItem('categories')
                 // return to categories
                 this.$router.replace({ name: 'categories' })
-              }, response => {
+              }, (response) => {
                 if (response.body.message) {
                   this.error = response.body.message
                   return
@@ -243,12 +248,12 @@ export default {
           }
           // updating new (sub)category
           this.rCategories.update({ id: this.category.id }, this.category)
-            .then(response => {
+            .then((response) => {
               localStorage.removeItem('categoriesActives')
               localStorage.removeItem('categories')
               // return to categories
               this.$router.replace({ name: 'categories' })
-            }, response => {
+            }, (response) => {
               if (response.body.message) {
                 this.error = response.body.message
                 return
@@ -263,7 +268,7 @@ export default {
       })
     }
   },
-  mounted: function () {
+  mounted () {
     this.breadcrumbItems = [
       { link: '/', icon: 'fa-home', text: this.$t('labels.home') },
       { link: '/categories', icon: 'fa-folder-open-o', text: this.$tc('objects.category', 2) }

@@ -15,7 +15,7 @@ export default {
   // send a request to the login URL and save the returned JWT
   login (context, creds, redirect) {
     context.$http.post(Config.API_URL + 'users/tokens', creds)
-      .then(response => {
+      .then((response) => {
         // store token
         this.handleToken(response.body)
         // send event for updating UI
@@ -26,8 +26,8 @@ export default {
           return
         }
         // redirect to home
-        context.$router.replace({name: 'home'})
-      }, response => {
+        context.$router.replace({ name: 'home' })
+      }, (response) => {
         context.isLoading = false
         if (response.body.message) {
           context.error = response.body.message
@@ -62,6 +62,7 @@ export default {
       this.user.id = payload.id
       this.user.login = payload.login
       this.user.mail = payload.mail
+      this.user.language = payload.language
       let scope = {}
       if (payload.scope) {
         payload.scope.split(' ').forEach(function (role) { scope[role] = true })

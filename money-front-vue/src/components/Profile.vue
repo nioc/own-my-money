@@ -76,11 +76,30 @@
 
           <div class="field is-horizontal">
             <div class="field-label is-normal">
+              <label class="label">{{ $t('fieldnames.language') }}</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <div class="control">
+                  <div class="select">
+                    <select name="language" v-model="user.language">
+                      <option value="">{{ $t('labels.automatic') }}</option>
+                      <option value="fr">Français</option>
+                      <option value="en">English</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
             </div>
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
+                  <button class="button is-primary" :disabled="!isOnline"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
                 </div>
                 <div class="control">
                   <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.cancel') }}</a>
@@ -128,6 +147,11 @@ export default {
       rUsers: this.$resource(Config.API_URL + 'users{/id}')
     }
   },
+  computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    }
+  },
   methods: {
     validateBeforeSubmit () {
       // call the async validator
@@ -135,9 +159,9 @@ export default {
         if (result) {
           this.isLoading = true
           // if validation is ok, call user API
-          this.rUsers.update({id: this.user.id}, {sub: this.user.id, login: this.user.login, password: this.password, mail: this.user.mail})
-            .then(response => {
-            }, response => {
+          this.rUsers.update({ id: this.user.id }, { sub: this.user.id, login: this.user.login, password: this.password, mail: this.user.mail, language: this.user.language })
+            .then((response) => {
+            }, (response) => {
               if (response.body.message) {
                 this.error = response.body.message
                 return

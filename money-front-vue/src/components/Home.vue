@@ -59,12 +59,20 @@
               :date="date"
               ></transactions-distribution-chart>
             </div>
+            <div v-if="subcategorySelected.key" class="column no-padding-mobile is-full">
+              <transactions-history-chart
+              :title="$t('labels.transactionsByDay') + ' ' + $t('labels.for') + ' ' + subcategorySelected.label"
+              :chartEndpoint="'transactions/history?subcategory='+subcategorySelected.key"
+              :isIndependent="false"
+              :date="date"
+              ></transactions-history-chart>
+            </div>
           </div>
         </div>
       </div>
       <div class="container box">
         <h1 class="title">{{ $tc('objects.transaction', 2) }}</h1>
-        <transactions v-bind:url="url"/>
+        <transactions :url="url" :displayAccount="true"/>
       </div>
     </div>
   </section>
@@ -88,16 +96,20 @@ export default {
   data () {
     const today = new Date()
     today.setHours(0, 0, 0)
+    today.setMilliseconds(0)
     return {
       categorySelected: { key: null },
+      subcategorySelected: { key: null },
       url: Config.API_URL + 'transactions{/id}',
       date: {
-        periodStart: this.$moment(today).subtract(this.$moment.duration('P1M')).toDate(),
+        timeUnit: '',
+        duration: 'P3M',
+        periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
         periodEnd: today
       }
     }
   },
-  mounted: function () {
+  mounted () {
     Bus.$on('category-selected', (category) => {
       if (!this.categorySelected.key || this.categorySelected.key !== category.key) {
         // clear previous subcategory pies
@@ -108,10 +120,26 @@ export default {
         })
       }
     })
+    Bus.$on('subcategory-selected', (subcategory) => {
+      if (!this.subcategorySelected.key || this.subcategorySelected.key !== subcategory.key) {
+        // clear previous subcategory history
+        this.subcategorySelected.key = null
+        this.$nextTick(function () {
+          // set subcategory after next DOM update cycle
+          this.subcategorySelected = subcategory
+        })
+      }
+    })
     Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.date.periodStart.getTime() !== search.periodStart.getTime()) || (this.date.periodEnd.getTime() !== search.periodEnd.getTime())) {
+      if ((this.date.periodStart.getTime() !== search.periodStart.getTime()) || (this.date.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.date.timeUnit !== search.timeUnit)) {
         this.date.periodStart = search.periodStart
         this.date.periodEnd = search.periodEnd
+        if (search.timeUnit) {
+          this.date.timeUnit = search.timeUnit
+        }
+        if (search.duration) {
+          this.date.duration = search.duration
+        }
       }
     })
   },

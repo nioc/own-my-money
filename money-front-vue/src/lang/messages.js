@@ -12,6 +12,7 @@ export default {
       accountIdentifier: 'Account identifier',
       code: 'Code',
       label: 'Label',
+      duration: 'Duration',
       note: 'Note',
       memo: 'Memo',
       dateFormat: 'Date format',
@@ -25,6 +26,7 @@ export default {
       ipAddress: 'IP address',
       userAgent: 'User agent',
       admin: 'Admin',
+      language: 'Language',
       balance: 'Balance',
       updated: 'Updated'
     },
@@ -52,8 +54,10 @@ export default {
       deleteMap: 'Delete mapping',
       addAccount: 'Add account',
       deleteAccount: 'Delete account',
+      download: 'Download',
       uploadOfxJson: 'Upload OFX/JSON',
       uploadOfx: 'Upload OFX',
+      uploadIcon: 'Upload icon',
       updateTo: 'Update to'
     },
     labels: {
@@ -98,6 +102,13 @@ export default {
       uncategorizedTransaction: 'Uncategorized',
       debits: 'Debits',
       credits: 'Credits',
+      balances: 'Balances',
+      automatic: 'Automatic',
+      daily: 'Daily',
+      weekly: 'Weekly',
+      monthly: 'Monthly',
+      isOnline: 'You are back online',
+      isOffline: 'You are offline',
       aboutText: '<p>Own my money is a simple way to track your bank activity on any device connected to the web (pc, smartphone, tablet, ...).</p><p>If you have any issues or feature requests, please create an <a href="https://github.com/nioc/own-my-money/issues" target="_blank">issue</a>.</p><p>This project is licensed under the <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank">GNU Affero General Public License v3.0</a>.</p>'
     },
     objects: {
@@ -130,6 +141,7 @@ export default {
       accountIdentifier: 'Numéro de compte',
       code: 'Code',
       label: 'Libellé',
+      duration: 'Durée',
       note: 'Note',
       memo: 'Mémo',
       dateFormat: 'Format de date',
@@ -143,6 +155,7 @@ export default {
       ipAddress: 'Adresse IP',
       userAgent: 'User agent',
       admin: 'Admin',
+      language: 'Langue',
       balance: 'Solde',
       updated: 'Mise à jour'
     },
@@ -170,8 +183,10 @@ export default {
       deleteMap: 'Supprimer la correspondance',
       addAccount: 'Ajouter un compte',
       deleteAccount: 'Supprimer le compte',
+      download: 'Télécharger',
       uploadOfxJson: 'Téléverser OFX/JSON',
       uploadOfx: 'Téléverser OFX',
+      uploadIcon: 'Téléverser icône',
       updateTo: 'Mise à jour vers'
     },
     labels: {
@@ -216,6 +231,13 @@ export default {
       uncategorizedTransaction: 'Non classé',
       debits: 'Débits',
       credits: 'Crédits',
+      balances: 'Soldes',
+      automatic: 'Automatique',
+      daily: 'Par jour',
+      weekly: 'Par semaine',
+      monthly: 'Par mois',
+      isOnline: 'Vous êtes à nouveau connecté',
+      isOffline: 'Vous êtes hors-ligne',
       aboutText: '<p>Own my money est un outil pour suivre facilement votre activité bancaire depuis n\'importe quel équipement connecté à internet (pc, smartphone, tablette, ...).</p><p>En cas de problème ou pour toute suggestion, merci de créer un <a href="https://github.com/nioc/own-my-money/issues" target="_blank">ticket</a>.</p><p>Ce projet est sous la licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank">GNU Affero General Public License v3.0</a>.</p>'
     },
     objects: {

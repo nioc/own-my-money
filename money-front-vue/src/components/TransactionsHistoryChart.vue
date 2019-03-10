@@ -4,7 +4,7 @@
     <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
         <div class="select">
-          <select v-model="quickDate">
+          <select v-model="search.duration">
             <option value="P1W">{{ $tc('objects.lastWeek', 1) }}</option>
             <option value="P1M">{{ $tc('objects.lastMonth', 1) }}</option>
             <option value="P3M">{{ $tc('objects.lastMonth', 3) }}</option>
@@ -18,6 +18,16 @@
       </div>
       <div class="control">
         <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodEnd"></b-datepicker>
+      </div>
+      <div class="control">
+        <div class="select">
+          <select v-model="search.timeUnit">
+            <option value="">{{ $t('labels.automatic') }}</option>
+            <option value="D">{{ $t('labels.daily') }}</option>
+            <option value="W">{{ $t('labels.weekly') }}</option>
+            <option value="M">{{ $t('labels.monthly') }}</option>
+          </select>
+        </div>
       </div>
       <div class="control">
         <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
@@ -56,15 +66,17 @@ export default {
   data () {
     const today = new Date()
     today.setHours(0, 0, 0)
+    today.setMilliseconds(0)
     return {
       isLoading: false,
       isLoaded: false,
       chartData: null,
       labelCallback: null,
-      quickDate: 'P1M',
       search: {
+        duration: 'P3M',
+        timeUnit: '',
         currentDate: today,
-        periodStart: this.$moment(today).subtract(this.$moment.duration(this.quickDate)).toDate(),
+        periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
         periodEnd: today
       }
     }
@@ -77,12 +89,16 @@ export default {
     requestData () {
       this.isLoading = true
       let options = {
-        // params: {
-        //   periodStart: this.$moment(this.search.periodStart).format('X'),
-        //   periodEnd: this.$moment(this.search.periodEnd).format('X')
-        // }
+        params: {
+          periodStart: this.$moment(this.search.periodStart).format('X'),
+          periodEnd: this.$moment(this.search.periodEnd).format('X')
+        }
       }
-      this.$http.get(Config.API_URL + this.chartEndpoint, options).then(response => {
+      if (this.search.timeUnit !== '') {
+        options.params.timeUnit = this.search.timeUnit
+      }
+      // this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
+      this.$http.get(Config.API_URL + this.chartEndpoint, {}).then((response) => {
         let vm = this
         this.labelCallback = function (tooltipItem, data) {
           return data.datasets[tooltipItem.datasetIndex].label + ': ' + vm.$n(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index], 'currency')
@@ -90,27 +106,41 @@ export default {
         this.chartData = {
           datasets: [
             {
-              data: response.data.values.map(point => point.debit),
-              label: this.$t('labels.debits'),
-              backgroundColor: 'rgba(255, 99, 132, 0.5)',
-              borderColor: 'rgb(255, 99, 132)',
-              pointBackgroundColor: 'rgba(255, 99, 132, 0.8)'
+              data: response.data.values.map((point) => point.balance),
+              label: this.$t('labels.balances'),
+              type: 'line',
+              backgroundColor: 'rgba(0, 0, 0, 0)',
+              borderColor: 'rgb(122, 122, 122)',
+              pointBackgroundColor: 'rgba(122, 122, 122, 0.8)',
+              radius: 2,
+              lineTension: 0.1,
+              yAxisID: 'y-axis-2'
             },
             {
-              data: response.data.values.map(point => point.credit),
+              data: response.data.values.map((point) => point.debit),
+              label: this.$t('labels.debits'),
+              type: 'bar',
+              backgroundColor: 'rgba(255, 99, 132, 0.7)',
+              borderColor: 'rgb(255, 99, 132)',
+              yAxisID: 'y-axis-1'
+            },
+            {
+              data: response.data.values.map((point) => point.credit),
               label: this.$t('labels.credits'),
-              backgroundColor: 'rgba(66, 185, 131, 0.5)',
+              type: 'bar',
+              backgroundColor: 'rgba(66, 185, 131, 0.7)',
               borderColor: 'rgb(66, 185, 131)',
-              pointBackgroundColor: 'rgba(66, 185, 131, 0.8)'
+              yAxisID: 'y-axis-1'
             }
           ],
-          labels: response.data.values.map(point => this.$moment(point.date))
+          labels: response.data.values.map((point) => this.$moment(point.date))
         }
         this.search.periodStart = this.$moment(response.data.periodStart).toDate()
         this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
         this.isLoading = false
         this.isLoaded = true
-      }, response => {
+      }, (response) => {
+        this.isLoading = false
         if (response.body.message) {
           console.log(response.body.message)
           return
@@ -120,10 +150,12 @@ export default {
     }
   },
   watch: {
-    quickDate () {
-      if (this.quickDate) {
+    'search.duration' () {
+      if (this.search.duration) {
         Bus.$emit('transactions-date-filtered', {
-          periodStart: this.$moment(this.search.currentDate).subtract(this.$moment.duration(this.quickDate)).toDate(),
+          duration: this.search.duration,
+          timeUnit: this.search.timeUnit,
+          periodStart: this.$moment(this.search.currentDate).subtract(this.$moment.duration(this.search.duration)).toDate(),
           periodEnd: this.search.currentDate
         })
       }
@@ -131,15 +163,23 @@ export default {
   },
   mounted () {
     Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
+      if (search.duration) {
+        this.search.duration = search.duration
+      }
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.timeUnit !== search.timeUnit)) {
         this.search.periodStart = search.periodStart
         this.search.periodEnd = search.periodEnd
+        if (search.timeUnit) {
+          this.search.timeUnit = search.timeUnit
+        }
         this.requestData()
       }
     })
     if (this.date) {
+      this.search.duration = this.date.duration
       this.search.periodStart = this.date.periodStart
       this.search.periodEnd = this.date.periodEnd
+      this.search.timeUnit = this.date.timeUnit
     }
     this.requestData()
   }

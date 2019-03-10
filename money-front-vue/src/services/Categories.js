@@ -37,17 +37,17 @@ export default {
       let query = {}
       if (includeInactives) {
         localStorageKey = 'categories'
-        // query = {status: 'all'}
+        // query = { status: 'all' }
       }
       if (localStorage.getItem(localStorageKey)) {
         this.handleResponse(JSON.parse(localStorage.getItem(localStorageKey)))
         return
       }
-      this.rCategories.query(query).then(response => {
+      this.rCategories.query(query).then((response) => {
         this.handleResponse(response.body)
         // put categories in local storage for future usage
         localStorage.setItem(localStorageKey, JSON.stringify(this.categories))
-      }, response => {
+      }, (response) => {
         // @TODO : add error handling
         console.error(response)
       })

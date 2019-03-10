@@ -14,7 +14,7 @@
         <p class="subtitle has-text-grey">{{ $t('labels.categoriesLabel') }}</p>
         <ul class="menu-list">
           <li v-for="category in categories" :key="category.id" :class="{ 'item-disabled': !category.status }">
-            <router-link :to="{ name: 'category', params: { id: category.id }}"><i class="fa fa-fw" :class="category.icon" />&nbsp;{{ category.label }}</router-link>
+            <router-link :to="{ name: 'category', params: { id: category.id }}"><i class="fa fa-fw" :class="category.icon" />&nbsp;{{ category.label }}&nbsp;<span v-if="!category.isBudgeted" class="has-text-grey-light" :title="$t('labels.isNotBudgeted')"><i class="fa fa-fw fa-bell-slash-o"/></span></router-link>
             <ul>
               <li v-for="subcategory in category.sub" :key="subcategory.id" :class="{ 'item-disabled': !subcategory.status }">
                 <router-link :to="{ name: 'subcategory', params: { id: subcategory.id, pid: category.id }}">{{ subcategory.label }}</router-link>
@@ -37,12 +37,10 @@
 <script>
 import Config from './../services/Config'
 import Breadcrumb from '@/components/Breadcrumb'
-import Category from '@/components/Category'
 export default {
   name: 'categories',
   components: {
-    Breadcrumb,
-    Category
+    Breadcrumb
   },
   data () {
     return {
@@ -54,13 +52,13 @@ export default {
   methods: {
     get () {
       this.isLoading = true
-      // this.rCategories.query({status: 'all'})
+      // this.rCategories.query({ status: 'all' })
       this.rCategories.query({})
-        .then(response => {
+        .then((response) => {
           this.categories = response.body
           // put categories in local storage for future usage
           localStorage.setItem('categories', JSON.stringify(this.categories))
-        }, response => {
+        }, (response) => {
         // @TODO : add error handling
           console.error(response)
         })
@@ -70,7 +68,7 @@ export default {
         })
     }
   },
-  mounted: function () {
+  mounted () {
     this.get()
   }
 }

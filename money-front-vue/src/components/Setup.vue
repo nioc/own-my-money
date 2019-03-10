@@ -41,7 +41,7 @@
           </div>
 
           <div class="has-text-centered" v-if="currentStep < steps.length-1">
-            <button class="button is-primary" :disabled="errors.any()"><span class="icon"><i class="fa fa-arrow-circle-right"/></span><span>{{ $t('actions.next') }}</span></button>
+            <button class="button is-primary" :disabled="!isOnline || errors.any()"><span class="icon"><i class="fa fa-arrow-circle-right"/></span><span>{{ $t('actions.next') }}</span></button>
           </div>
 
         </form>
@@ -77,14 +77,19 @@ export default {
       rFields: this.$resource(Config.API_URL + 'setup/steps{/code}/fields')
     }
   },
+  computed: {
+    isOnline () {
+      return this.$store.state.isOnline
+    }
+  },
   methods: {
     getSteps () {
       this.isLoading = true
       this.rSteps.query()
-        .then(response => {
+        .then((response) => {
           this.steps = response.body
-          this.setStep(this.steps.findIndex(step => step.isActive))
-        }, response => {
+          this.setStep(this.steps.findIndex((step) => step.isActive))
+        }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
             return
@@ -96,11 +101,11 @@ export default {
           this.isLoading = false
         })
     },
-    setStep: function (index) {
+    setStep (index) {
       if (index < 0 || index >= this.steps.length) {
         index = 0
       }
-      this.steps.map(step => {
+      this.steps.map((step) => {
         step.isActive = false
         return step
       })
@@ -109,24 +114,24 @@ export default {
       }
       this.currentStep = index
     },
-    validateBeforeSubmit: function () {
+    validateBeforeSubmit () {
       this.error = ''
       this.$validator.validateAll().then((result) => {
         if (result) {
           this.isLoading = true
           // if validation is ok, call steps/{code}/fields API
           let code = this.steps[this.currentStep].code
-          let fields = this.steps[this.currentStep].fields.map(field => {
+          let fields = this.steps[this.currentStep].fields.map((field) => {
             let f = {}
             f.name = field.name
             f.value = field.value
             return f
           })
           this.rFields.update({ code: code }, fields)
-            .then(response => {
+            .then((response) => {
               this.currentStep++
               this.setStep(this.currentStep)
-            }, response => {
+            }, (response) => {
               if (response.body.message) {
                 this.error = response.body.message
                 return
@@ -141,7 +146,7 @@ export default {
       })
     }
   },
-  mounted: function () {
+  mounted () {
     this.getSteps()
   }
 }

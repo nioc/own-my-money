@@ -1,5 +1,7 @@
 <script>
 import { Doughnut, mixins } from 'vue-chartjs'
+import Chart from 'chart.js'
+Chart.defaults.global.defaultFontFamily = '"FontAwesome", "Helvetica Neue", "Helvetica", "Arial", sans-serif'
 const { reactiveProp } = mixins
 
 export default {
