@@ -340,12 +340,11 @@ export default {
       if (!routeExists) {
         // console.log(url)
         return request.respondWith({ status: 404, statusText: 'Not found' })
-      } else {
-        return request.respondWith(
-          route.response,
-          { status: 200 }
-        )
       }
+      return request.respondWith(
+        route.response,
+        { status: 200 }
+      )
     })
   }
 }
