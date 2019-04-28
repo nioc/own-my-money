@@ -119,7 +119,7 @@ export default {
               data: response.data.values.map((point) => point.debit),
               label: this.$t('labels.debits'),
               type: 'bar',
-              backgroundColor: 'rgba(255, 99, 132, 0.7)',
+              backgroundColor: 'rgba(255, 99, 132, 0.6)',
               borderColor: 'rgb(255, 99, 132)',
               yAxisID: 'y-axis-1'
             },
@@ -127,7 +127,23 @@ export default {
               data: response.data.values.map((point) => point.credit),
               label: this.$t('labels.credits'),
               type: 'bar',
-              backgroundColor: 'rgba(66, 185, 131, 0.7)',
+              backgroundColor: 'rgba(66, 185, 131, 0.6)',
+              borderColor: 'rgb(66, 185, 131)',
+              yAxisID: 'y-axis-1'
+            },
+            {
+              data: response.data.values.map((point) => point.debitRecurring),
+              label: this.$t('labels.debits') + this.$t('labels.recurring'),
+              type: 'bar',
+              backgroundColor: 'rgba(255, 99, 132, 0.4)',
+              borderColor: 'rgb(255, 99, 132)',
+              yAxisID: 'y-axis-1'
+            },
+            {
+              data: response.data.values.map((point) => point.creditRecurring),
+              label: this.$t('labels.credits') + this.$t('labels.recurring'),
+              type: 'bar',
+              backgroundColor: 'rgba(66, 185, 131, 0.4)',
               borderColor: 'rgb(66, 185, 131)',
               yAxisID: 'y-axis-1'
             }
