@@ -57,6 +57,10 @@ class Transaction
      * @var string User note about the transaction
      */
     public $note;
+    /**
+     * @var boolean Indicate if transaction is reccuring or single shot
+     */
+    public $isRecurring;
 
     /**
      * Initializes a Transaction object with his identifier.
@@ -201,11 +205,12 @@ class Transaction
         if (is_int($this->id)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
             $connection = new DatabaseConnection();
-            $query = $connection->prepare('UPDATE `transaction` SET `category`=:category, `subcategory`=:subcategory, `note`=:note WHERE `id`=:id;');
+            $query = $connection->prepare('UPDATE `transaction` SET `category`=:category, `subcategory`=:subcategory, `note`=:note, `isRecurring`=:isRecurring WHERE `id`=:id;');
             $query->bindValue(':id', $this->id, PDO::PARAM_INT);
             $query->bindValue(':category', $this->category, PDO::PARAM_INT);
             $query->bindValue(':subcategory', $this->subcategory, PDO::PARAM_INT);
             $query->bindValue(':note', $this->note, PDO::PARAM_STR);
+            $query->bindValue(':isRecurring', $this->isRecurring, PDO::PARAM_BOOL);
             if ($query->execute()) {
                 //return true to indicate a successful transaction update
                 return true;
@@ -296,6 +301,9 @@ class Transaction
                 $transaction->iconUrl= "accounts/$transaction->aid/icons";
             }
             unset($transaction->hasIcon);
+        }
+        if (isset($transaction->isRecurring)) {
+            $transaction->isRecurring = (bool) $transaction->isRecurring;
         }
         unset($transaction->aid);
         //return structured transaction

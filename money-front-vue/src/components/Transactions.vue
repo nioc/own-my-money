@@ -70,6 +70,15 @@
             </div>
           </div>
           <div class="control">
+            <div class="select">
+              <select v-model="batch.isRecurring">
+                <option :value=null>-- {{ $t('fieldnames.isRecurring') }} --</option>
+                <option :value=true>{{ $t('labels.isRecurring') }}</option>
+                <option :value=false>{{ $t('labels.isNotRecurring') }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="control">
             <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="(batch.isLoading || !isOnline)"><span class="icon"><i class="fa fa-cogs"></i></span><span>{{ $t('actions.apply') }}</span></button>
           </div>
           <div class="control">
@@ -105,6 +114,9 @@
         </b-table-column>
         <b-table-column field="datePosted" :label="$t('fieldnames.date')" sortable>
           {{ props.row.datePosted | moment("L") }}
+        </b-table-column>
+        <b-table-column field="isRecurring" :label="$t('fieldnames.isRecurring')" sortable>
+          <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']"></i>
         </b-table-column>
         <b-table-column field="category" :label="$tc('objects.category', 1)" sortable>
           <span class="icon" v-if="props.row.categoryIcon"><i class="fa fa-fw" :class="props.row.categoryIcon"></i></span>
@@ -169,6 +181,7 @@ export default {
         progress: 0,
         result: '',
         checkedTransactions: [],
+        isRecurring: null,
         category: '',
         subcategory: ''
       },
@@ -289,6 +302,7 @@ export default {
         let processed = 0
         let category = this.batch.category
         let subcategory = this.batch.subcategory
+        let isRecurring = this.batch.isRecurring
         this.batch.result = ''
         for (let transaction of this.batch.checkedTransactions) {
           if (category) {
@@ -296,6 +310,9 @@ export default {
             if (subcategory) {
               transaction.subcategory = subcategory
             }
+          }
+          if (isRecurring !== null) {
+            transaction.isRecurring = isRecurring
           }
           this.rTransactions.update({ id: transaction.id }, transaction)
             .then((response) => {
