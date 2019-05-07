@@ -144,7 +144,7 @@ export default {
                 tempElement.className = icon
                 document.body.appendChild(tempElement)
                 unicodeContent = window.getComputedStyle(tempElement, ':before').content.replace(/'|"/g, '') + ' '
-                tempElement.remove()
+                tempElement.parentNode.removeChild(tempElement)
               }
               return unicodeContent + this.categoriesAndSubcategoriesLookup[point.key].label
             }
