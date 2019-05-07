@@ -62,6 +62,7 @@ export default {
       updateTo: 'Update to'
     },
     labels: {
+      all: 'All',
       login: 'Access to your OwnMyMoney account',
       home: 'Home',
       language: 'Language',
@@ -195,6 +196,7 @@ export default {
       updateTo: 'Mise à jour vers'
     },
     labels: {
+      all: 'Tous',
       login: 'Accéder à votre compte OwnMyMoney',
       home: 'Accueil',
       language: 'Langue',

@@ -53,6 +53,10 @@ switch ($api->method) {
                 if ($api->checkParameterExists('subcategory', $subcategory)) {
                     $response->subcategory = $subcategory;
                 }
+                $isRecurringOnly = false;
+                if ($api->checkParameterExists('isRecurringOnly', $isRecurringOnly)) {
+                    $isRecurringOnly = filter_var($isRecurringOnly, FILTER_VALIDATE_BOOLEAN);
+                }
                 //request transactions history
                 if ($api->checkParameterExists('aid', $aid)) {
                     //specific account
@@ -67,10 +71,10 @@ switch ($api->method) {
                         //indicate the requester is not the account owner and is not allowed to query it
                         return;
                     }
-                    $values = $account->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, false, $category, $subcategory);
+                    $values = $account->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, false, $category, $subcategory, $isRecurringOnly);
                 } else {
                     //all user accounts
-                    $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, true, $category, $subcategory);
+                    $values = $user->getTransactionsHistory($periodStart, $periodEnd, $timeUnit, true, $category, $subcategory, $isRecurringOnly);
                 }
                 if (!$values) {
                     $api->output(500, '');
@@ -96,9 +100,13 @@ switch ($api->method) {
                     //no graph type provided, return error
                     return;
                 }
+                $isRecurringOnly = false;
+                if ($api->checkParameterExists('isRecurringOnly', $isRecurringOnly)) {
+                    $isRecurringOnly = filter_var($isRecurringOnly, FILTER_VALIDATE_BOOLEAN);
+                }
                 $api->checkParameterExists('value', $value);
                 //request transactions distribution
-                $values = $user->getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value, true);
+                $values = $user->getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value, true, $isRecurringOnly);
                 if ($values === false) {
                     $api->output(500, '');
                     //something go wrong

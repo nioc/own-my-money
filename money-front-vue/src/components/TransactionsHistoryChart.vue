@@ -30,6 +30,14 @@
         </div>
       </div>
       <div class="control">
+        <div class="select">
+          <select v-model="search.isRecurringOnly">
+            <option :value="false">{{ $t('labels.all') }}</option>
+            <option :value="true">{{ $t('labels.isRecurring') }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="control">
         <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
@@ -75,6 +83,7 @@ export default {
       search: {
         duration: 'P3M',
         timeUnit: '',
+        isRecurringOnly: false,
         currentDate: today,
         periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
         periodEnd: today
@@ -90,6 +99,7 @@ export default {
       this.isLoading = true
       let options = {
         params: {
+          isRecurringOnly: this.search.isRecurringOnly,
           periodStart: this.$moment(this.search.periodStart).format('X'),
           periodEnd: this.$moment(this.search.periodEnd).format('X')
         }
@@ -181,12 +191,13 @@ export default {
       if (search.duration) {
         this.search.duration = search.duration
       }
-      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.timeUnit !== search.timeUnit)) {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.timeUnit !== search.timeUnit) || (this.search.isRecurringOnly !== search.isRecurringOnly)) {
         this.search.periodStart = search.periodStart
         this.search.periodEnd = search.periodEnd
         if (search.timeUnit) {
           this.search.timeUnit = search.timeUnit
         }
+        this.search.isRecurringOnly = search.isRecurringOnly
         this.requestData()
       }
     })

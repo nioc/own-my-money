@@ -402,10 +402,11 @@ class User
      * @param int $budgetedOnly Request only transaction from budgeted categories
      * @param int $category Category identifier
      * @param int $subcategory Subcategory identifier
+     * @param boolean $isRecurringOnly Request only recurring transactions
      *
      * @return array User transactions history
      */
-    public function getTransactionsHistory($periodStart, $periodEnd, $timeUnit = 'D', $budgetedOnly = true, $category = null, $subcategory = null)
+    public function getTransactionsHistory($periodStart, $periodEnd, $timeUnit = 'D', $budgetedOnly = true, $category = null, $subcategory = null, $isRecurringOnly = false)
     {
         switch ($timeUnit) {
           case 'M':
@@ -427,11 +428,15 @@ class User
         }
 
         //get debits
-        $debits = $this->getTransactionsByType('debit', $sqlFormat, false, $periodStart, $periodEnd, $budgetedOnly, $category, $subcategory);
+        if (!$isRecurringOnly) {
+            $debits = $this->getTransactionsByType('debit', $sqlFormat, false, $periodStart, $periodEnd, $budgetedOnly, $category, $subcategory);
+        }
         $debitsRecurring = $this->getTransactionsByType('debit', $sqlFormat, true, $periodStart, $periodEnd, $budgetedOnly, $category, $subcategory);
 
         //get credits
-        $credits = $this->getTransactionsByType('credit', $sqlFormat, false, $periodStart, $periodEnd, $budgetedOnly, $category, $subcategory);
+        if (!$isRecurringOnly) {
+            $credits = $this->getTransactionsByType('credit', $sqlFormat, false, $periodStart, $periodEnd, $budgetedOnly, $category, $subcategory);
+        }
         $creditsRecurring = $this->getTransactionsByType('credit', $sqlFormat, true, $periodStart, $periodEnd, $budgetedOnly, $category, $subcategory);
 
         //create calendar for returning each days
@@ -448,13 +453,15 @@ class User
         } while ($dateTime->getTimestamp() <= $periodEnd);
 
         //put amount in calendar
-        foreach ($debits as $point) {
-            $calendar[$point['date']]['debit'] = floatval($point['debit']);
-            $calendar[$point['date']]['countDebit'] = intval($point['countDebit']);
-        }
-        foreach ($credits as $point) {
-            $calendar[$point['date']]['credit'] = floatval($point['credit']);
-            $calendar[$point['date']]['countCredit'] = intval($point['countCredit']);
+        if (!$isRecurringOnly) {
+            foreach ($debits as $point) {
+                $calendar[$point['date']]['debit'] = floatval($point['debit']);
+                $calendar[$point['date']]['countDebit'] = intval($point['countDebit']);
+            }
+            foreach ($credits as $point) {
+                $calendar[$point['date']]['credit'] = floatval($point['credit']);
+                $calendar[$point['date']]['countCredit'] = intval($point['countCredit']);
+            }
         }
         foreach ($debitsRecurring as $point) {
             $calendar[$point['date']]['debitRecurring'] = floatval($point['debit']);
@@ -481,13 +488,15 @@ class User
         foreach ($calendar as $date => $value) {
             $point = new stdClass();
             $point->date = $date;
-            $point->debit = key_exists('debit', $value) ? $value['debit'] : 0;
+            if (!$isRecurringOnly) {
+                $point->debit = key_exists('debit', $value) ? $value['debit'] : 0;
+                $point->credit = key_exists('credit', $value) ? $value['credit'] : 0;
+                $point->countDebit = key_exists('countDebit', $value) ? $value['countDebit'] : 0;
+                $point->countCredit = key_exists('countCredit', $value) ? $value['countCredit'] : 0;
+            }
             $point->debitRecurring = key_exists('debitRecurring', $value) ? $value['debitRecurring'] : 0;
-            $point->credit = key_exists('credit', $value) ? $value['credit'] : 0;
             $point->creditRecurring = key_exists('creditRecurring', $value) ? $value['creditRecurring'] : 0;
-            $point->countDebit = key_exists('countDebit', $value) ? $value['countDebit'] : 0;
             $point->countDebitRecurring = key_exists('countDebitRecurring', $value) ? $value['countDebitRecurring'] : 0;
-            $point->countCredit = key_exists('countCredit', $value) ? $value['countCredit'] : 0;
             $point->countCreditRecurring = key_exists('countCreditRecurring', $value) ? $value['countCreditRecurring'] : 0;
             if ($category === null && $subcategory === null) {
                 $point->balance = $value['balance'];
@@ -513,15 +522,16 @@ class User
      * @param string $key Distribution group by field ('category', 'subcategory')
      * @param string|int $value Value for distribution on a specific field (category.id for subcategory distribution)
      * @param boolean $budgetedOnly Request only budgeted category
+     * @param boolean $isRecurringOnly Request only recurring transactions
      *
      * @return array User transactions distribution
      */
-    public function getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value = null, $budgetedOnly = true)
+    public function getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value = null, $budgetedOnly = true, $isRecurringOnly = false)
     {
         if ($key === 'categories') {
-            $queryString = 'SELECT `category` AS `key`, SUM(`amount`) AS `amount` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user`=:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL) GROUP BY `category` ORDER BY SUM(ABS(`amount`)) DESC;';
+            $queryString = 'SELECT `category` AS `key`, SUM(`amount`) AS `amount` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user`=:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL) AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY `category` ORDER BY SUM(ABS(`amount`)) DESC;';
         } elseif ($key === 'subcategories' && $value !== null) {
-            $queryString = 'SELECT `subcategory` AS `key`, SUM(`amount`) AS `amount` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user`=:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `category`=:category AND `type`=:type GROUP BY `subcategory` ORDER BY SUM(ABS(`amount`)) DESC;';
+            $queryString = 'SELECT `subcategory` AS `key`, SUM(`amount`) AS `amount` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user`=:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `category`=:category AND `type`=:type AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY `subcategory` ORDER BY SUM(ABS(`amount`)) DESC;';
         } else {
             //invalid request
             return false;
@@ -538,6 +548,7 @@ class User
             $query->bindValue(':isBudgeted', $budgetedOnly, PDO::PARAM_BOOL);
         }
         $query->bindValue(':type', $type, PDO::PARAM_STR);
+        $query->bindValue(':isRecurring', $isRecurringOnly, PDO::PARAM_BOOL);
         if (!$query->execute()) {
             return false;
         }

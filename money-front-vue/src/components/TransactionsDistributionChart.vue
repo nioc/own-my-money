@@ -54,6 +54,7 @@ export default {
       chartData: null,
       options: null,
       search: {
+        isRecurringOnly: false,
         currentDate: today,
         periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
         periodEnd: today
@@ -69,6 +70,7 @@ export default {
       this.isLoading = true
       let options = {
         params: {
+          isRecurringOnly: this.search.isRecurringOnly,
           periodStart: this.$moment(this.search.periodStart).format('X'),
           periodEnd: this.$moment(this.search.periodEnd).format('X')
         }
@@ -184,9 +186,10 @@ export default {
   },
   mounted () {
     Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.isRecurringOnly !== search.isRecurringOnly)) {
         this.search.periodStart = search.periodStart
         this.search.periodEnd = search.periodEnd
+        this.search.isRecurringOnly = search.isRecurringOnly
         this.requestData()
       }
     })
