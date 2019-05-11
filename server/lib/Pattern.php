@@ -33,6 +33,11 @@ class Pattern
      */
     public $subcategory;
 
+    /**
+     * @var boolean Indicate if pattern is reccuring or single shot
+     */
+    public $isRecurring;
+
     public function __construct($userId = null, $id = null)
     {
         if ($userId !== null) {
@@ -100,6 +105,9 @@ class Pattern
         if (isset($pattern->subcategory)) {
             $pattern->subcategory= (int) $pattern->subcategory;
         }
+        if (isset($pattern->isRecurring)) {
+            $pattern->isRecurring = (bool) $pattern->isRecurring;
+        }
         unset($this->user);
         //return structured pattern
         return $pattern;
@@ -117,11 +125,12 @@ class Pattern
         $error = '';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `pattern` (`user`, `label`, `category`, `subcategory`) VALUES ( :user, :label, :category, :subcategory );');
+        $query = $connection->prepare('INSERT INTO `pattern` (`user`, `label`, `category`, `subcategory`, `isRecurring`) VALUES ( :user, :label, :category, :subcategory, :isRecurring );');
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
         $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':category', $this->category, PDO::PARAM_INT);
         $query->bindValue(':subcategory', $this->subcategory, PDO::PARAM_INT);
+        $query->bindValue(':isRecurring', $this->isRecurring, PDO::PARAM_BOOL);
         if ($query->execute()) {
             $this->id = $connection->lastInsertId();
             //returns insertion was successfully processed
@@ -185,12 +194,13 @@ class Pattern
         $error = '';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('UPDATE `pattern` SET `label`=:label, `category`=:category, `subcategory`=:subcategory WHERE `user`=:user AND `id`=:id;');
+        $query = $connection->prepare('UPDATE `pattern` SET `label`=:label, `category`=:category, `subcategory`=:subcategory, `isRecurring`=:isRecurring WHERE `user`=:user AND `id`=:id;');
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
         $query->bindValue(':id', $this->id, PDO::PARAM_INT);
         $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':category', $this->category, PDO::PARAM_INT);
         $query->bindValue(':subcategory', $this->subcategory, PDO::PARAM_INT);
+        $query->bindValue(':isRecurring', $this->isRecurring, PDO::PARAM_BOOL);
 
         if ($query->execute()) {
             //returns udpate was successfully processed

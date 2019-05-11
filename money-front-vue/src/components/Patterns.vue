@@ -26,6 +26,9 @@
             <b-table-column :label="$tc('objects.subcategory', 1)">
               <span v-if="props.row.subcategory && categoriesAndSubcategoriesLookup[props.row.subcategory]">{{ categoriesAndSubcategoriesLookup[props.row.subcategory].label }}</span>
             </b-table-column>
+            <b-table-column :label="$t('fieldnames.isRecurring')">
+              <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']"></i>
+            </b-table-column>
           </template>
         </b-table>
 

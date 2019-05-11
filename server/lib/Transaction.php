@@ -266,6 +266,7 @@ class Transaction
                 // apply pattern and end the loop
                 $this->category = $pattern->category;
                 $this->subcategory = $pattern->subcategory;
+                $this->isRecurring = $pattern->isRecurring;
                 break;
             }
         }

@@ -37,6 +37,12 @@
             </div>
           </div>
         </div>
+        <div class="field">
+          <label class="label">{{ $t('fieldnames.isRecurring') }}</label>
+          <div class="control">
+            <b-switch v-model="pattern.isRecurring">{{ pattern.isRecurring ? $t('labels.isRecurring') : $t('labels.isNotRecurring') }}</b-switch>
+          </div>
+        </div>
 
         <div class="message is-danger block" v-if="error">
           <div class="message-body">
