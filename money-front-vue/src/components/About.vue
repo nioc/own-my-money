@@ -12,6 +12,16 @@
       <div class="container box">
         <h1 class="title container">{{ $t('labels.about') }}</h1>
         <p class="subtitle has-text-grey">Own my money</p>
+        <div class="field" v-if="user.scope.admin">
+          <div class="control">
+            <div class="select">
+              <select name="parent" v-model="releaseChannel" v-on:change="setSetting('releaseChannel', releaseChannel)" :disabled="!isOnline || !releaseChannelLoaded" :title="$t('labels.releaseChannel')">
+                <option value="stable">{{ $t('labels.stable') }}</option>
+                <option value="beta">{{ $t('labels.beta') }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
         <div class="content field is-grouped is-grouped-multiline" v-if="isLoaded">
           <div class="control">
             <div class="tags has-addons"><span class="tag is-dark">Installed version</span><span class="tag" :class="[isUpToDate ? 'is-success': 'is-danger']">{{ version.installed }}</span></div>
@@ -55,7 +65,10 @@ export default {
       updateLogs: null,
       isLoaded: false,
       isUpdating: false,
+      releaseChannel: null,
+      releaseChannelLoaded: false,
       // resources
+      rSettings: this.$resource(Config.API_URL + 'settings{/key}'),
       rVersions: this.$resource(Config.API_URL + 'setup/versions/latest')
     }
   },
@@ -84,6 +97,36 @@ export default {
           this.isLoaded = true
         })
     },
+    getSetting (key) {
+      if (this.user.scope.admin) {
+        this.rSettings.get({ key: key })
+          .then((response) => {
+            switch (key) {
+              case 'releaseChannel':
+                this.releaseChannelLoaded = true
+                this.releaseChannel = response.body.value
+                break
+            }
+          }, (response) => {
+            console.error(response)
+          })
+      }
+    },
+    setSetting (key, value) {
+      if (this.user.scope.admin) {
+        this.rSettings.update({ key: key }, { key: key, value: value })
+          .then((response) => {
+            switch (key) {
+              case 'releaseChannel':
+                this.releaseChannel = response.body.value
+                this.get()
+                break
+            }
+          }, (response) => {
+            console.error(response)
+          })
+      }
+    },
     update () {
       this.updateLogs = ''
       this.isUpdating = true
@@ -106,6 +149,7 @@ export default {
   },
   mounted () {
     this.get()
+    this.getSetting('releaseChannel')
   }
 }
 </script>

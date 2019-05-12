@@ -12,6 +12,7 @@ fr {
     accountIdMustBeProvided { "L'identifiant du compte doit être fourni" }
     transactionIdMustBeProvided { "L'identifiant de la transaction doit être fourni" }
     keyMustBeProvidedInPath { "L'attribut Key doit être fourni dans l'url" }
+    valueMustBeProvided { "L'attribut Value doit être fourni" }
     userIdMustBeProvidedInPath { "L'identifiant de l'utilisateur doit être fourni dans l'url" }
     loginAndPasswordMustBeProvided { "L'identifiant et le password doivent être fournis" }
     typeMustBeProvidedInQuery { "L'attribut Type doit être fourni dans la chaine de recherche" }

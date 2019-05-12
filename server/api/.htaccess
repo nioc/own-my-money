@@ -27,3 +27,4 @@ RewriteRule ^transactions/history/?$                            graph.php?reques
 RewriteRule ^setup/steps/([A-Za-z-]+)/fields/?                  steps.php?code=$1 [L]
 RewriteRule ^setup/steps/?([A-Za-z-]*)/?$                       steps.php?code=$1 [L]
 RewriteRule ^setup/versions/latest/?$                           updates.php [L]
+RewriteRule ^settings/([A-Za-z]+)/?$                            settings.php?key=$1 [L]

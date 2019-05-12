@@ -12,6 +12,7 @@ en {
     accountIdMustBeProvided { "Account identifier must be provided" }
     transactionIdMustBeProvided { "Transaction identifier must be provided" }
     keyMustBeProvidedInPath { "Key attribute must be provided in path" }
+    valueMustBeProvided { "Value attribute must be provided" }
     userIdMustBeProvidedInPath { "User identifier must be provided in path" }
     loginAndPasswordMustBeProvided { "Both login and password must be provided" }
     typeMustBeProvidedInQuery { "Type attribute must be provided in query string" }
