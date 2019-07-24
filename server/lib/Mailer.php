@@ -75,6 +75,8 @@ class Mailer
         if (isset($this->bcc)) {
             $this->headers .= "Bcc: $this->bcc$crlf";
         }
+        $this->headers .= "Content-Type: text/plain; charset=utf-8$crlf";
+        $this->headers .= "Content-Transfer-Encoding: 8bit$crlf";
     }
 
     /**

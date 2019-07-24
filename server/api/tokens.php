@@ -65,7 +65,7 @@ switch ($api->method) {
         }
         $user->clearLoginAttemptFailed();
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Mailer.php';
-        $mailer = new Mailer($user->mail, '[Money] New connection in your account', "Hi,\r\n\r\nSomeone was recently authorized to access your account.\r\nYou can check this access from your profile.\r\n\r\nRegards.", null, null);
+        $mailer = new Mailer($user->mail, $api->getMessage('mailConnectionTitle'), $api->getMessage('mailConnectionBody'), null, null);
         $mailer->send();
         $api->output(201, $api->generateToken($user->getProfile()));
         break;

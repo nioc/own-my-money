@@ -122,4 +122,6 @@ fr {
     applicationUpdated { "L'application a été mise à jour, il peut être nécessaire de finaliser la configuration ici : {0}/#/setup" }
     downloadError { "erreur lors du téléchargement : " }
     donwloadSpeed { "{0} octets en {1} secondes"}
+    mailConnectionTitle { "[Money] Nouvel accès à votre compte" }
+    mailConnectionBody { "Bonjour,\r\n\r\nUn accès à votre compte vient d'être autorisé.\r\nVous pouvez en consulter le détail sur votre profil.\r\n\r\nCordialement." }
 }

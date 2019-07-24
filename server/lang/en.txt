@@ -122,4 +122,6 @@ en {
     applicationUpdated { "Application is updated, you may have to configure at: {0}/#/setup" }
     downloadError { "download error: " }
     donwloadSpeed { "{0} bytes on {1} seconds"}
+    mailConnectionTitle { "[Money] New connection in your account" }
+    mailConnectionBody { "Hi,\r\n\r\nSomeone was recently authorized to access your account.\r\nYou can check this access from your profile.\r\n\r\nRegards." }
 }
