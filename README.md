@@ -55,6 +55,8 @@ This project is powered by the following components:
 - [UAParser.js](https://github.com/faisalman/ua-parser-js) (MIT)
 - [Chart.js](https://www.chartjs.org/) (MIT)
 - [vue-chartjs](https://vue-chartjs.org/) (MIT)
+- [Export From JSON](https://github.com/zheeeng/export-from-json) (MIT)
+- [fontAwesomePicker](https://github.com/laistomazz/font-awesome-picker) (MIT)
 - Favicon: [Piggy Bank by Musmellow from the Noun Project](https://thenounproject.com/term/piggy-bank/1616637) (licensed as Creative Commons CCBY)
 
 ## License
