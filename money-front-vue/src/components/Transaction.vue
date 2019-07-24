@@ -8,14 +8,14 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.label') }}</label>
           <div class="control">
-            <input class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" v-model="transaction.name" v-validate="'required'" :class="{ 'is-danger': errors.has('label') }">
+            <input class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" v-model="localTransaction.name" v-validate="'required'" :class="{ 'is-danger': errors.has('label') }">
             <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
           </div>
         </div>
         <div class="field">
           <label class="label">{{ $t('fieldnames.amount') }}</label>
           <div class="control">
-            <input class="input" type="number" name="amount" :placeholder="$t('fieldnames.amount')" v-model="transaction.amount" v-validate="'required|decimal:2'" :class="{ 'is-danger': errors.has('amount') }">
+            <input class="input" type="number" name="amount" :placeholder="$t('fieldnames.amount')" v-model="localTransaction.amount" v-validate="'required|decimal:2'" :class="{ 'is-danger': errors.has('amount') }">
             <span v-show="errors.has('amount')" class="help is-danger">{{ errors.first('amount') }}</span>
           </div>
         </div>
@@ -28,7 +28,7 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.note') }}</label>
           <div class="control">
-            <input class="input" type="text" name="note" :placeholder="$t('fieldnames.note')" v-model="transaction.note" v-validate="'max:30'" :class="{ 'is-danger': errors.has('note') }">
+            <input class="input" type="text" name="note" :placeholder="$t('fieldnames.note')" v-model="localTransaction.note" v-validate="'max:30'" :class="{ 'is-danger': errors.has('note') }">
             <span v-show="errors.has('note')" class="help is-danger">{{ errors.first('note') }}</span>
           </div>
         </div>
@@ -36,20 +36,20 @@
           <label class="label">{{ $tc('objects.category', 1) }}</label>
           <div class="control">
             <div class="select">
-              <select name="parent" v-model="transaction.category">
+              <select name="parent" v-model="localTransaction.category">
                 <option value="">-- {{ $tc('objects.category', 1) }} --</option>
                 <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
               </select>
             </div>
           </div>
         </div>
-        <div class="field" v-if="transaction.category && categoriesAndSubcategoriesLookup[transaction.category] && categoriesAndSubcategoriesLookup[transaction.category].sub.length > 0">
+        <div class="field" v-if="localTransaction.category && categoriesAndSubcategoriesLookup[localTransaction.category] && categoriesAndSubcategoriesLookup[localTransaction.category].sub.length > 0">
           <label class="label">{{ $tc('objects.subcategory', 1) }}</label>
           <div class="control">
             <div class="select">
-              <select name="parent" v-model="transaction.subcategory">
+              <select name="parent" v-model="localTransaction.subcategory">
                 <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
-                <option v-for="subcategory in categoriesAndSubcategoriesLookup[transaction.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
+                <option v-for="subcategory in categoriesAndSubcategoriesLookup[localTransaction.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
               </select>
             </div>
           </div>
@@ -57,7 +57,7 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.isRecurring') }}</label>
           <div class="control">
-            <b-switch v-model="transaction.isRecurring">{{ transaction.isRecurring ? $t('labels.isRecurring') : $t('labels.isNotRecurring') }}</b-switch>
+            <b-switch v-model="localTransaction.isRecurring">{{ localTransaction.isRecurring ? $t('labels.isRecurring') : $t('labels.isNotRecurring') }}</b-switch>
           </div>
         </div>
         <div class="message is-danger block" v-if="error">
@@ -86,6 +86,7 @@ export default {
       error: '',
       isLoading: false,
       currentDate: new Date(),
+      localTransaction: JSON.parse(JSON.stringify(this.transaction)),
       // resources
       rCategories: this.$resource(Config.API_URL + 'categories{/id}')
     }
@@ -96,10 +97,10 @@ export default {
     },
     dateUser: {
       get () {
-        return this.$moment(this.transaction.dateUser).toDate()
+        return this.$moment(this.localTransaction.dateUser).toDate()
       },
       set (newValue) {
-        this.transaction.dateUser = this.$moment(newValue).format()
+        this.localTransaction.dateUser = this.$moment(newValue).format()
       }
     }
   },
@@ -110,9 +111,19 @@ export default {
         if (result) {
           // if validation is ok, call accounts API
           this.isLoading = true
-          this.transaction.amount = parseFloat(this.transaction.amount)
-          this.rTransactions.update({ id: this.transaction.id }, this.transaction)
+          this.localTransaction.amount = parseFloat(this.localTransaction.amount)
+          this.rTransactions.update({ id: this.localTransaction.id }, this.localTransaction)
             .then((response) => {
+              // update transaction for rendering
+              this.localTransaction = response.body
+              this.transaction.name = this.localTransaction.name
+              this.transaction.amount = this.localTransaction.amount
+              this.transaction.dateUser = this.localTransaction.dateUser
+              this.transaction.note = this.localTransaction.note
+              this.transaction.category = this.localTransaction.category
+              this.transaction.subcategory = this.localTransaction.subcategory
+              this.transaction.isRecurring = this.localTransaction.isRecurring
+              // close
               this.$parent.close()
             }, (response) => {
               // remove loading overlay when API replies
@@ -128,9 +139,9 @@ export default {
     }
   },
   watch: {
-    'transaction.category' () {
+    'localTransaction.category' () {
       // clear subcategory field if category has changed
-      this.transaction.subcategory = ''
+      this.localTransaction.subcategory = ''
     }
   },
   mounted () {
