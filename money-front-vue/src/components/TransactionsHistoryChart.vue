@@ -1,6 +1,9 @@
 <template>
   <div class="box" v-if="isLoaded">
-    <p class="title">{{ title }}</p>
+    <header class="title chart-header">
+      <h2 class="title is-marginless">{{ title }}</h2>
+      <a v-if="isClosable" class="delete is-large" :title="this.$t('actions.close')" v-on:click="isLoaded = false"></a>
+    </header>
     <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
         <div class="select">
@@ -68,6 +71,11 @@ export default {
       required: false
     },
     date: {
+      required: false
+    },
+    isClosable: {
+      type: Boolean,
+      default: false,
       required: false
     }
   },

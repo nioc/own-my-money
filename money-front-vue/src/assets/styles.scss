@@ -70,6 +70,10 @@ $input-shadow: none;
   }
 }
 
+.column:empty {
+  padding: 0;
+}
+
 @import "~buefy/src/scss/buefy";
 
 td.icon-account, .icon-account {
@@ -94,4 +98,9 @@ td.icon-account, .icon-account {
   height: 36px;
   border-color: rgb(219, 219, 219);
   border-style: solid;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
 }

@@ -1,6 +1,9 @@
 <template>
-  <div class="box" v-if="isLoaded">
-    <p class="title">{{ title }}</p>
+  <div class="box" v-if="isLoaded" style="height: 100%;">
+  <header class="title chart-header">
+    <h2 class="title is-marginless">{{ title }}</h2>
+      <a v-if="isClosable" class="delete is-large" :title="this.$t('actions.close')" v-on:click="isLoaded = false"></a>
+  </header>
     <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
         <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodStart"></b-datepicker>
@@ -41,6 +44,11 @@ export default {
     isIndependent: {
       type: Boolean,
       default: true,
+      required: false
+    },
+    isClosable: {
+      type: Boolean,
+      default: false,
       required: false
     }
   },

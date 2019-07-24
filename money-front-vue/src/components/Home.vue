@@ -16,6 +16,7 @@
               :title="$t('labels.transactionsByDay')"
               chartEndpoint="transactions/history"
               :isIndependent="true"
+              :isClosable="false"
               :date="date"
               ></transactions-history-chart>
             </div>
@@ -24,6 +25,7 @@
               :title="$t('labels.incomeDistribution')"
               chartEndpoint="transactions/distribution/credit/categories"
               :isIndependent="false"
+              :isClosable="false"
               :date="date"
               ></transactions-distribution-chart>
             </div>
@@ -32,6 +34,7 @@
               :title="$t('labels.expenseDistribution')"
               chartEndpoint="transactions/distribution/debit/categories"
               :isIndependent="false"
+              :isClosable="false"
               :date="date"
               ></transactions-distribution-chart>
             </div>
@@ -40,6 +43,7 @@
               :title="$t('labels.transactionsByDay') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
               :chartEndpoint="'transactions/history?category='+categorySelected.key"
               :isIndependent="false"
+              :isClosable="true"
               :date="date"
               ></transactions-history-chart>
             </div>
@@ -48,6 +52,7 @@
               :title="$t('labels.incomeDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
               :chartEndpoint="'transactions/distribution/credit/subcategories?value='+categorySelected.key"
               :isIndependent="false"
+              :isClosable="true"
               :date="date"
               ></transactions-distribution-chart>
             </div>
@@ -56,6 +61,7 @@
               :title="$t('labels.expenseDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
               :chartEndpoint="'transactions/distribution/debit/subcategories?value='+categorySelected.key"
               :isIndependent="false"
+              :isClosable="true"
               :date="date"
               ></transactions-distribution-chart>
             </div>
@@ -64,6 +70,7 @@
               :title="$t('labels.transactionsByDay') + ' ' + $t('labels.for') + ' ' + subcategorySelected.label"
               :chartEndpoint="'transactions/history?subcategory='+subcategorySelected.key"
               :isIndependent="false"
+              :isClosable="true"
               :date="date"
               ></transactions-history-chart>
             </div>
