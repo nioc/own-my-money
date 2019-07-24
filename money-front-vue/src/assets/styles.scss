@@ -27,12 +27,7 @@ $card-header-shadow: 0;
 $body-background-color: $white-ter;
 $input-shadow: none;
 
-@import "~bulma/sass/utilities/_all";
-@import "~bulma/sass/base/_all";
-@import "~bulma/sass/elements/_all";
-@import "~bulma/sass/components/_all";
-@import "~bulma/sass/grid/_all";
-@import "~bulma/sass/layout/_all";
+@import "~bulma/bulma.sass";
 
 .hero .tabs ul {
   border-bottom-color: $tabs-border-bottom-color;
@@ -75,7 +70,6 @@ $input-shadow: none;
   }
 }
 
-@import "~bulma/bulma.sass";
 @import "~buefy/src/scss/buefy";
 
 td.icon-account, .icon-account {
