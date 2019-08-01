@@ -110,12 +110,16 @@ class Api
     }
 
     /**
-     * Check the if the user have a correct authentication and authorization.
+     * Checks if a specific header was provided in the request and returns it by reference.
      *
-     * @return int|bool User identifier or false if user do not have a valid authentication/authorization
+     * @param string $name  Name of the searched header
+     * @param string $value Value of the header
+     * 
+     * @return bool Return true if header was provided
      */
-    public function checkAuth()
+    public function checkHeaderExists($name, &$value)
     {
+        $value = null;
         if (!function_exists('apache_request_headers')) {
             /**
              * Fetches all HTTP request headers from the current request.
@@ -135,7 +139,24 @@ class Api
             }
         }
         $headers = apache_request_headers();
-        if (!array_key_exists('Authorization', $headers) && !array_key_exists('authorization', $headers)) {
+        if (array_key_exists($name, $headers)) {
+            $value = $headers[$name];
+            return true;
+        } elseif (array_key_exists(strtolower($name), $headers)) {
+            $value = $headers[strtolower($name)];
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check the if the user have a correct authentication and authorization.
+     *
+     * @return int|bool User identifier or false if user do not have a valid authentication/authorization
+     */
+    public function checkAuth()
+    {
+        if (!$this->checkHeaderExists('Authorization', $authorization_header)) {
             $this->output(401, $this->getMessage('authorizationNotFound'));
             header('WWW-Authenticate: Bearer realm="money"');
             //Authorization header not provided
@@ -145,7 +166,6 @@ class Api
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Configuration.php';
         $configuration = new Configuration();
         $token = new Token($configuration->get('hashKey'));
-        $authorization_header = array_key_exists('Authorization', $headers) ? $headers['Authorization'] : $headers['authorization'];
         list($scheme, $token->value) = explode(' ', $authorization_header, 2);
         if ($scheme !== 'Bearer') {
             $this->output(401, $this->getMessage('tokenSchemeBearer'));

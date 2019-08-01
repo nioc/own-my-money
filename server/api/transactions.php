@@ -68,9 +68,7 @@ switch ($api->method) {
         $transactions = array();
         //get last fetch date in request header
         $lastFetch = null;
-        $headers = apache_request_headers();
-        if (array_key_exists('Omm-Last-Fetch', $headers) && $headers['Omm-Last-Fetch'] !== '') {
-            $lastFetchTimestamp = $headers['Omm-Last-Fetch'];
+        if ($api->checkHeaderExists('Omm-Last-Fetch', $lastFetchTimestamp) && $lastFetchTimestamp !== '') {
             foreach ($transactionsList as $transaction) {
                 if (isset($transaction->insertedTimestamp) && ($transaction->insertedTimestamp >= $lastFetchTimestamp)) {
                     $transaction->isNew = true;
