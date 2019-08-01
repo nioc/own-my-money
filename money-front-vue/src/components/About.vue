@@ -30,7 +30,7 @@
             <div class="tags has-addons"><span class="tag is-dark">Latest version</span><span class="tag is-info">{{ version.latest }}</span></div>
           </div>
           <div class="control">
-            <a href="https://github.com/nioc/own-my-money/releases/latest" target="_blank">Changelog</a>
+            <a href="https://github.com/nioc/own-my-money/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
           </div>
         </div>
         <section class="content" v-if="!isUpToDate && this.user.scope.admin">

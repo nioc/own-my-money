@@ -36,7 +36,7 @@
               <router-link class="navbar-item" to="/patterns"><i class="fa fa-magic fa-fw"/>&nbsp;{{ $tc('objects.pattern', 2) }}</router-link>
               <hr class="navbar-divider">
               <router-link class="navbar-item" to="/about"><i class="fa fa-info-circle fa-fw"/>&nbsp;{{ $t('labels.about') }}</router-link>
-              <a class="navbar-item" href="https://github.com/nioc/own-my-money/issues/new" target="_blank"><i class="fa fa-bug fa-fw"/>&nbsp;{{ $t('labels.reportABug') }}</a>
+              <a class="navbar-item" href="https://github.com/nioc/own-my-money/issues/new" target="_blank" rel="noreferrer"><i class="fa fa-bug fa-fw"/>&nbsp;{{ $t('labels.reportABug') }}</a>
               <hr class="navbar-divider">
               <a class="navbar-item" @click="logout()"><i class="fa fa-sign-out fa-fw"/>&nbsp;{{ $t('labels.logout') }}</a>
             </div>
