@@ -114,7 +114,7 @@ class Api
      *
      * @param string $name  Name of the searched header
      * @param string $value Value of the header
-     * 
+     *
      * @return bool Return true if header was provided
      */
     public function checkHeaderExists($name, &$value)
