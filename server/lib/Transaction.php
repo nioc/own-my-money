@@ -86,8 +86,11 @@ class Transaction
     public function insert()
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        if ($this->isRecurring === null) {
+            $this->isRecurring = false;
+        }
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `memo`, `category`, `subcategory`, `note`, `insertedTimestamp`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :memo, :category, :subcategory, :note, :insertedTimestamp);');
+        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `memo`, `category`, `subcategory`, `note`, `isRecurring`, `insertedTimestamp`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :memo, :category, :subcategory, :note, :isRecurring, :insertedTimestamp);');
         $query->bindValue(':aid', $this->aid, PDO::PARAM_INT);
         $query->bindValue(':fitid', $this->fitid, PDO::PARAM_STR);
         $query->bindValue(':type', $this->type, PDO::PARAM_STR);
@@ -100,6 +103,7 @@ class Transaction
         $query->bindValue(':category', $this->category, PDO::PARAM_STR);
         $query->bindValue(':subcategory', $this->subcategory, PDO::PARAM_STR);
         $query->bindValue(':note', $this->note, PDO::PARAM_STR);
+        $query->bindValue(':isRecurring', $this->isRecurring, PDO::PARAM_BOOL);
         $query->bindValue(':insertedTimestamp', time(), PDO::PARAM_INT);
         if ($query->execute()) {
             $this->id = $connection->lastInsertId();
@@ -107,6 +111,9 @@ class Transaction
             return true;
         }
         //returns insertion has encountered an error
+        if ($query->errorInfo()[1] !== 1062) {
+            error_log('Transaction insertion error ' . $query->errorInfo()[1]. ': '. $query->errorInfo()[2]);
+        }
         return false;
     }
 
