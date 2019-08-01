@@ -39,7 +39,8 @@ export default {
 
   // remove the token
   logout () {
-    localStorage.removeItem('user')
+    localStorage.clear()
+    sessionStorage.clear()
     this.user.authenticated = false
     delete Vue.http.headers.common['Authorization']
     this.user = {}
