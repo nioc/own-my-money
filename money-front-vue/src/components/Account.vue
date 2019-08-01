@@ -25,7 +25,7 @@
                 ></transactions-history-chart>
               </div>
             </div>
-            <transactions :url="url" :duration="account.duration" v-if="isLoaded"/>
+            <transactions :url="url" :duration="account.duration" :accountId="this.account.id" v-if="isLoaded"/>
 
             <div class="field is-grouped">
               <p class="control">
@@ -452,6 +452,11 @@ export default {
         .then((response) => {
           if (response.body.message) {
             this.upload.result = response.body.message
+          }
+          if (response.body.accounts && response.body.insertTime) {
+            response.body.accounts.forEach(account => {
+              sessionStorage.setItem('accounts:' + account + ':transactions:lastFetch', response.body.insertTime)
+            })
           }
           Bus.$emit('transactions-updated', {})
         }, (response) => {

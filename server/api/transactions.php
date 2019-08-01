@@ -66,6 +66,18 @@ switch ($api->method) {
         //Request all transactions of the account (in date interval)
         $transactionsList = $account->getTransactions($periodStart, $periodEnd);
         $transactions = array();
+        //get last fetch date in request header
+        $lastFetch = null;
+        $headers = apache_request_headers();
+        if (array_key_exists('Omm-Last-Fetch', $headers) && $headers['Omm-Last-Fetch'] !== '') {
+            $lastFetchTimestamp = $headers['Omm-Last-Fetch'];
+            foreach ($transactionsList as $transaction) {
+                if (isset($transaction->insertedTimestamp) && ($transaction->insertedTimestamp >= $lastFetchTimestamp)) {
+                    $transaction->isNew = true;
+                }
+            }
+        }
+        //clean data
         foreach ($transactionsList as $transaction) {
             array_push($transactions, $transaction->structureData());
         }

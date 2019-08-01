@@ -19,6 +19,7 @@ switch ($api->method) {
             //user not authentified/authorized
             return;
         }
+        $insertTime = time();
         //get file
         $file = $_FILES['file'];
         // check extension
@@ -62,6 +63,7 @@ switch ($api->method) {
         $result['accountInserted'] = 0;
         $result['inserted'] = 0;
         $result['processed'] = 0;
+        $result['accountsList'] = [];
         switch ($extension) {
             case '.ofx':
                 $dataset = new Dataset($file['tmp_name']);
@@ -93,6 +95,7 @@ switch ($api->method) {
                                 $result['inserted']++;
                             }
                         }
+                        array_push($result['accountsList'], $currentAccount->id);
                     }
                 }
                 break;
@@ -124,6 +127,7 @@ switch ($api->method) {
                     $account->balance += $sum;
                     $account->update();
                 }
+                array_push($result['accountsList'], $accountId);
                 break;
             default:
                 $api->output(501, $api->getMessage('fileExtensionNotImplemented', array($extension)));
@@ -139,6 +143,8 @@ switch ($api->method) {
         } else {
             $response->message = $api->getMessage('transactionsProcessed', array($result['inserted'], $result['processed']));
         }
+        $response->accounts = $result['accountsList'];
+        $response->insertTime = $insertTime;
         $api->output(201, $response);
         return;
         break;

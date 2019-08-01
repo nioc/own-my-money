@@ -150,6 +150,11 @@ export default {
           if (response.body.message) {
             this.upload.result = response.body.message
           }
+          if (response.body.accounts && response.body.insertTime) {
+            response.body.accounts.forEach(account => {
+              sessionStorage.setItem('accounts:' + account + ':transactions:lastFetch', response.body.insertTime)
+            })
+          }
           this.getAccounts()
         }, (response) => {
         // upload failed, inform user

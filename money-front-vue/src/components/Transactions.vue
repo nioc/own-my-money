@@ -101,7 +101,7 @@
       </div>
     </b-collapse>
 
-    <b-table :data=displayedTransactions :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" @select="edit" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
+    <b-table :data=displayedTransactions :row-class="(row, index) => row.isNew ? 'has-text-weight-bold' : ''" :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" @select="edit" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
       <template slot-scope="props">
         <b-table-column field="icon" v-if="displayAccount">
           <span class="icon-transactions-account"><img v-if="props.row.iconUrl" :src="props.row.iconUrl" :title="props.row.accountLabel" height="24" width="24"><span class="is-hidden-tablet">{{ props.row.accountLabel }}</span></span>
@@ -160,6 +160,11 @@ export default {
       required: false,
       type: Boolean,
       default: false
+    },
+    accountId: {
+      required: false,
+      type: Number,
+      default: null
     },
     duration: {
       required: false,
@@ -241,11 +246,22 @@ export default {
         return
       }
       this.isLoading = true
-      let params = {
-        periodStart: this.$moment(this.search.periodStart).format('X'),
-        periodEnd: this.$moment(this.search.periodEnd).format('X')
+      let config = {
+        params: {
+          periodStart: this.$moment(this.search.periodStart).format('X'),
+          periodEnd: this.$moment(this.search.periodEnd).format('X')
+        },
+        headers: {
+        }
       }
-      this.rTransactions.query(params).then((response) => {
+      // try to get last fetch date for highlighting new transactions
+      if (this.accountId) {
+        let transactionsLastFetchDate = sessionStorage.getItem('accounts:' + this.accountId + ':transactions:lastFetch')
+        if (transactionsLastFetchDate) {
+          config.headers = { 'Omm-Last-Fetch': transactionsLastFetchDate }
+        }
+      }
+      this.$http.get(this.url, config).then((response) => {
         this.transactions = response.body
         this.transactions.map((transaction) => {
           transaction.iconUrl = transaction.iconUrl ? Config.API_URL + transaction.iconUrl : null

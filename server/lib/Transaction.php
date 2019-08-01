@@ -61,6 +61,10 @@ class Transaction
      * @var boolean Indicate if transaction is reccuring or single shot
      */
     public $isRecurring;
+    /**
+     * @var int Date transaction was inserted
+     */
+    public $insertedTimestamp;
 
     /**
      * Initializes a Transaction object with his identifier.
@@ -83,7 +87,7 @@ class Transaction
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `memo`, `category`, `subcategory`, `note`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :memo, :category, :subcategory, :note);');
+        $query = $connection->prepare('INSERT INTO `transaction` (`aid`, `fitid`, `type`, `datePosted`, `dateUser`, `amount`, `name`, `memo`, `category`, `subcategory`, `note`, `insertedTimestamp`) VALUES ( :aid, :fitid, :type, :datePosted, :dateUser, :amount, :name, :memo, :category, :subcategory, :note, :insertedTimestamp);');
         $query->bindValue(':aid', $this->aid, PDO::PARAM_INT);
         $query->bindValue(':fitid', $this->fitid, PDO::PARAM_STR);
         $query->bindValue(':type', $this->type, PDO::PARAM_STR);
@@ -96,6 +100,7 @@ class Transaction
         $query->bindValue(':category', $this->category, PDO::PARAM_STR);
         $query->bindValue(':subcategory', $this->subcategory, PDO::PARAM_STR);
         $query->bindValue(':note', $this->note, PDO::PARAM_STR);
+        $query->bindValue(':insertedTimestamp', time(), PDO::PARAM_INT);
         if ($query->execute()) {
             $this->id = $connection->lastInsertId();
             //returns insertion was successfully processed
@@ -307,6 +312,7 @@ class Transaction
             $transaction->isRecurring = (bool) $transaction->isRecurring;
         }
         unset($transaction->aid);
+        unset($transaction->insertedTimestamp);
         //return structured transaction
         return $transaction;
     }

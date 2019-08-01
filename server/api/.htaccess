@@ -1,7 +1,7 @@
 allow from all
 Header set Access-Control-Allow-Origin "*"
 Header set Access-Control-Allow-Methods "POST, GET, PUT, OPTIONS, DELETE"
-Header set Access-Control-Allow-Headers "authorization, content-type"
+Header set Access-Control-Allow-Headers "authorization, content-type, Omm-Last-Fetch"
 RewriteEngine on
 RewriteRule ^users/tokens/?$                                    tokens.php [L]
 RewriteRule ^users/([0-9]+)/tokens/?$                           tokens.php?user=$1 [L]
