@@ -197,7 +197,9 @@ export default {
       if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.isRecurringOnly !== search.isRecurringOnly)) {
         this.search.periodStart = search.periodStart
         this.search.periodEnd = search.periodEnd
-        this.search.isRecurringOnly = search.isRecurringOnly
+        if (search.isRecurringOnly !== undefined) {
+          this.search.isRecurringOnly = search.isRecurringOnly
+        }
         this.requestData()
       }
     })

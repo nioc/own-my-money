@@ -205,7 +205,9 @@ export default {
         if (search.timeUnit) {
           this.search.timeUnit = search.timeUnit
         }
-        this.search.isRecurringOnly = search.isRecurringOnly
+        if (search.isRecurringOnly !== undefined) {
+          this.search.isRecurringOnly = search.isRecurringOnly
+        }
         this.requestData()
       }
     })
