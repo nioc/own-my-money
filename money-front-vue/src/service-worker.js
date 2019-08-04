@@ -16,6 +16,13 @@ workbox.routing.registerRoute(
 )
 
 workbox.routing.registerRoute(
+  /.*\.(?:woff|woff2|ttf|eot)$/,
+  workbox.strategies.cacheFirst({
+    cacheName: 'fonts-cache'
+  })
+)
+
+workbox.routing.registerRoute(
   /\/server\/api\//,
   workbox.strategies.networkFirst({
     cacheName: 'api-cache'
