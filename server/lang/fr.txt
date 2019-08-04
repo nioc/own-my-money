@@ -123,5 +123,5 @@ fr {
     downloadError { "erreur lors du téléchargement : " }
     donwloadSpeed { "{0} octets en {1} secondes"}
     mailConnectionTitle { "[Money] Nouvel accès à votre compte" }
-    mailConnectionBody { "Bonjour,\r\n\r\nUn accès à votre compte vient d'être autorisé.\r\nVous pouvez en consulter le détail sur votre profil.\r\n\r\nCordialement." }
+    mailConnectionBody { "Bonjour,\r\n\r\nUn accès à votre compte vient d'être autorisé.\r\nAdresse IP : {0}.\r\nUser agent : {1}.\r\n\r\nVous pouvez en consulter le détail sur votre profil.\r\n\r\nCordialement." }
 }

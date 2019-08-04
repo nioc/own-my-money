@@ -65,7 +65,7 @@ switch ($api->method) {
         }
         $user->clearLoginAttemptFailed();
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Mailer.php';
-        $mailer = new Mailer($user->mail, $api->getMessage('mailConnectionTitle'), $api->getMessage('mailConnectionBody'), null, null);
+        $mailer = new Mailer($user->mail, $api->getMessage('mailConnectionTitle'), $api->getMessage('mailConnectionBody', array($_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'])), null, null);
         $mailer->send();
         $api->output(201, $api->generateToken($user->getProfile()));
         break;

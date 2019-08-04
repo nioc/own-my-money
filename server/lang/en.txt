@@ -123,5 +123,5 @@ en {
     downloadError { "download error: " }
     donwloadSpeed { "{0} bytes on {1} seconds"}
     mailConnectionTitle { "[Money] New connection in your account" }
-    mailConnectionBody { "Hi,\r\n\r\nSomeone was recently authorized to access your account.\r\nYou can check this access from your profile.\r\n\r\nRegards." }
+    mailConnectionBody { "Hi,\r\n\r\nSomeone was recently authorized to access your account.\r\nIP address: {0}.\r\nUser agent: {1}.\r\n\r\nYou can check this access from your profile.\r\n\r\nRegards." }
 }
