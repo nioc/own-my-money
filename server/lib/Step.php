@@ -403,6 +403,7 @@ class Step
                 $user->password = $password;
                 $user->scope = 'user admin';
                 $user->status = true;
+                $user->language = '';
                 if (!$user->insert($error)) {
                     return $lang->getMessage('userCreationError') . $error;
                 }

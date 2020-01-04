@@ -86,11 +86,13 @@ class User
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('INSERT INTO `user` (`login`, `password`, `scope`, `status`) VALUES ( :login, :password, :scope, :status);');
+        $query = $connection->prepare('INSERT INTO `user` (`login`, `password`, `scope`, `status`, `mail`, `language`) VALUES ( :login, :password, :scope, :status, :mail, :language);');
         $query->bindValue(':login', $this->login, PDO::PARAM_STR);
         $query->bindValue(':password', password_hash($this->password, PASSWORD_DEFAULT), PDO::PARAM_STR);
         $query->bindValue(':scope', $this->scope, PDO::PARAM_STR);
         $query->bindValue(':status', $this->status, PDO::PARAM_BOOL);
+        $query->bindValue(':mail', $this->mail, PDO::PARAM_STR);
+        $query->bindValue(':language', $this->language, PDO::PARAM_STR);
         if ($query->execute() && $query->rowCount() > 0) {
             $this->id = $connection->lastInsertId();
             //return true to indicate a successful user creation

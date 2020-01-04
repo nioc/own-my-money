@@ -82,6 +82,7 @@ switch ($api->method) {
         if ($api->checkParameterExists('status', $postedUser->status)) {
             $postedUser->status = boolval($postedUser->status);
         }
+        $postedUser->language = '';
 
         if (!$postedUser->insert($error)) {
             $api->output(500, $api->getMessage('userCreationError') . $error);
