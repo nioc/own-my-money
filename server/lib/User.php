@@ -654,7 +654,7 @@ class User
         $connection = new DatabaseConnection();
         foreach ($rawPatterns as $patternText) {
             //get matching transactions with category
-            $query = $connection->prepare('SELECT `transaction`.`category`, `transaction`.`subcategory`, count(1) AS `count` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `transaction`.`category` IS NOT NULL AND CONCAT(`memo`, " ", `name`) like :pattern GROUP BY `transaction`.`category`, `transaction`.`subcategory`;');
+            $query = $connection->prepare('SELECT `transaction`.`category`, `transaction`.`subcategory`, `transaction`.`isRecurring`, count(1) AS `count` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `transaction`.`category` IS NOT NULL AND CONCAT(`memo`, " ", `name`) like :pattern GROUP BY `transaction`.`category`, `transaction`.`subcategory`, `transaction`.`isRecurring`;');
             $query->bindValue(':user', $this->id, PDO::PARAM_INT);
             $query->bindValue(':pattern', "%$patternText%", PDO::PARAM_STR);
             $query->execute();
@@ -665,6 +665,7 @@ class User
                 $pattern->label = "*$patternText*";
                 $pattern->category = $transactions[0]->category;
                 $pattern->subcategory = $transactions[0]->subcategory;
+                $pattern->isRecurring = $transactions[0]->isRecurring;
                 $pattern->count = $transactions[0]->count;
                 array_push($validPatterns, $pattern);
             }

@@ -58,6 +58,9 @@
             <b-table-column :label="$tc('objects.subcategory', 1)">
               <span v-if="props.row.subcategory && categoriesAndSubcategoriesLookup[props.row.subcategory]">{{ categoriesAndSubcategoriesLookup[props.row.subcategory].label }}</span>
             </b-table-column>
+            <b-table-column :label="$tc('fieldnames.isRecurring', 1)">
+              <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']"></i>
+            </b-table-column>
             <b-table-column :label="$tc('objects.occurence', 2)">
               {{ props.row.count }}
             </b-table-column>
@@ -127,7 +130,7 @@ export default {
         })
     },
     create () {
-      const pattern = { label: '', category: '', subcategory: '' }
+      const pattern = { label: '', category: '', subcategory: '', isRecurring: false }
       this.patterns.push(pattern)
       this.modalPattern.pattern = pattern
       this.modalPattern.isActive = true
