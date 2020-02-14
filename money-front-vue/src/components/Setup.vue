@@ -120,9 +120,9 @@ export default {
         if (result) {
           this.isLoading = true
           // if validation is ok, call steps/{code}/fields API
-          let code = this.steps[this.currentStep].code
-          let fields = this.steps[this.currentStep].fields.map((field) => {
-            let f = {}
+          const code = this.steps[this.currentStep].code
+          const fields = this.steps[this.currentStep].fields.map((field) => {
+            const f = {}
             f.name = field.name
             f.value = field.value
             return f

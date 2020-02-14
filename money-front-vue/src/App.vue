@@ -78,7 +78,7 @@ export default {
     notifyConnectivity (event) {
       this.isOnline = event.type === 'online'
       this.$store.commit('setConnectivity', this.isOnline)
-      let toast = {}
+      const toast = {}
       toast.message = this.isOnline ? this.$t('labels.isOnline') : this.$t('labels.isOffline')
       toast.type = this.isOnline ? 'is-success' : 'is-danger'
       toast.position = 'is-bottom'
@@ -90,7 +90,7 @@ export default {
       document.querySelector('html').setAttribute('lang', locale)
       this.$i18n.locale = locale
       this.$moment.locale(locale)
-      let localeData = this.$moment.localeData()
+      const localeData = this.$moment.localeData()
       this.$buefy.setOptions({
         defaultIconPack: 'fa',
         defaultFirstDayOfWeek: localeData.firstDayOfWeek(),

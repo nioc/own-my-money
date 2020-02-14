@@ -85,7 +85,7 @@ export default {
         return this.user.scope.includes('admin')
       },
       set: function (isAdmin) {
-        let scope = this.user.scope.split(' ').filter((value, index, arr) => value !== 'admin')
+        const scope = this.user.scope.split(' ').filter((value, index, arr) => value !== 'admin')
         if (isAdmin) {
           scope.push('admin')
         }

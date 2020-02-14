@@ -1,5 +1,5 @@
 export default {
-  'en': {
+  en: {
     fieldnames: {
       login: 'Login',
       password: 'Password',
@@ -137,7 +137,7 @@ export default {
       byte: '1 byte | {count} bytes'
     }
   },
-  'fr': {
+  fr: {
     fieldnames: {
       login: 'Identifiant',
       password: 'Password',

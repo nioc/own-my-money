@@ -169,7 +169,7 @@ export default {
     },
     updateBreadcrumbItems () {
       // need to copy breadcrumb items array for sync
-      let breadcrumbItems = this.breadcrumbItems.slice()
+      const breadcrumbItems = this.breadcrumbItems.slice()
       let currentLevel = 2
       if (!this.isCategory) {
         // it is a subcategory, find and display the parent category
@@ -178,7 +178,7 @@ export default {
           // parent is kwnow, try to find it
           var label = this.category.parentId
           if (this.parentCategories.length > 0) {
-            let parent = this.parentCategories.filter((pcategory) => pcategory.id === parseInt(this.category.parentId))
+            const parent = this.parentCategories.filter((pcategory) => pcategory.id === parseInt(this.category.parentId))
             if (parent.length > 0) {
               // parent is found, update the breadcrumb
               label = parent[0].label

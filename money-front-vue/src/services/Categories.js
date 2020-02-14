@@ -18,10 +18,10 @@ export default {
         // save the complete list and create lookup for getting label
         var lookup = []
         for (let i = 0; i < categories.length; i++) {
-          let category = categories[i]
+          const category = categories[i]
           lookup[category.id] = category
           for (let i = 0; i < category.sub.length; i++) {
-            let subcategory = category.sub[i]
+            const subcategory = category.sub[i]
             lookup[subcategory.id] = subcategory
           }
         }

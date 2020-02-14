@@ -65,7 +65,7 @@ Vue.use(VueMoment, {
   moment
 })
 
-let localeData = Vue.moment.localeData()
+const localeData = Vue.moment.localeData()
 Vue.use(Buefy, {
   defaultIconPack: 'fa',
   defaultFirstDayOfWeek: localeData.firstDayOfWeek(),
@@ -75,10 +75,10 @@ Vue.use(Buefy, {
 })
 
 // set header at init
-delete Vue.http.headers.common['Authorization']
-let authHeader = Auth.getAuthHeader()
+delete Vue.http.headers.common.Authorization
+const authHeader = Auth.getAuthHeader()
 if (authHeader) {
-  Vue.http.headers.common['Authorization'] = authHeader
+  Vue.http.headers.common.Authorization = authHeader
 }
 
 // check auth before changing page
@@ -95,14 +95,14 @@ router.beforeEach((to, from, next) => {
   // change title attribute
   if (to.meta.title) {
     let title = to.meta.title
-    let params = to.params
+    const params = to.params
     for (var property in params) {
       title = title.replace(':' + property, params[property])
     }
     document.title = title + ' | OwnMyMoney'
   }
   // close hamburger (if existing)
-  let burger = document.getElementById('navbar-burger')
+  const burger = document.getElementById('navbar-burger')
   if (burger) {
     burger.classList.remove('is-active')
     document.getElementById('navbar-menu').classList.remove('is-active')

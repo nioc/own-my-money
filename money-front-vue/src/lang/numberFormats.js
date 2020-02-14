@@ -1,5 +1,5 @@
 export default {
-  'en': {
+  en: {
     currency: {
       style: 'currency', currency: 'GBP'
     }
@@ -9,7 +9,7 @@ export default {
       style: 'currency', currency: 'USD'
     }
   },
-  'fr': {
+  fr: {
     currency: {
       style: 'currency', currency: 'EUR'
     }

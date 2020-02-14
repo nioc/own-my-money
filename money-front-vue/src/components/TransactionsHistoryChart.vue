@@ -105,7 +105,7 @@ export default {
     },
     requestData () {
       this.isLoading = true
-      let options = {
+      const options = {
         params: {
           isRecurringOnly: this.search.isRecurringOnly,
           periodStart: this.$moment(this.search.periodStart).format('X'),
@@ -116,7 +116,7 @@ export default {
         options.params.timeUnit = this.search.timeUnit
       }
       this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
-        let vm = this
+        const vm = this
         this.labelCallback = function (tooltipItem, data) {
           return data.datasets[tooltipItem.datasetIndex].label + ': ' + vm.$n(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index], 'currency')
         }

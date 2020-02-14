@@ -213,12 +213,12 @@ export default {
       return this.$store.state.isOnline
     },
     displayedTransactions () {
-      let query = this.search.query
-      let periodStart = this.search.periodStart
-      let periodEnd = this.search.periodEnd
-      let category = this.search.category
-      let subcategory = this.search.subcategory
-      let transactions = this.transactions
+      const query = this.search.query
+      const periodStart = this.search.periodStart
+      const periodEnd = this.search.periodEnd
+      const category = this.search.category
+      const subcategory = this.search.subcategory
+      const transactions = this.transactions
       transactions.map((t) => {
         t.categoryLabel = (t.category in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.category].label : null
         t.categoryIcon = (t.category in this.categoriesAndSubcategoriesLookup) ? this.categoriesAndSubcategoriesLookup[t.category].icon : null
@@ -246,7 +246,7 @@ export default {
         return
       }
       this.isLoading = true
-      let config = {
+      const config = {
         params: {
           periodStart: this.$moment(this.search.periodStart).format('X'),
           periodEnd: this.$moment(this.search.periodEnd).format('X')
@@ -256,7 +256,7 @@ export default {
       }
       // try to get last fetch date for highlighting new transactions
       if (this.accountId) {
-        let transactionsLastFetchDate = sessionStorage.getItem('accounts:' + this.accountId + ':transactions:lastFetch')
+        const transactionsLastFetchDate = sessionStorage.getItem('accounts:' + this.accountId + ':transactions:lastFetch')
         if (transactionsLastFetchDate) {
           config.headers = { 'Omm-Last-Fetch': transactionsLastFetchDate }
         }
@@ -282,7 +282,7 @@ export default {
         this.modalTransaction.isActive = true
       } else {
         // batch edition mode, just (un)check the transaction
-        let index = this.batch.checkedTransactions.indexOf(item)
+        const index = this.batch.checkedTransactions.indexOf(item)
         if (index > -1) {
           this.batch.checkedTransactions.splice(index, 1)
         } else {
@@ -291,7 +291,7 @@ export default {
       }
     },
     downloadData () {
-      let transactions = JSON.parse(JSON.stringify(this.displayedTransactions)).map((t) => {
+      const transactions = JSON.parse(JSON.stringify(this.displayedTransactions)).map((t) => {
         t.amount = this.$n(t.amount, { style: 'decimal', useGrouping: false })
         t.datePosted = this.$moment(t.datePosted).format('L')
         t.dateUser = this.$moment(t.dateUser).format('L')
@@ -311,16 +311,16 @@ export default {
       exportFromJSON({ data: transactions, fileName: 'transactions', exportType: exportFromJSON.types.csv, withBOM: true })
     },
     processBatchUpdate () {
-      let length = this.batch.checkedTransactions.length
+      const length = this.batch.checkedTransactions.length
       if (length > 0) {
         this.batch.isLoading = true
         this.batch.progress = 0
         let processed = 0
-        let category = this.batch.category
-        let subcategory = this.batch.subcategory
-        let isRecurring = this.batch.isRecurring
+        const category = this.batch.category
+        const subcategory = this.batch.subcategory
+        const isRecurring = this.batch.isRecurring
         this.batch.result = ''
-        for (let transaction of this.batch.checkedTransactions) {
+        for (const transaction of this.batch.checkedTransactions) {
           if (category) {
             transaction.category = category
             if (subcategory) {

@@ -132,7 +132,7 @@ export default {
     uploadDataset () {
       this.upload.result = ''
       // get file
-      let file = this.upload.file
+      const file = this.upload.file
       var data = new FormData()
       data.append('Content-Type', file.type || 'application/octet-stream')
       data.append('file', file)

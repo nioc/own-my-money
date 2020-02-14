@@ -42,14 +42,14 @@ export default {
     localStorage.clear()
     sessionStorage.clear()
     this.user.authenticated = false
-    delete Vue.http.headers.common['Authorization']
+    delete Vue.http.headers.common.Authorization
     this.user = {}
     return this.user
   },
 
   // return the object to be passed as a header for authenticated requests
   getAuthHeader () {
-    let token = this.getToken()
+    const token = this.getToken()
     if (token) {
       return 'Bearer ' + token
     }
@@ -64,7 +64,7 @@ export default {
       this.user.login = payload.login
       this.user.mail = payload.mail
       this.user.language = payload.language
-      let scope = {}
+      const scope = {}
       if (payload.scope) {
         payload.scope.split(' ').forEach(function (role) { scope[role] = true })
       }
@@ -80,14 +80,14 @@ export default {
       // token is not provided in data
       return false
     }
-    let parts = data.token.split('.')
+    const parts = data.token.split('.')
     if (parts.length !== 3) {
       // token do not contains 3 parts (standard structure)
       return false
     }
     try {
       // parse the payload part
-      let payload = JSON.parse(atob(parts[1]))
+      const payload = JSON.parse(atob(parts[1]))
       // transform the payload and store it in local storage
       payload.token = data.token
       payload.id = payload.sub
@@ -95,7 +95,7 @@ export default {
       localStorage.setItem('user', JSON.stringify(payload))
       // populate this User
       this.populate(payload)
-      Vue.http.headers.common['Authorization'] = this.getAuthHeader()
+      Vue.http.headers.common.Authorization = this.getAuthHeader()
       return true
     } catch (err) {
       console.error(err)
@@ -115,7 +115,7 @@ export default {
   // return stored token
   getToken () {
     try {
-      let payload = JSON.parse(localStorage.getItem('user'))
+      const payload = JSON.parse(localStorage.getItem('user'))
       this.populate(payload)
       return this.user.token
     } catch (e) {

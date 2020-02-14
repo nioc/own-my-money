@@ -127,7 +127,7 @@ export default {
         })
     },
     create () {
-      let pattern = { label: '', category: '', subcategory: '' }
+      const pattern = { label: '', category: '', subcategory: '' }
       this.patterns.push(pattern)
       this.modalPattern.pattern = pattern
       this.modalPattern.isActive = true
@@ -154,7 +154,7 @@ export default {
         })
     },
     createSuggested (suggestedPattern) {
-      let pattern = JSON.parse(JSON.stringify(suggestedPattern))
+      const pattern = JSON.parse(JSON.stringify(suggestedPattern))
       this.patterns.push(pattern)
       this.edit(pattern)
     }

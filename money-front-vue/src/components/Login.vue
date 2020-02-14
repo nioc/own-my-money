@@ -77,7 +77,7 @@ export default {
         if (result) {
           this.isLoading = true
           // get credentials
-          let credentials = {
+          const credentials = {
             login: this.credentials.login,
             password: this.credentials.password
           }

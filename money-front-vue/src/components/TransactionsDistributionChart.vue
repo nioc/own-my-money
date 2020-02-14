@@ -76,7 +76,7 @@ export default {
     },
     requestData () {
       this.isLoading = true
-      let options = {
+      const options = {
         params: {
           isRecurringOnly: this.search.isRecurringOnly,
           periodStart: this.$moment(this.search.periodStart).format('X'),
@@ -84,9 +84,9 @@ export default {
         }
       }
       this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
-        let values = response.data.values
+        const values = response.data.values
         let colors = ['#42b983', '#292f36', '#4ecdc4', '#0b3954', '#ff6663', '#7d7c84', '#7180ac', '#2b4570', '#c84630', '#81a684', '#466060', '#c9cba3', '#e26d5c', '#2a4747', '#157a6e', '#ee6c4d']
-        let count = values.length
+        const count = values.length
         let lightness
         if (response.data.type === 'debit') {
           colors = []
@@ -104,9 +104,9 @@ export default {
         let onClick = null
         if (response.data.key === 'categories') {
           onClick = function (evt) {
-            let index = this.chart.getElementsAtEvent(evt)[0]
+            const index = this.chart.getElementsAtEvent(evt)[0]
             if (index) {
-              let key = values[index._index].key
+              const key = values[index._index].key
               if (key) {
                 // send event for parent update (may be displaying subcategories distribution)
                 Bus.$emit('category-selected', { key: key, label: this.chart.data.labels[index._index].replace(/[^ -~]+ /g, '') })
@@ -115,9 +115,9 @@ export default {
           }
         } else if (response.data.key === 'subcategories') {
           onClick = function (evt) {
-            let index = this.chart.getElementsAtEvent(evt)[0]
+            const index = this.chart.getElementsAtEvent(evt)[0]
             if (index) {
-              let key = values[index._index].key
+              const key = values[index._index].key
               if (key) {
                 // send event for parent update (may be displaying subcategories transaction history)
                 Bus.$emit('subcategory-selected', { key: key, label: this.chart.data.labels[index._index] })
@@ -125,11 +125,11 @@ export default {
             }
           }
         }
-        let vm = this
-        let labelCallback = function (tooltipItem, data) {
-          let sum = data.datasets[tooltipItem.datasetIndex].data.reduce((a, b) => a + b, 0)
-          let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
-          let label = data.labels[tooltipItem.index].replace(/[^ -~]+ /g, '')
+        const vm = this
+        const labelCallback = function (tooltipItem, data) {
+          const sum = data.datasets[tooltipItem.datasetIndex].data.reduce((a, b) => a + b, 0)
+          const value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
+          const label = data.labels[tooltipItem.index].replace(/[^ -~]+ /g, '')
           return label + ': ' + vm.$n(value, 'currency') + ' (' + Math.round(100 * value / sum) + '%)'
         }
         this.chartData = {
@@ -147,8 +147,8 @@ export default {
             if (this.categoriesAndSubcategoriesLookup[point.key]) {
               if (this.categoriesAndSubcategoriesLookup[point.key].icon) {
                 // to get unicode content from CSS class, create a styled element then get content and remove it
-                let icon = this.categoriesAndSubcategoriesLookup[point.key].icon
-                let tempElement = document.createElement('i')
+                const icon = this.categoriesAndSubcategoriesLookup[point.key].icon
+                const tempElement = document.createElement('i')
                 tempElement.className = icon
                 document.body.appendChild(tempElement)
                 unicodeContent = window.getComputedStyle(tempElement, ':before').content.replace(/'|"/g, '') + ' '

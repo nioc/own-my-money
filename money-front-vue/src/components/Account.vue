@@ -344,7 +344,7 @@ export default {
     uploadIcon () {
       this.icon.result = ''
       // get file
-      let file = this.icon.file
+      const file = this.icon.file
       var data = new FormData()
       data.append('Content-Type', file.type || 'application/octet-stream')
       data.append('file', file)
@@ -353,7 +353,7 @@ export default {
         this.icon.result = this.$t('labels.fileTooBig')
         return
       }
-      let params = {}
+      const params = {}
       // prepare context
       this.icon.isUploading = true
       this.isLoading = true
@@ -427,7 +427,7 @@ export default {
     uploadDataset () {
       this.upload.result = ''
       // get file
-      let file = this.upload.file
+      const file = this.upload.file
       var data = new FormData()
       data.append('Content-Type', file.type || 'application/octet-stream')
       data.append('file', file)

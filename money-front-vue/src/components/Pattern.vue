@@ -98,8 +98,8 @@ export default {
             .then((response) => {
               // close modal and remove deleted pattern
               this.$parent.close()
-              let patterns = this.$parent.$parent.patterns
-              let index = patterns.map((pattern) => pattern.id).indexOf(this.pattern.id)
+              const patterns = this.$parent.$parent.patterns
+              const index = patterns.map((pattern) => pattern.id).indexOf(this.pattern.id)
               patterns.splice(index, 1)
             }, (response) => {
               // remove loading overlay when API replies

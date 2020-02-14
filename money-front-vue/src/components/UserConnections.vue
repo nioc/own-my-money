@@ -36,10 +36,10 @@ export default {
       this.rConnections.query()
         .then((response) => {
           this.connections = response.body
-          let parser = new UAParser()
+          const parser = new UAParser()
           this.connections.forEach(function (connection) {
             parser.setUA(connection.userAgent)
-            let userAgent = parser.getResult()
+            const userAgent = parser.getResult()
             connection.browser = userAgent.browser.name + ' ' + userAgent.browser.major
             connection.os = userAgent.os.name + ' ' + userAgent.os.version
             if (userAgent.device.model) {
