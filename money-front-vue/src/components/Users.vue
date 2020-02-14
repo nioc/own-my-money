@@ -32,7 +32,7 @@
 
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="create" :disabled="!isOnline"><i class="fa fa-user-plus"/>&nbsp;{{ $t('actions.addUser') }}</button>
+            <button class="button is-primary" role="button" @click="create" :disabled="!isOnline"><i class="fa fa-user-plus fa-mr"/>{{ $t('actions.addUser') }}</button>
           </p>
         </div>
         <div class="message is-danger" v-if="error">

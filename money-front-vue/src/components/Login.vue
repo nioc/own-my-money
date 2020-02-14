@@ -32,7 +32,7 @@
                   </div>
               </div>
               <div class="field">
-                <button class="button is-block is-primary is-medium is-fullwidth" :class="{ 'is-loading': isLoading }" :disabled="isDisabled" @click="submit"><span class="fa fa-sign-in fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.login') }}</button>
+                <button class="button is-block is-primary is-medium is-fullwidth" :class="{ 'is-loading': isLoading }" :disabled="isDisabled" @click="submit"><span class="fa fa-sign-in fa-fw fa-mr" aria-hidden="true"></span>{{ $t('actions.login') }}</button>
               </div>
               <div class="message is-danger" v-if="error">
                 <div class="message-body">

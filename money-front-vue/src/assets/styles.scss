@@ -95,7 +95,7 @@ td.icon-account, .icon-account {
 .icon-account-admin {
   border-width: 1px 0 1px 1px;
   border-radius: 4px 0 0 4px;
-  height: 36px;
+  height: 40px;
   border-color: rgb(219, 219, 219);
   border-style: solid;
 }
@@ -103,4 +103,12 @@ td.icon-account, .icon-account {
 .chart-header {
   display: flex;
   justify-content: space-between;
+}
+
+.datepicker {
+  max-width: 12em;
+}
+
+.fa-mr {
+  margin-right: 0.4em;
 }

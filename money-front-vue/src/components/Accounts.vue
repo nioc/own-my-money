@@ -41,7 +41,7 @@
         </div>
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true" :disabled="!isOnline"><i class="fa fa-plus"/>&nbsp;{{ $t('actions.addAccount') }}</button>
+            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true" :disabled="!isOnline"><i class="fa fa-plus fa-mr"/>{{ $t('actions.addAccount') }}</button>
           </p>
           <p class="control">
             <b-field class="file">

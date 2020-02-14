@@ -99,10 +99,10 @@
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary" :disabled="!isOnline"><span class="fa fa-save fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.save') }}</button>
+                  <button class="button is-primary" :disabled="!isOnline"><span class="fa fa-save fa-fw fa-mr" aria-hidden="true"></span>{{ $t('actions.save') }}</button>
                 </div>
                 <div class="control">
-                  <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw" aria-hidden="true"></span>&nbsp;{{ $t('actions.cancel') }}</a>
+                  <a @click="$router.go(-1)" class="button is-light"><span class="fa fa-ban fa-fw fa-mr" aria-hidden="true"></span>{{ $t('actions.cancel') }}</a>
                 </div>
               </div>
             </div>

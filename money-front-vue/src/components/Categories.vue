@@ -14,7 +14,7 @@
         <p class="subtitle has-text-grey">{{ $t('labels.categoriesLabel') }}</p>
         <ul class="menu-list">
           <li v-for="category in categories" :key="category.id" :class="{ 'item-disabled': !category.status }">
-            <router-link :to="{ name: 'category', params: { id: category.id }}"><i class="fa fa-fw" :class="category.icon" />&nbsp;{{ category.label }}&nbsp;<span v-if="!category.isBudgeted" class="has-text-grey-light" :title="$t('labels.isNotBudgeted')"><i class="fa fa-fw fa-bell-slash-o"/></span></router-link>
+            <router-link :to="{ name: 'category', params: { id: category.id }}"><i class="fa fa-fw fa-mr" :class="category.icon" />{{ category.label }}&nbsp;<span v-if="!category.isBudgeted" class="has-text-grey-light" :title="$t('labels.isNotBudgeted')"><i class="fa fa-fw fa-bell-slash-o"/></span></router-link>
             <ul>
               <li v-for="subcategory in category.sub" :key="subcategory.id" :class="{ 'item-disabled': !subcategory.status }">
                 <router-link :to="{ name: 'subcategory', params: { id: subcategory.id, pid: category.id }}">{{ subcategory.label }}</router-link>

@@ -193,8 +193,8 @@
                 <div class="field-body">
                   <div class="field">
                     <div class="buttons">
-                      <button type="submit" class="button is-primary" role="button" :disabled="!isOnline"><i class="fa fa-save"/>&nbsp;{{ $t('actions.save') }}</button>
-                      <button type="button" class="button is-danger" role="button" :disabled="!isOnline" v-on:click="deleteAccount"><i class="fa fa-trash"/>&nbsp;{{ $t('actions.delete') }}</button>
+                      <button type="submit" class="button is-primary" role="button" :disabled="!isOnline"><i class="fa fa-save fa-mr"/>{{ $t('actions.save') }}</button>
+                      <button type="button" class="button is-danger" role="button" :disabled="!isOnline" v-on:click="deleteAccount"><i class="fa fa-trash fa-mr"/>{{ $t('actions.delete') }}</button>
                     </div>
                   </div>
                 </div>
