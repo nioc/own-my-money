@@ -84,13 +84,14 @@ export default {
   },
   methods: {
     deletePattern () {
-      this.$dialog.confirm({
+      this.$buefy.dialog.confirm({
         message: this.$t('labels.deletePatternMsg'),
         title: this.$t('labels.deletePattern'),
         type: 'is-danger',
         hasIcon: true,
         icon: 'trash',
         confirmText: this.$t('actions.deletePattern'),
+        cancelText: this.$t('actions.cancel'),
         focusOn: 'cancel',
         onConfirm: () => {
           this.isLoading = true

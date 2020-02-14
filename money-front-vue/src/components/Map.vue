@@ -242,13 +242,14 @@ export default {
     },
     // get map informations
     deleteMap () {
-      this.$dialog.confirm({
+      this.$buefy.dialog.confirm({
         message: this.$t('labels.deleteMapMsg'),
         title: this.$t('labels.deleteMap'),
         type: 'is-danger',
         hasIcon: true,
         icon: 'trash',
         confirmText: this.$t('actions.deleteMap'),
+        cancelText: this.$t('actions.cancel'),
         focusOn: 'cancel',
         onConfirm: () => {
           this.isLoading = true

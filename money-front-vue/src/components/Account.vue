@@ -383,7 +383,7 @@ export default {
         })
     },
     deleteAccount () {
-      this.$dialog.confirm({
+      this.$buefy.dialog.confirm({
         message: this.$t('labels.deleteAccountMsg'),
         title: this.$t('labels.deleteAccount'),
         type: 'is-danger',
