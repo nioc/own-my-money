@@ -80,11 +80,11 @@
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input class="input" type="text" name="label" :placeholder="$t('labels.typeJsonAttribute')" v-model="map.attributes.name" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('label') }">
-                  <span class="icon is-small is-right" v-show="errors.has('label')">
+                  <input class="input" type="text" name="name" :placeholder="$t('labels.typeJsonAttribute')" v-model="map.attributes.name" v-validate="'required|alpha_num'" :class="{ 'is-danger': errors.has('name') }">
+                  <span class="icon is-small is-right" v-show="errors.has('name')">
                     <i class="fa fa-exclamation-triangle"></i>
                   </span>
-                  <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
+                  <span v-show="errors.has('name')" class="help is-danger">{{ errors.first('name') }}</span>
                 </div>
               </div>
             </div>
