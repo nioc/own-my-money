@@ -99,8 +99,15 @@ switch ($api->method) {
        }
        //check if parent change
        if ($category->parentId !== $previousParentId) {
+           //update transactions
            require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
            if (!Transaction::updateFollowingParentSubategoryChange($previousParentId, $category->parentId, $id, $errorMessage)) {
+               $api->output(500, $api->getMessage('updateError') . $errorMessage);
+               return;
+           }
+           //update patterns
+           require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Pattern.php';
+           if (!Pattern::updateFollowingParentSubategoryChange($previousParentId, $category->parentId, $id, $errorMessage)) {
                $api->output(500, $api->getMessage('updateError') . $errorMessage);
                return;
            }

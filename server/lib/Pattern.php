@@ -234,4 +234,31 @@ class Pattern
         //returns update has encountered an error
         return false;
     }
+
+    /**
+     * Update patterns category following an update on subcategory parent id
+     *
+     * @param string $oldCategory Previous patterns category
+     * @param string $newCategory New patterns category
+     * @param string $subcategory patterns subcategory
+     * @param string $error The returned error message
+     *
+     * @return bool True on success or false on failure
+     */
+    public static function updateFollowingParentSubategoryChange($oldCategory, $newCategory, $subcategory, &$error)
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('UPDATE `pattern` SET `category`=:newCategory WHERE `category`=:oldCategory AND `subcategory`=:subcategory;');
+        $query->bindValue(':oldCategory', $oldCategory, PDO::PARAM_INT);
+        $query->bindValue(':newCategory', $newCategory, PDO::PARAM_INT);
+        $query->bindValue(':subcategory', $subcategory, PDO::PARAM_INT);
+        if ($query->execute()) {
+            //returns udpate was successfully processed
+            return true;
+        }
+        $error = $query->errorInfo()[2];
+        //returns update has encountered an error
+        return false;
+    }
 }
