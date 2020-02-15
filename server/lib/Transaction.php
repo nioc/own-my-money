@@ -268,12 +268,8 @@ class Transaction
         $patterns = Pattern::getAll($userId);
         //try to find a matching pattern
         foreach ($patterns as $pattern) {
-            //replace regexp delimiters in pattern
-            $pattern->label = str_replace('/', '\/', $pattern->label);
-            //replace dot in pattern
-            $pattern->label = str_replace('.', '\.', $pattern->label);
-            //replace wildcard character in pattern
-            $pattern->label = str_replace('*', '.*', $pattern->label);
+            //escape regular expression characters in pattern
+            $pattern->label = preg_quote($pattern->label, '/');
             if (preg_match("/^$pattern->label$/i", $transactionLabel)) {
                 // apply pattern and end the loop
                 $this->category = $pattern->category;

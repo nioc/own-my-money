@@ -597,13 +597,22 @@ class User
      */
     public function suggestPatterns()
     {
+        //set memory_limit from configuration
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Configuration.php';
+        $configuration = new Configuration();
+        $memory_limit = $configuration->get('patternsMemoryLimit');
+        if (! $memory_limit) {
+            $memory_limit = '256M';
+        }
+        ini_set('memory_limit', $memory_limit);
+
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Pattern.php';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
         //get user transactions
         $transactions = $this->getTransactions();
 
         //create raw patterns
-        $minLength = 6;
+        $minLength = 7;
         $rawPatterns = [];
         foreach ($transactions as $transaction) {
             $transactionLabel = $transaction->name;
@@ -670,6 +679,7 @@ class User
                 array_push($validPatterns, $pattern);
             }
         }
+        ini_restore('memory_limit');
 
         //return the valided patterns
         return $validPatterns;

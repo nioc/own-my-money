@@ -141,6 +141,7 @@ export default {
     },
     suggest () {
       this.isLoading = true
+      this.error = ''
       this.rTransactionsPatterns.query()
         .then((response) => {
           this.suggestedPatterns = response.body
