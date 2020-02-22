@@ -23,6 +23,26 @@ switch ($api->method) {
         if (!$api->checkParameterExists('aid', $aid)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
             $user = new User($api->requesterId);
+            if ($api->checkParameterExists('id', $id) && $id !== '') {
+                //request for a specific user transaction
+                $transaction = new Transaction($id);
+                if (!$transaction->get($api->requesterId)) {
+                    $api->output(404, $api->getMessage('transactionNotFound'));
+                    //indicate the transaction was not found
+                    return;
+                }
+                //check requestor is the transaction account owner
+                $account = new Account($transaction->aid);
+                $account->get();
+                if ($account->user !== $api->requesterId) {
+                    $api->output(403, $api->getMessage('transactionsCanBeQueriedByAccountOwnerOnly'));
+                    //indicate the requester is not the account owner and is not allowed to query it
+                    return;
+                }
+                $api->output(200, $transaction->structureData());
+                //return requested transaction
+                return;
+            }
             if ($api->checkParameterExists('pattern', $pattern)) {
                 //return user transactions matching pattern
                 $pattern = str_replace('*', '%', $pattern);
@@ -54,7 +74,7 @@ switch ($api->method) {
         if ($api->checkParameterExists('id', $id) && $id !== '') {
             //request for a specific transaction
             $transaction = new Transaction($id);
-            if (!$transaction->get()) {
+            if (!$transaction->get($api->requesterId)) {
                 $api->output(404, $api->getMessage('transactionNotFound'));
                 //indicate the account was not found
                 return;
@@ -96,7 +116,7 @@ switch ($api->method) {
             return;
         }
         $transaction = new Transaction($id);
-        if (!$transaction->get()) {
+        if (!$transaction->get($api->requesterId)) {
             $api->output(404, $api->getMessage('transactionNotFound'));
             //indicate the transaction was not found
             return;
@@ -123,12 +143,12 @@ switch ($api->method) {
             //provided transaction is not valid
             return;
         }
-        if (!$transaction->update($errorMessage)) {
+        if (!$transaction->update($errorMessage) || !$transaction->updateShares($api->requesterId, $errorMessage)) {
             $api->output(500, $api->getMessage('transactionUpdateError') . $errorMessage);
             //something gone wrong :(
             return;
         }
-        $transaction->get();
+        $transaction->get($api->requesterId);
         $api->output(200, $transaction->structureData());
         //return transaction
         return;

@@ -118,18 +118,48 @@ class Transaction
     }
 
     /**
-     * Populates a Transaction.
+     * Get shares of a Transaction.
      *
      * @return mixed True on success or false on failure
      */
-    public function get()
+    private function getShares()
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT * FROM `transaction` WHERE `id`=:id LIMIT 1;');
+        $query = $connection->prepare('SELECT `user`, `share` FROM `transaction_user_dispatch` WHERE `transaction_user_dispatch`.`transaction` = :id;');
         $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        $this->shares = [];
+        if ($query->execute()) {
+            $this->shares = $query->fetchAll(PDO::FETCH_OBJ);
+            foreach ($this->shares as &$share) {
+                $share->user = (int) $share->user;
+                $share->share = (int) $share->share;
+            }
+            //returns the shares was successfully fetched
+            return true;
+        }
+        //returns an error occurs when fetching shares
+        return false;
+    }
+
+    /**
+     * Populates a Transaction.
+     *
+     * @param int $userId User identifier to get transaction share
+     *
+     * @return mixed True on success or false on failure
+     */
+    public function get($userId)
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT `transaction`.*, IFNULL(`share`, 100) AS `share` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id` WHERE `id`=:id LIMIT 1;');
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':user', $userId, PDO::PARAM_INT);
         $query->setFetchMode(PDO::FETCH_INTO, $this);
         if ($query->execute() && $query->fetch()) {
+            //get shares dispatch
+            $this->getShares();
             //returns the transaction object was successfully fetched
             return true;
         }
@@ -234,6 +264,51 @@ class Transaction
     }
 
     /**
+     * Update transaction shares dispatch with provided informations.
+     *
+     * @param int $userId User identifier to set transaction share
+     * @param string $error The returned error message
+     *
+     * @return bool True if shares are updated
+     */
+    public function updateShares($userId, &$error)
+    {
+        $error = '';
+        if (!is_int($this->id)) {
+            //return false to indicate operation is not done
+            return false;
+        }
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('DELETE FROM `transaction_user_dispatch` WHERE `transaction` = :id');
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        if (!$query->execute()) {
+            $error = $query->errorInfo()[2];
+            //return false to indicate an error occurs during operation
+            return false;
+        }
+        $query = $connection->prepare('INSERT INTO `transaction_user_dispatch` (`transaction`, `user`, `share`) VALUES (:id, :user, :share);');
+        foreach ($this->shares as $share) {
+            if (!is_null($share->user) && !is_null($share->share)) {
+                $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+                $query->bindValue(':user', $share->user, PDO::PARAM_INT);
+                $query->bindValue(':share', $share->share, PDO::PARAM_INT);
+                if (!$query->execute()) {
+                    $error = $query->errorInfo()[2];
+                    //return false to indicate an error occurs during operation
+                    return false;
+                }
+                if ($userId === $share->user) {
+                    //this is the requester share, update transaction
+                    $this->share = $share->share;
+                }
+            }
+        }
+        //return true to indicate operation is successful
+        return true;
+    }
+
+    /**
      * Delete a transaction from database.
      *
      * @return bool True on success or false on failure
@@ -313,6 +388,9 @@ class Transaction
         }
         if (isset($transaction->isRecurring)) {
             $transaction->isRecurring = (bool) $transaction->isRecurring;
+        }
+        if (isset($transaction->share)) {
+            $transaction->share = (int) $transaction->share;
         }
         unset($transaction->aid);
         unset($transaction->insertedTimestamp);

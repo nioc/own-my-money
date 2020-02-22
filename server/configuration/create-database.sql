@@ -7,7 +7,7 @@ CREATE TABLE `account` (
   `accountId` varchar(22) DEFAULT NULL,
   `label` varchar(50) DEFAULT NULL,
   `duration` varchar(10) NOT NULL DEFAULT 'P3M',
-  `hasIcon` tinyint(1) NOT NULL DEFAULT '0',
+  `hasIcon` tinyint(1) NOT NULL DEFAULT 0,
   `balance` decimal(8,2) DEFAULT NULL,
   `lastUpdate` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -23,9 +23,9 @@ DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
   `id` smallint(3) UNSIGNED NOT NULL,
   `label` varchar(45) DEFAULT NULL,
-  `status` tinyint(1) DEFAULT '1',
-  `icon` text,
-  `isBudgeted` tinyint(1) NOT NULL DEFAULT '1',
+  `status` tinyint(1) DEFAULT 1,
+  `icon` text DEFAULT NULL,
+  `isBudgeted` tinyint(1) NOT NULL DEFAULT 1,
   `parentId` smallint(3) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -50,7 +50,7 @@ CREATE TABLE `pattern` (
   `label` varchar(200) NOT NULL,
   `category` smallint(3) UNSIGNED DEFAULT NULL,
   `subcategory` smallint(3) UNSIGNED DEFAULT NULL,
-  `isRecurring` tinyint(1) NOT NULL DEFAULT '0'
+  `isRecurring` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `token`;
@@ -76,9 +76,16 @@ CREATE TABLE `transaction` (
   `category` smallint(3) UNSIGNED DEFAULT NULL,
   `subcategory` smallint(3) UNSIGNED DEFAULT NULL,
   `note` varchar(50) DEFAULT NULL,
-  `isRecurring` tinyint(1) NOT NULL DEFAULT '0',
+  `isRecurring` tinyint(1) NOT NULL DEFAULT 0,
   `insertedTimestamp` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `transaction_user_dispatch`;
+CREATE TABLE `transaction_user_dispatch` (
+  `transaction` int(11) UNSIGNED NOT NULL,
+  `user` smallint(3) UNSIGNED NOT NULL,
+  `share` tinyint(3) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
@@ -86,10 +93,10 @@ CREATE TABLE `user` (
   `login` varchar(20) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `scope` varchar(50) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `status` tinyint(1) NOT NULL DEFAULT 1,
   `mail` varchar(50) DEFAULT NULL,
   `language` varchar(7) NOT NULL,
-  `loginAttemptFailed` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
+  `loginAttemptFailed` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
   `lastLoginAttemptFailed` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -131,6 +138,10 @@ ALTER TABLE `transaction`
   ADD KEY `fk_account` (`aid`),
   ADD KEY `fk_category` (`category`),
   ADD KEY `fk_subcategory` (`subcategory`);
+
+ALTER TABLE `transaction_user_dispatch`
+  ADD UNIQUE KEY `transaction` (`transaction`,`user`),
+  ADD KEY `fk_ratio_user_id` (`user`);
 
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
@@ -176,4 +187,8 @@ ALTER TABLE `transaction`
   ADD CONSTRAINT `category` FOREIGN KEY (`category`) REFERENCES `category` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `subcategory` FOREIGN KEY (`subcategory`) REFERENCES `category` (`id`) ON UPDATE CASCADE;
 
-INSERT INTO `version` (`version`) VALUES ('0.10.0');
+ALTER TABLE `transaction_user_dispatch`
+  ADD CONSTRAINT `fk_ratio_transaction_id` FOREIGN KEY (`transaction`) REFERENCES `transaction` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_ratio_user_id` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+INSERT INTO `version` (`version`) VALUES ('0.11.0');

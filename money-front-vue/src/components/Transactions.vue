@@ -109,6 +109,9 @@
         <b-table-column field="amount" :label="$t('fieldnames.amount')" sortable numeric>
           <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
         </b-table-column>
+        <b-table-column field="share" :label="$t('fieldnames.share')" sortable numeric>
+          <span v-if="props.row.share !== 100" class="has-text-weight-light has-text-grey">{{ props.row.share }}%</span>
+        </b-table-column>
         <b-table-column field="name" :label="$t('fieldnames.label')" sortable>
           {{ props.row.fullname }}<span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
         </b-table-column>
