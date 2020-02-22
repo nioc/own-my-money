@@ -13,42 +13,58 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Api.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
 $api = new Api('json', ['GET', 'POST', 'PUT']);
 switch ($api->method) {
-  case 'GET':
-      //returns a specific user or all
-      if (!$api->checkAuth()) {
-          //User not authentified/authorized
-          return;
-      }
-      if ($api->checkParameterExists('id', $id) && $id !== '') {
-          //request a specific user
-          if ($api->requesterId !== intval($id) && !$api->checkScope('admin')) {
-              $api->output(403, $api->getMessage('adminScopeRequired'));
-              //indicate the requester is not the user and is not allowed to update it
-              return;
-          }
-          $user = new User($id);
-          if (!$user->get()) {
-              $api->output(404, $api->getMessage('userNotFound'));
-              //indicate the user was not found
-              return;
-          }
-          $api->output(200, $user->getProfile());
-          //return requested user
-          return;
-      }
-      //request all users
-      if (!$api->checkScope('admin')) {
-          $api->output(403, $api->getMessage('adminScopeRequired'));
-          //indicate the requester is not allowed to get all users
-          return;
-      }
-      $rawUsers = User::getAll();
-      $users =  array();
-      foreach ($rawUsers as $user) {
-          array_push($users, $user->getProfile());
-      }
-      $api->output(200, $users);
-      break;
+    case 'GET':
+        //returns a specific user or all
+        if (!$api->checkAuth()) {
+            //User not authentified/authorized
+            return;
+        }
+        if ($api->checkParameterExists('role', $role) && $role === 'holders') {
+            //return actives users as accounts or transactions holder
+            $rawUsers = User::getAll();
+            $users = array();
+            foreach ($rawUsers as $rawUser) {
+                if ($rawUser->status) {
+                    $user = new stdClass();
+                    $user->id = (int) $rawUser->id;
+                    $user->name = $rawUser->login;
+                    array_push($users, $user);
+                }
+            }
+            $api->output(200, $users);
+            //return actives users
+            return;
+        }
+        if ($api->checkParameterExists('id', $id) && $id !== '') {
+            //request a specific user
+            if ($api->requesterId !== intval($id) && !$api->checkScope('admin')) {
+                $api->output(403, $api->getMessage('adminScopeRequired'));
+                //indicate the requester is not the user and is not allowed to update it
+                return;
+            }
+            $user = new User($id);
+            if (!$user->get()) {
+                $api->output(404, $api->getMessage('userNotFound'));
+                //indicate the user was not found
+                return;
+            }
+            $api->output(200, $user->getProfile());
+            //return requested user
+            return;
+        }
+        //request all users
+        if (!$api->checkScope('admin')) {
+            $api->output(403, $api->getMessage('adminScopeRequired'));
+            //indicate the requester is not allowed to get all users
+            return;
+        }
+        $rawUsers = User::getAll();
+        $users = array();
+        foreach ($rawUsers as $user) {
+            array_push($users, $user->getProfile());
+        }
+        $api->output(200, $users);
+        break;
 
     case 'POST':
         //create user

@@ -62,11 +62,13 @@
 <script>
 import Config from './../services/Config'
 import UserConnections from '@/components/UserConnections'
+import HoldersFactory from '@/services/Holders'
 export default {
   props: ['user'],
   components: {
     UserConnections
   },
+  mixins: [HoldersFactory],
   data () {
     return {
       error: '',
@@ -105,6 +107,7 @@ export default {
             // creating new user
             this.rUsers.save(this.user)
               .then((response) => {
+                this.removeHoldersCache()
                 this.$parent.close()
               }, (response) => {
                 if (response.body.message) {
@@ -122,6 +125,7 @@ export default {
           // updating user
           this.rUsers.update({ id: this.user.sub }, this.user)
             .then((response) => {
+              this.removeHoldersCache()
               this.$parent.close()
             }, (response) => {
               if (response.body.message) {
