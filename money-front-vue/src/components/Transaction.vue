@@ -187,14 +187,13 @@ export default {
   },
   mounted () {
     this.getCategories(false)
-    this.$set(this.localTransaction, 'shares', [])
   },
   methods: {
     validateBeforeSubmit () {
       this.error = ''
       // call the async validator
       this.$validator.validateAll().then((result) => {
-        if (this.localTransaction.shares.length > 0) {
+        if (this.localTransaction.shares && this.localTransaction.shares.length > 0) {
           // calcul shares sum
           if (this.sharesSum !== 100) {
             this.error = this.$t('labels.invalidDispatch')
@@ -245,7 +244,7 @@ export default {
       })
     },
     getTransactionDispatch () {
-      this.localTransaction.shares = []
+      this.$set(this.localTransaction, 'shares', [])
       this.rTransactions.get({ id: this.localTransaction.id })
         .then(response => {
           this.localTransaction.shares = response.body.shares
@@ -274,11 +273,3 @@ export default {
   },
 }
 </script>
-<style>
-.dispatch-slider {
-  width: 75%;
-}
-.dispatch-slider .input {
-  width: 4.5rem !important;
-}
-</style>

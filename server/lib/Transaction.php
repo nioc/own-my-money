@@ -106,7 +106,7 @@ class Transaction
         $query->bindValue(':isRecurring', $this->isRecurring, PDO::PARAM_BOOL);
         $query->bindValue(':insertedTimestamp', time(), PDO::PARAM_INT);
         if ($query->execute()) {
-            $this->id = $connection->lastInsertId();
+            $this->id = (int) $connection->lastInsertId();
             //returns insertion was successfully processed
             return true;
         }
@@ -290,6 +290,7 @@ class Transaction
     {
         $error = '';
         if (!is_int($this->id)) {
+            $error = 'transaction id is not a valid integer';
             //return false to indicate operation is not done
             return false;
         }
@@ -365,6 +366,9 @@ class Transaction
                 $this->category = $pattern->category;
                 $this->subcategory = $pattern->subcategory;
                 $this->isRecurring = $pattern->isRecurring;
+                if ($pattern->shares) {
+                    $this->shares = $pattern->shares;
+                }
                 break;
             }
         }

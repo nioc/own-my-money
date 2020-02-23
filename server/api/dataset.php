@@ -93,6 +93,11 @@ switch ($api->method) {
                             $transaction->applyPatterns($api->requesterId);
                             if ($transaction->insert()) {
                                 $result['inserted']++;
+                                if (property_exists($transaction, 'shares')) {
+                                    if (!$transaction->updateShares($api->requesterId, $error)) {
+                                        error_log('Error when trying to apply shares from pattern: '.$error);
+                                    }
+                                }
                             }
                         }
                         array_push($result['accountsList'], $currentAccount->id);

@@ -20,6 +20,9 @@
             <b-table-column :label="$t('fieldnames.label')">
               {{ props.row.label }}
             </b-table-column>
+            <b-table-column :label="$t('fieldnames.share')">
+              <span v-if="props.row.share !== 100" class="has-text-weight-light has-text-grey">{{ props.row.share }}%</span>
+            </b-table-column>
             <b-table-column :label="$tc('objects.category', 1)">
               <span v-if="props.row.category && categoriesAndSubcategoriesLookup[props.row.category]">{{ categoriesAndSubcategoriesLookup[props.row.category].label }}</span>
             </b-table-column>
@@ -134,7 +137,7 @@ export default {
         })
     },
     create () {
-      const pattern = { label: '', category: '', subcategory: '', isRecurring: false }
+      const pattern = { label: '', category: '', subcategory: '', isRecurring: false, share: 100, shares: [] }
       this.patterns.push(pattern)
       this.modalPattern.pattern = pattern
       this.modalPattern.isActive = true
@@ -163,6 +166,8 @@ export default {
     },
     createSuggested (suggestedPattern) {
       const pattern = JSON.parse(JSON.stringify(suggestedPattern))
+      pattern.share = 100
+      pattern.shares = []
       this.patterns.push(pattern)
       this.edit(pattern)
     },

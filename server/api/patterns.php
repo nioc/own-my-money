@@ -52,7 +52,7 @@ switch ($api->method) {
             //provided pattern is not valid
             return;
         }
-        if (!$pattern->insert($error)) {
+        if (!$pattern->insert($error) || !$pattern->updateShares($api->requesterId, $error)) {
             $api->output(500, $api->getMessage('patternCreationError') . $error);
             //something gone wrong :(
             return;
@@ -91,7 +91,7 @@ switch ($api->method) {
             //something gone wrong :(
             return;
         }
-        if (!$pattern->update($error)) {
+        if (!$pattern->update($error) || !$pattern->updateShares($api->requesterId, $error)) {
             $api->output(500, $api->getMessage('patternUpdateError') . $error);
             //something gone wrong :(
             return;
