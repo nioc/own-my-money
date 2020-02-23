@@ -1,5 +1,5 @@
 <template>
-  <b-table :data=connections :mobile-cards="false" :striped="true" narrowed default-sort="creation" default-sort-direction="desc">
+  <b-table :data="connections" :mobile-cards="false" :striped="true" narrowed default-sort="creation" default-sort-direction="desc">
     <template slot-scope="props">
       <b-table-column field="creation" :label="$t('fieldnames.date')" sortable>
         {{ props.row.creation | moment("L LTS") }}
@@ -21,15 +21,18 @@ export default {
   props: {
     id: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
   data () {
     return {
       connections: [],
       // resources
-      rConnections: this.$resource(Config.API_URL + 'users/' + this.id + '/tokens')
+      rConnections: this.$resource(Config.API_URL + 'users/' + this.id + '/tokens'),
     }
+  },
+  mounted () {
+    this.get()
   },
   methods: {
     get () {
@@ -54,10 +57,7 @@ export default {
           }
           console.log(response.status + ' - ' + response.statusText)
         })
-    }
+    },
   },
-  mounted () {
-    this.get()
-  }
 }
 </script>

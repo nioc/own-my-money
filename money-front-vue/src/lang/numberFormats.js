@@ -1,17 +1,17 @@
 export default {
   en: {
     currency: {
-      style: 'currency', currency: 'GBP'
-    }
+      style: 'currency', currency: 'GBP',
+    },
   },
   'en-US': {
     currency: {
-      style: 'currency', currency: 'USD'
-    }
+      style: 'currency', currency: 'USD',
+    },
   },
   fr: {
     currency: {
-      style: 'currency', currency: 'EUR'
-    }
-  }
+      style: 'currency', currency: 'EUR',
+    },
+  },
 }

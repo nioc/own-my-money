@@ -3,10 +3,10 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: this.$t('labels.home') },
-          {link: '/maps', icon: 'fa-random', text: this.$tc('objects.transactionMapping', 2), isActive: true}
-        ]">
-      </breadcrumb>
+          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
+          {link: '/maps', icon: 'fa-random', text: this.$tc('objects.transactionMapping', 2), isActive: true},
+        ]"
+      />
     </div>
     <div class="hero-body">
       <div class="container box">
@@ -14,13 +14,13 @@
         <p class="subtitle has-text-grey">{{ $t('labels.mapsLabel') }}</p>
         <ul class="menu-list">
           <li v-for="map in maps" :key="map.code">
-            <router-link :to="{ name: 'map', params: { code: map.code }}">{{ map.label }}</router-link>
+            <router-link :to="{name: 'map', params: {code: map.code}}">{{ map.label }}</router-link>
           </li>
           <li>
-            <router-link :to="{ name: 'newMap' }" class="has-text-grey-light"><i class="fa fa-fw fa-plus-square-o"></i>{{ $t('actions.addMap') }}</router-link>
+            <router-link :to="{name: 'newMap'}" class="has-text-grey-light"><i class="fa fa-fw fa-plus-square-o" />{{ $t('actions.addMap') }}</router-link>
           </li>
         </ul>
-        <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
+        <b-loading :is-full-page="false" :active.sync="isLoading" />
       </div>
     </div>
   </section>
@@ -30,16 +30,19 @@
 import Config from './../services/Config'
 import Breadcrumb from '@/components/Breadcrumb'
 export default {
-  name: 'mappings',
+  name: 'Mappings',
   components: {
-    Breadcrumb
+    Breadcrumb,
   },
   data () {
     return {
       rMaps: this.$resource(Config.API_URL + 'maps{/id}'),
       maps: [],
-      isLoading: false
+      isLoading: false,
     }
+  },
+  mounted () {
+    this.get()
   },
   methods: {
     get () {
@@ -57,10 +60,7 @@ export default {
           // remove loading overlay when API replies
           this.isLoading = false
         })
-    }
+    },
   },
-  mounted () {
-    this.get()
-  }
 }
 </script>

@@ -1,4 +1,4 @@
 export default {
   // set API endpoint
-  API_URL: 'http://localhost/server/api/'
+  API_URL: 'http://localhost/server/api/',
 }

@@ -31,7 +31,7 @@ export default {
       admin: 'Admin',
       language: 'Language',
       balance: 'Balance',
-      updated: 'Updated'
+      updated: 'Updated',
     },
     actions: {
       login: 'Login',
@@ -62,7 +62,7 @@ export default {
       uploadOfxJson: 'Upload OFX/JSON',
       uploadOfx: 'Upload OFX',
       uploadIcon: 'Upload icon',
-      updateTo: 'Update to'
+      updateTo: 'Update to',
     },
     labels: {
       all: 'All',
@@ -122,7 +122,7 @@ export default {
       monthly: 'Monthly',
       isOnline: 'You are back online',
       isOffline: 'You are offline',
-      aboutText: '<p>Own my money is a simple way to track your bank activity on any device connected to the web (pc, smartphone, tablet, ...).</p><p>If you have any issues or feature requests, please create an <a href="https://github.com/nioc/own-my-money/issues" target="_blank" rel="noreferrer">issue</a>.</p><p>This project is licensed under the <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank" rel="noreferrer">GNU Affero General Public License v3.0</a>.</p>'
+      aboutText: '<p>Own my money is a simple way to track your bank activity on any device connected to the web (pc, smartphone, tablet, ...).</p><p>If you have any issues or feature requests, please create an <a href="https://github.com/nioc/own-my-money/issues" target="_blank" rel="noreferrer">issue</a>.</p><p>This project is licensed under the <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank" rel="noreferrer">GNU Affero General Public License v3.0</a>.</p>',
     },
     objects: {
       account: 'Account | Accounts',
@@ -138,8 +138,8 @@ export default {
       lastWeek: 'Last week | Last {count} weeks',
       lastMonth: 'Last month | Last {count} months',
       lastYear: 'Last year | Last {count} years',
-      byte: '1 byte | {count} bytes'
-    }
+      byte: '1 byte | {count} bytes',
+    },
   },
   fr: {
     fieldnames: {
@@ -173,7 +173,7 @@ export default {
       admin: 'Admin',
       language: 'Langue',
       balance: 'Solde',
-      updated: 'Mise à jour'
+      updated: 'Mise à jour',
     },
     actions: {
       login: 'Connexion',
@@ -204,7 +204,7 @@ export default {
       uploadOfxJson: 'Téléverser OFX/JSON',
       uploadOfx: 'Téléverser OFX',
       uploadIcon: 'Téléverser icône',
-      updateTo: 'Mise à jour vers'
+      updateTo: 'Mise à jour vers',
     },
     labels: {
       all: 'Tous',
@@ -264,7 +264,7 @@ export default {
       monthly: 'Par mois',
       isOnline: 'Vous êtes à nouveau connecté',
       isOffline: 'Vous êtes hors-ligne',
-      aboutText: '<p>Own my money est un outil pour suivre facilement votre activité bancaire depuis n\'importe quel équipement connecté à internet (pc, smartphone, tablette, ...).</p><p>En cas de problème ou pour toute suggestion, merci de créer un <a href="https://github.com/nioc/own-my-money/issues" target="_blank" rel="noreferrer">ticket</a>.</p><p>Ce projet est sous la licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank" rel="noreferrer">GNU Affero General Public License v3.0</a>.</p>'
+      aboutText: '<p>Own my money est un outil pour suivre facilement votre activité bancaire depuis n\'importe quel équipement connecté à internet (pc, smartphone, tablette, ...).</p><p>En cas de problème ou pour toute suggestion, merci de créer un <a href="https://github.com/nioc/own-my-money/issues" target="_blank" rel="noreferrer">ticket</a>.</p><p>Ce projet est sous la licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank" rel="noreferrer">GNU Affero General Public License v3.0</a>.</p>',
     },
     objects: {
       account: 'Compte | Comptes',
@@ -280,7 +280,7 @@ export default {
       lastWeek: 'La semaine dernière | Les {count} dernières semaines',
       lastMonth: 'Le mois dernier | Les {count} derniers mois',
       lastYear: 'L\'année dernière | Les {count} dernières années',
-      byte: '1 octet | {count} octets'
-    }
-  }
+      byte: '1 octet | {count} octets',
+    },
+  },
 }

@@ -8,11 +8,12 @@ export default {
   props: {
     chartData: {
       type: Object,
-      required: true
+      required: true,
     },
     labelCallback: {
       type: Function,
-      required: false
+      required: false,
+      default: null,
     },
     chartOptions: {
       type: Object,
@@ -20,23 +21,23 @@ export default {
       default () {
         return {
           legend: {
-            display: false
+            display: false,
           },
           maintainAspectRatio: false,
           spanGaps: false,
           elements: {
             line: {
-              tension: 0.000001
-            }
+              tension: 0.000001,
+            },
           },
           plugins: {
             filler: {
-              propagate: false
-            }
+              propagate: false,
+            },
           },
           tooltips: {
             callbacks: {
-            }
+            },
           },
           scales: {
             xAxes: [{
@@ -44,22 +45,27 @@ export default {
               stacked: true,
               ticks: {
                 autoSkip: false,
-                maxRotation: 0
+                maxRotation: 0,
               },
               gridLines: {
-                offsetGridLines: true
-              }
+                offsetGridLines: true,
+              },
             }],
             yAxes: [{
               id: 'y-axis-1',
               type: 'linear',
               ticks: {
-              }
-            }]
-          }
+              },
+            }],
+          },
         }
-      }
-    }
+      },
+    },
+  },
+  watch: {
+    chartData () {
+      this.renderChart(this.chartData, this.chartOptions)
+    },
   },
   mounted () {
     if (this.labelCallback !== null && typeof this.labelCallback === 'function') {
@@ -72,20 +78,15 @@ export default {
           type: 'linear',
           position: 'right',
           ticks: {
-            beginAtZero: true
+            beginAtZero: true,
           },
           gridLines: {
-            drawOnChartArea: false
-          }
+            drawOnChartArea: false,
+          },
         })
       }
     })
     this.renderChart(this.chartData, this.chartOptions)
   },
-  watch: {
-    chartData () {
-      this.renderChart(this.chartData, this.chartOptions)
-    }
-  }
 }
 </script>

@@ -9,7 +9,7 @@ export default {
     return {
       categories: [],
       categoriesAndSubcategoriesLookup: [],
-      rCategories: Vue.resource(Config.API_URL + 'categories{/id}')
+      rCategories: Vue.resource(Config.API_URL + 'categories{/id}'),
     }
   },
   methods: {
@@ -51,6 +51,6 @@ export default {
         // @TODO : add error handling
         console.error(response)
       })
-    }
-  }
+    },
+  },
 }

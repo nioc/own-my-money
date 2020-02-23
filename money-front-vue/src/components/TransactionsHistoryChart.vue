@@ -1,8 +1,8 @@
 <template>
-  <div class="box" v-if="isLoaded">
+  <div v-if="isLoaded" class="box">
     <header class="title chart-header">
       <h2 class="title is-marginless">{{ title }}</h2>
-      <a v-if="isClosable" class="delete is-large" :title="this.$t('actions.close')" v-on:click="isLoaded = false"></a>
+      <a v-if="isClosable" class="delete is-large" :title="this.$t('actions.close')" @click="isLoaded = false" />
     </header>
     <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
@@ -17,10 +17,10 @@
         </div>
       </div>
       <div class="control">
-        <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodStart"></b-datepicker>
+        <b-datepicker v-model="search.periodStart" placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" />
       </div>
       <div class="control">
-        <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodEnd"></b-datepicker>
+        <b-datepicker v-model="search.periodEnd" placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" />
       </div>
       <div class="control">
         <div class="select">
@@ -41,10 +41,10 @@
         </div>
       </div>
       <div class="control">
-        <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
+        <button class="button" :class="{'is-loading': isLoading}" :disabled="isLoading" @click="applyFilter"><span class="icon"><i class="fa fa-refresh" /></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
-    <line-chart :chartData="chartData" :labelCallback="labelCallback"></line-chart>
+    <line-chart :chart-data="chartData" :label-callback="labelCallback" />
   </div>
 </template>
 
@@ -54,30 +54,32 @@ import LineChart from '@/components/Line'
 import Bus from '@/services/Bus'
 export default {
   components: {
-    LineChart
+    LineChart,
   },
   props: {
     title: {
       type: String,
-      required: true
+      required: true,
     },
     chartEndpoint: {
       type: String,
-      required: true
+      required: true,
     },
     isIndependent: {
       type: Boolean,
       default: true,
-      required: false
+      required: false,
     },
     date: {
-      required: false
+      type: Object,
+      default: null,
+      required: false,
     },
     isClosable: {
       type: Boolean,
       default: false,
-      required: false
-    }
+      required: false,
+    },
   },
   data () {
     const today = new Date()
@@ -94,96 +96,8 @@ export default {
         isRecurringOnly: false,
         currentDate: today,
         periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
-        periodEnd: today
-      }
-    }
-  },
-  methods: {
-    applyFilter () {
-      Bus.$emit('transactions-date-filtered', this.search)
-      this.requestData()
-    },
-    requestData () {
-      this.isLoading = true
-      const options = {
-        params: {
-          isRecurringOnly: this.search.isRecurringOnly,
-          periodStart: this.$moment(this.search.periodStart).format('X'),
-          periodEnd: this.$moment(this.search.periodEnd).format('X')
-        }
-      }
-      if (this.search.timeUnit !== '') {
-        options.params.timeUnit = this.search.timeUnit
-      }
-      this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
-        const vm = this
-        this.labelCallback = function (tooltipItem, data) {
-          return data.datasets[tooltipItem.datasetIndex].label + ': ' + vm.$n(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index], 'currency')
-        }
-        this.chartData = {
-          datasets: [
-            {
-              data: response.data.values.map((point) => point.balance),
-              label: this.$t('labels.balances'),
-              type: 'line',
-              backgroundColor: 'rgba(0, 0, 0, 0)',
-              borderColor: 'rgb(122, 122, 122)',
-              pointBackgroundColor: 'rgba(122, 122, 122, 0.8)',
-              radius: 2,
-              lineTension: 0.1,
-              yAxisID: 'y-axis-2'
-            },
-            {
-              data: response.data.values.map((point) => point.debit),
-              label: this.$t('labels.debits'),
-              type: 'bar',
-              barThickness: 'flex',
-              backgroundColor: 'rgba(255, 99, 132, 0.6)',
-              borderColor: 'rgb(255, 99, 132)',
-              yAxisID: 'y-axis-1'
-            },
-            {
-              data: response.data.values.map((point) => point.credit),
-              label: this.$t('labels.credits'),
-              type: 'bar',
-              barThickness: 'flex',
-              backgroundColor: 'rgba(66, 185, 131, 0.6)',
-              borderColor: 'rgb(66, 185, 131)',
-              yAxisID: 'y-axis-1'
-            },
-            {
-              data: response.data.values.map((point) => point.debitRecurring),
-              label: this.$t('labels.debits') + this.$t('labels.recurring'),
-              type: 'bar',
-              barThickness: 'flex',
-              backgroundColor: 'rgba(255, 99, 132, 0.4)',
-              borderColor: 'rgb(255, 99, 132)',
-              yAxisID: 'y-axis-1'
-            },
-            {
-              data: response.data.values.map((point) => point.creditRecurring),
-              label: this.$t('labels.credits') + this.$t('labels.recurring'),
-              type: 'bar',
-              barThickness: 'flex',
-              backgroundColor: 'rgba(66, 185, 131, 0.4)',
-              borderColor: 'rgb(66, 185, 131)',
-              yAxisID: 'y-axis-1'
-            }
-          ],
-          labels: response.data.values.map((point) => this.$moment(point.date))
-        }
-        this.search.periodStart = this.$moment(response.data.periodStart).toDate()
-        this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
-        this.isLoading = false
-        this.isLoaded = true
-      }, (response) => {
-        this.isLoading = false
-        if (response.body.message) {
-          console.log(response.body.message)
-          return
-        }
-        console.log(response.status + ' - ' + response.statusText)
-      })
+        periodEnd: today,
+      },
     }
   },
   watch: {
@@ -193,10 +107,10 @@ export default {
           duration: this.search.duration,
           timeUnit: this.search.timeUnit,
           periodStart: this.$moment(this.search.currentDate).subtract(this.$moment.duration(this.search.duration)).toDate(),
-          periodEnd: this.search.currentDate
+          periodEnd: this.search.currentDate,
         })
       }
-    }
+    },
   },
   mounted () {
     Bus.$on('transactions-date-filtered', (search) => {
@@ -222,6 +136,94 @@ export default {
       this.search.timeUnit = this.date.timeUnit
     }
     this.requestData()
-  }
+  },
+  methods: {
+    applyFilter () {
+      Bus.$emit('transactions-date-filtered', this.search)
+      this.requestData()
+    },
+    requestData () {
+      this.isLoading = true
+      const options = {
+        params: {
+          isRecurringOnly: this.search.isRecurringOnly,
+          periodStart: this.$moment(this.search.periodStart).format('X'),
+          periodEnd: this.$moment(this.search.periodEnd).format('X'),
+        },
+      }
+      if (this.search.timeUnit !== '') {
+        options.params.timeUnit = this.search.timeUnit
+      }
+      this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
+        const vm = this
+        this.labelCallback = function (tooltipItem, data) {
+          return data.datasets[tooltipItem.datasetIndex].label + ': ' + vm.$n(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index], 'currency')
+        }
+        this.chartData = {
+          datasets: [
+            {
+              data: response.data.values.map((point) => point.balance),
+              label: this.$t('labels.balances'),
+              type: 'line',
+              backgroundColor: 'rgba(0, 0, 0, 0)',
+              borderColor: 'rgb(122, 122, 122)',
+              pointBackgroundColor: 'rgba(122, 122, 122, 0.8)',
+              radius: 2,
+              lineTension: 0.1,
+              yAxisID: 'y-axis-2',
+            },
+            {
+              data: response.data.values.map((point) => point.debit),
+              label: this.$t('labels.debits'),
+              type: 'bar',
+              barThickness: 'flex',
+              backgroundColor: 'rgba(255, 99, 132, 0.6)',
+              borderColor: 'rgb(255, 99, 132)',
+              yAxisID: 'y-axis-1',
+            },
+            {
+              data: response.data.values.map((point) => point.credit),
+              label: this.$t('labels.credits'),
+              type: 'bar',
+              barThickness: 'flex',
+              backgroundColor: 'rgba(66, 185, 131, 0.6)',
+              borderColor: 'rgb(66, 185, 131)',
+              yAxisID: 'y-axis-1',
+            },
+            {
+              data: response.data.values.map((point) => point.debitRecurring),
+              label: this.$t('labels.debits') + this.$t('labels.recurring'),
+              type: 'bar',
+              barThickness: 'flex',
+              backgroundColor: 'rgba(255, 99, 132, 0.4)',
+              borderColor: 'rgb(255, 99, 132)',
+              yAxisID: 'y-axis-1',
+            },
+            {
+              data: response.data.values.map((point) => point.creditRecurring),
+              label: this.$t('labels.credits') + this.$t('labels.recurring'),
+              type: 'bar',
+              barThickness: 'flex',
+              backgroundColor: 'rgba(66, 185, 131, 0.4)',
+              borderColor: 'rgb(66, 185, 131)',
+              yAxisID: 'y-axis-1',
+            },
+          ],
+          labels: response.data.values.map((point) => this.$moment(point.date)),
+        }
+        this.search.periodStart = this.$moment(response.data.periodStart).toDate()
+        this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
+        this.isLoading = false
+        this.isLoaded = true
+      }, (response) => {
+        this.isLoading = false
+        if (response.body.message) {
+          console.log(response.body.message)
+          return
+        }
+        console.log(response.status + ' - ' + response.statusText)
+      })
+    },
+  },
 }
 </script>

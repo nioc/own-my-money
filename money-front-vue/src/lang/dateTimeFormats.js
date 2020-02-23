@@ -3,7 +3,7 @@ export default {
     short: {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     },
     long: {
       year: 'numeric',
@@ -12,14 +12,14 @@ export default {
       weekday: 'short',
       hour: 'numeric',
       minute: 'numeric',
-      hour12: true
-    }
+      hour12: true,
+    },
   },
   'fr-FR': {
     short: {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     },
     long: {
       year: 'numeric',
@@ -27,7 +27,7 @@ export default {
       day: 'numeric',
       weekday: 'short',
       hour: 'numeric',
-      minute: 'numeric'
-    }
-  }
+      minute: 'numeric',
+    },
+  },
 }

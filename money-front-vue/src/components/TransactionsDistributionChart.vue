@@ -1,21 +1,21 @@
 <template>
-  <div class="box" v-if="isLoaded" style="height: 100%;">
-  <header class="title chart-header">
-    <h2 class="title is-marginless">{{ title }}</h2>
-      <a v-if="isClosable" class="delete is-large" :title="this.$t('actions.close')" v-on:click="isLoaded = false"></a>
-  </header>
+  <div v-if="isLoaded" class="box" style="height: 100%;">
+    <header class="title chart-header">
+      <h2 class="title is-marginless">{{ title }}</h2>
+      <a v-if="isClosable" class="delete is-large" :title="this.$t('actions.close')" @click="isLoaded = false" />
+    </header>
     <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
-        <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodStart"></b-datepicker>
+        <b-datepicker v-model="search.periodStart" placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" />
       </div>
       <div class="control">
-        <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" v-model="search.periodEnd"></b-datepicker>
+        <b-datepicker v-model="search.periodEnd" placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" />
       </div>
       <div class="control">
-        <button class="button" :class="{ 'is-loading': isLoading }" @click="applyFilter" :disabled="isLoading"><span class="icon"><i class="fa fa-refresh"></i></span><span>{{ $t('actions.refresh') }}</span></button>
+        <button class="button" :class="{'is-loading': isLoading}" :disabled="isLoading" @click="applyFilter"><span class="icon"><i class="fa fa-refresh" /></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
-    <doughnut :chartData="chartData" :options="options"></doughnut>
+    <doughnut :chart-data="chartData" :options="options" />
   </div>
 </template>
 
@@ -26,31 +26,33 @@ import Doughnut from '@/components/Doughnut'
 import CategoriesFactory from './../services/Categories'
 export default {
   components: {
-    Doughnut
+    Doughnut,
   },
   mixins: [CategoriesFactory],
   props: {
     title: {
       type: String,
-      required: true
+      required: true,
     },
     chartEndpoint: {
       type: String,
-      required: true
+      required: true,
     },
     date: {
-      required: false
+      type: Object,
+      default: null,
+      required: false,
     },
     isIndependent: {
       type: Boolean,
       default: true,
-      required: false
+      required: false,
     },
     isClosable: {
       type: Boolean,
       default: false,
-      required: false
-    }
+      required: false,
+    },
   },
   data () {
     const today = new Date()
@@ -65,9 +67,27 @@ export default {
         isRecurringOnly: false,
         currentDate: today,
         periodStart: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
-        periodEnd: today
-      }
+        periodEnd: today,
+      },
     }
+  },
+  mounted () {
+    Bus.$on('transactions-date-filtered', (search) => {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.isRecurringOnly !== search.isRecurringOnly)) {
+        this.search.periodStart = search.periodStart
+        this.search.periodEnd = search.periodEnd
+        if (search.isRecurringOnly !== undefined) {
+          this.search.isRecurringOnly = search.isRecurringOnly
+        }
+        this.requestData()
+      }
+    })
+    this.getCategories(true)
+    if (this.date) {
+      this.search.periodStart = this.date.periodStart
+      this.search.periodEnd = this.date.periodEnd
+    }
+    this.requestData()
   },
   methods: {
     applyFilter () {
@@ -80,8 +100,8 @@ export default {
         params: {
           isRecurringOnly: this.search.isRecurringOnly,
           periodStart: this.$moment(this.search.periodStart).format('X'),
-          periodEnd: this.$moment(this.search.periodEnd).format('X')
-        }
+          periodEnd: this.$moment(this.search.periodEnd).format('X'),
+        },
       }
       this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
         const values = response.data.values
@@ -136,9 +156,9 @@ export default {
           datasets: [
             {
               backgroundColor: colors,
-              data: values.map((point) => point.amount)
-            }
-          ]
+              data: values.map((point) => point.amount),
+            },
+          ],
         }
         let labels
         if (response.data.key === 'categories' || response.data.key === 'subcategories') {
@@ -167,16 +187,16 @@ export default {
         this.chartData.labels = labels
         this.options = {
           legend: {
-            display: true
+            display: true,
           },
           responsive: true,
           maintainAspectRatio: false,
           tooltips: {
             callbacks: {
-              label: labelCallback
-            }
+              label: labelCallback,
+            },
           },
-          onClick: onClick
+          onClick: onClick,
         }
         this.search.periodStart = this.$moment(response.data.periodStart).toDate()
         this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
@@ -190,25 +210,7 @@ export default {
         }
         console.log(response.status + ' - ' + response.statusText)
       })
-    }
+    },
   },
-  mounted () {
-    Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.isRecurringOnly !== search.isRecurringOnly)) {
-        this.search.periodStart = search.periodStart
-        this.search.periodEnd = search.periodEnd
-        if (search.isRecurringOnly !== undefined) {
-          this.search.isRecurringOnly = search.isRecurringOnly
-        }
-        this.requestData()
-      }
-    })
-    this.getCategories(true)
-    if (this.date) {
-      this.search.periodStart = this.date.periodStart
-      this.search.periodEnd = this.date.periodEnd
-    }
-    this.requestData()
-  }
 }
 </script>

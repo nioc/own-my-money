@@ -5,9 +5,9 @@
       <breadcrumb
         :items="[
           {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
-          {link: '/patterns', icon: 'fa-magic', text: this.$tc('objects.pattern', 2), isActive: true}
-        ]">
-      </breadcrumb>
+          {link: '/patterns', icon: 'fa-magic', text: this.$tc('objects.pattern', 2), isActive: true},
+        ]"
+      />
     </div>
 
     <div class="hero-body">
@@ -15,7 +15,7 @@
         <h1 class="title container">{{ $tc('objects.pattern', 2) }}</h1>
         <p class="subtitle has-text-grey">{{ $t('labels.patternsLabel') }}</p>
 
-        <b-table :data=patterns :striped="true" :hoverable="true" @select="edit" class="table-container">
+        <b-table :data="patterns" :striped="true" :hoverable="true" class="table-container" @select="edit">
           <template slot-scope="props">
             <b-table-column :label="$t('fieldnames.label')">
               {{ props.row.label }}
@@ -27,27 +27,27 @@
               <span v-if="props.row.subcategory && categoriesAndSubcategoriesLookup[props.row.subcategory]">{{ categoriesAndSubcategoriesLookup[props.row.subcategory].label }}</span>
             </b-table-column>
             <b-table-column :label="$t('fieldnames.isRecurring')">
-              <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']"></i>
+              <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']" />
             </b-table-column>
           </template>
         </b-table>
 
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="create" :disabled="!isOnline"><span class="icon"><i class="fa fa-plus"/></span><span>{{ $t('actions.addPattern') }}</span></button>
+            <button class="button is-primary" role="button" :disabled="!isOnline" @click="create"><span class="icon"><i class="fa fa-plus" /></span><span>{{ $t('actions.addPattern') }}</span></button>
           </p>
           <p class="control">
-            <button class="button is-primary" role="button" @click="suggest" :disabled="!isOnline"><span class="icon"><i class="fa fa-cogs"/></span><span>{{ $t('actions.suggestPatterns') }}</span></button>
+            <button class="button is-primary" role="button" :disabled="!isOnline" @click="suggest"><span class="icon"><i class="fa fa-cogs" /></span><span>{{ $t('actions.suggestPatterns') }}</span></button>
           </p>
         </div>
 
-        <div class="message is-danger block" v-if="error">
+        <div v-if="error" class="message is-danger block">
           <div class="message-body">
             {{ error }}
           </div>
         </div>
 
-        <b-table :data=suggestedPatterns :striped="true" :hoverable="true" @select="createSuggested" class="table-container">
+        <b-table :data="suggestedPatterns" :striped="true" :hoverable="true" class="table-container" @select="createSuggested">
           <template slot-scope="props">
             <b-table-column :label="$t('fieldnames.label')">
               {{ props.row.label }}
@@ -59,7 +59,7 @@
               <span v-if="props.row.subcategory && categoriesAndSubcategoriesLookup[props.row.subcategory]">{{ categoriesAndSubcategoriesLookup[props.row.subcategory].label }}</span>
             </b-table-column>
             <b-table-column :label="$tc('fieldnames.isRecurring', 1)">
-              <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']"></i>
+              <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']" />
             </b-table-column>
             <b-table-column :label="$tc('objects.occurence', 2)">
               {{ props.row.count }}
@@ -67,12 +67,12 @@
           </template>
         </b-table>
 
-        <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
+        <b-loading :is-full-page="false" :active.sync="isLoading" />
       </div>
     </div>
 
     <b-modal :active.sync="modalPattern.isActive" has-modal-card scroll="keep">
-      <transaction-pattern v-bind:pattern="modalPattern.pattern" v-bind:rPatterns="rPatterns"></transaction-pattern>
+      <transaction-pattern :pattern="modalPattern.pattern" :r-patterns="rPatterns" />
     </b-modal>
 
   </section>
@@ -84,10 +84,10 @@ import Breadcrumb from '@/components/Breadcrumb'
 import TransactionPattern from '@/components/Pattern'
 import CategoriesFactory from './../services/Categories'
 export default {
-  name: 'patterns',
+  name: 'Patterns',
   components: {
     TransactionPattern,
-    Breadcrumb
+    Breadcrumb,
   },
   mixins: [CategoriesFactory],
   data () {
@@ -99,17 +99,21 @@ export default {
       // modal
       modalPattern: {
         isActive: false,
-        pattern: {}
+        pattern: {},
       },
       // resources
       rPatterns: this.$resource(Config.API_URL + 'patterns{/id}'),
-      rTransactionsPatterns: this.$resource(Config.API_URL + 'transactions/patterns')
+      rTransactionsPatterns: this.$resource(Config.API_URL + 'transactions/patterns'),
     }
   },
   computed: {
     isOnline () {
       return this.$store.state.isOnline
-    }
+    },
+  },
+  mounted () {
+    this.get()
+    this.getCategories()
   },
   methods: {
     get () {
@@ -161,11 +165,7 @@ export default {
       const pattern = JSON.parse(JSON.stringify(suggestedPattern))
       this.patterns.push(pattern)
       this.edit(pattern)
-    }
+    },
   },
-  mounted () {
-    this.get()
-    this.getCategories()
-  }
 }
 </script>

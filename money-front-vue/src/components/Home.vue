@@ -3,9 +3,9 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          { link: '/', icon: 'fa-home', text: this.$t('labels.home'), isActive: true }
-        ]">
-      </breadcrumb>
+          {link: '/', icon: 'fa-home', text: this.$t('labels.home'), isActive: true},
+        ]"
+      />
     </div>
     <div class="hero-body">
       <div class="section no-padding-parent-mobile">
@@ -13,73 +13,73 @@
           <div class="columns no-padding-parent-mobile is-multiline">
             <div class="column no-padding-mobile is-full">
               <transactions-history-chart
-              :title="$t('labels.transactionsByDay')"
-              chartEndpoint="transactions/history"
-              :isIndependent="true"
-              :isClosable="false"
-              :date="date"
-              ></transactions-history-chart>
+                :title="$t('labels.transactionsByDay')"
+                chart-endpoint="transactions/history"
+                :is-independent="true"
+                :is-closable="false"
+                :date="date"
+              />
             </div>
             <div class="column no-padding-mobile is-one-half-desktop">
               <transactions-distribution-chart
-              :title="$t('labels.incomeDistribution')"
-              chartEndpoint="transactions/distribution/credit/categories"
-              :isIndependent="false"
-              :isClosable="false"
-              :date="date"
-              ></transactions-distribution-chart>
+                :title="$t('labels.incomeDistribution')"
+                chart-endpoint="transactions/distribution/credit/categories"
+                :is-independent="false"
+                :is-closable="false"
+                :date="date"
+              />
             </div>
             <div class="column no-padding-mobile is-one-half-desktop">
               <transactions-distribution-chart
-              :title="$t('labels.expenseDistribution')"
-              chartEndpoint="transactions/distribution/debit/categories"
-              :isIndependent="false"
-              :isClosable="false"
-              :date="date"
-              ></transactions-distribution-chart>
+                :title="$t('labels.expenseDistribution')"
+                chart-endpoint="transactions/distribution/debit/categories"
+                :is-independent="false"
+                :is-closable="false"
+                :date="date"
+              />
             </div>
             <div v-if="categorySelected.key" class="column no-padding-mobile is-full">
               <transactions-history-chart
-              :title="$t('labels.transactionsByDay') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
-              :chartEndpoint="'transactions/history?category='+categorySelected.key"
-              :isIndependent="false"
-              :isClosable="true"
-              :date="date"
-              ></transactions-history-chart>
+                :title="$t('labels.transactionsByDay') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
+                :chart-endpoint="'transactions/history?category='+categorySelected.key"
+                :is-independent="false"
+                :is-closable="true"
+                :date="date"
+              />
             </div>
             <div v-if="categorySelected.key" class="column no-padding-mobile is-one-half-desktop">
               <transactions-distribution-chart
-              :title="$t('labels.incomeDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
-              :chartEndpoint="'transactions/distribution/credit/subcategories?value='+categorySelected.key"
-              :isIndependent="false"
-              :isClosable="true"
-              :date="date"
-              ></transactions-distribution-chart>
+                :title="$t('labels.incomeDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
+                :chart-endpoint="'transactions/distribution/credit/subcategories?value='+categorySelected.key"
+                :is-independent="false"
+                :is-closable="true"
+                :date="date"
+              />
             </div>
             <div v-if="categorySelected.key" class="column no-padding-mobile is-one-half-desktop">
               <transactions-distribution-chart
-              :title="$t('labels.expenseDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
-              :chartEndpoint="'transactions/distribution/debit/subcategories?value='+categorySelected.key"
-              :isIndependent="false"
-              :isClosable="true"
-              :date="date"
-              ></transactions-distribution-chart>
+                :title="$t('labels.expenseDistribution') + ' ' + $t('labels.for') + ' ' + categorySelected.label"
+                :chart-endpoint="'transactions/distribution/debit/subcategories?value='+categorySelected.key"
+                :is-independent="false"
+                :is-closable="true"
+                :date="date"
+              />
             </div>
             <div v-if="subcategorySelected.key" class="column no-padding-mobile is-full">
               <transactions-history-chart
-              :title="$t('labels.transactionsByDay') + ' ' + $t('labels.for') + ' ' + subcategorySelected.label"
-              :chartEndpoint="'transactions/history?subcategory='+subcategorySelected.key"
-              :isIndependent="false"
-              :isClosable="true"
-              :date="date"
-              ></transactions-history-chart>
+                :title="$t('labels.transactionsByDay') + ' ' + $t('labels.for') + ' ' + subcategorySelected.label"
+                :chart-endpoint="'transactions/history?subcategory='+subcategorySelected.key"
+                :is-independent="false"
+                :is-closable="true"
+                :date="date"
+              />
             </div>
           </div>
         </div>
       </div>
       <div class="container box">
         <h1 class="title">{{ $tc('objects.transaction', 2) }}</h1>
-        <transactions :url="url" :displayAccount="true"/>
+        <transactions :url="url" :display-account="true" />
       </div>
     </div>
   </section>
@@ -93,12 +93,12 @@ import TransactionsDistributionChart from '@/components/TransactionsDistribution
 import TransactionsHistoryChart from '@/components/TransactionsHistoryChart'
 import Bus from '@/services/Bus'
 export default {
-  name: 'home',
+  name: 'Home',
   components: {
     Breadcrumb,
     TransactionsDistributionChart,
     TransactionsHistoryChart,
-    Transactions
+    Transactions,
   },
   data () {
     const today = new Date()
@@ -112,8 +112,8 @@ export default {
         timeUnit: '',
         duration: 'P3M',
         periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
-        periodEnd: today
-      }
+        periodEnd: today,
+      },
     }
   },
   mounted () {
@@ -154,7 +154,7 @@ export default {
     // remove events listener
     Bus.$off('category-selected')
     Bus.$off('transactions-date-filtered')
-  }
+  },
 }
 </script>
 

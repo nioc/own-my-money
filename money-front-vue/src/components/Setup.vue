@@ -1,15 +1,14 @@
 <template>
   <section class="hero">
-    <div class="hero-head">
-    </div>
+    <div class="hero-head" />
     <div class="hero-body">
       <div class="container box">
 
         <ul v-if="steps.length" class="steps is-horizontal is-medium is-centered has-content-centered">
-          <li v-for="step in steps" :key="step.label" class="steps-segment has-gaps" :class="{ 'is-active': step.isActive }">
+          <li v-for="step in steps" :key="step.label" class="steps-segment has-gaps" :class="{'is-active': step.isActive}">
             <span class="steps-marker">
               <span class="icon">
-                <i class="fa" :class="step.icon"></i>
+                <i class="fa" :class="step.icon" />
               </span>
             </span>
             <div class="steps-content">
@@ -20,33 +19,34 @@
 
         <div v-else class="content has-text-grey has-text-centered">{{ $t('labels.nothingToDo') }}</div>
 
-        <form @submit.prevent="validateBeforeSubmit" novalidate class="section is-max-width-form" v-if="steps.length > 0">
-          <div v-if="steps[currentStep].help" v-html="steps[currentStep].help" class="content has-text-grey has-text-centered"/>
-          <div class="field is-horizontal" v-for="field in steps[currentStep].fields" :key="field.name">
+        <form v-if="steps.length > 0" novalidate class="section is-max-width-form" @submit.prevent="validateBeforeSubmit">
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div v-if="steps[currentStep].help" class="content has-text-grey has-text-centered" v-html="steps[currentStep].help" />
+          <div v-for="field in steps[currentStep].fields" :key="field.name" class="field is-horizontal">
             <div class="field-label is-normal">
               <label class="label">{{ field.label }}</label>
             </div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input class="input" :type="field.type" :name="field.name" :placeholder="field.placeholder" v-model="field.value" v-validate="field.validate" :class="{ 'is-danger': errors.has(field.name) }">
-                  <span class="icon is-small is-right" v-show="errors.has(field.name)">
-                    <i class="fa fa-exclamation-triangle"></i>
+                  <input v-model="field.value" v-validate="field.validate" class="input" :type="field.type" :name="field.name" :placeholder="field.placeholder" :class="{'is-danger': errors.has(field.name)}">
+                  <span v-show="errors.has(field.name)" class="icon is-small is-right">
+                    <i class="fa fa-exclamation-triangle" />
                   </span>
-                  <span v-show="errors.has(field.name)" class="help is-danger">{{errors.first(field.name)}}</span>
+                  <span v-show="errors.has(field.name)" class="help is-danger">{{ errors.first(field.name) }}</span>
                 </div>
-                <p class="help" v-if="field.help">{{ field.help }}</p>
+                <p v-if="field.help" class="help">{{ field.help }}</p>
               </div>
             </div>
           </div>
 
-          <div class="has-text-centered" v-if="currentStep < steps.length-1">
-            <button class="button is-primary" :disabled="!isOnline || errors.any()"><span class="icon"><i class="fa fa-arrow-circle-right"/></span><span>{{ $t('actions.next') }}</span></button>
+          <div v-if="currentStep < steps.length-1" class="has-text-centered">
+            <button class="button is-primary" :disabled="!isOnline || errors.any()"><span class="icon"><i class="fa fa-arrow-circle-right" /></span><span>{{ $t('actions.next') }}</span></button>
           </div>
 
         </form>
 
-        <div class="is-centered columns" v-if="error">
+        <div v-if="error" class="is-centered columns">
           <div class="column is-narrow">
             <div class="message is-danger">
               <div class="message-body">
@@ -56,7 +56,7 @@
           </div>
         </div>
 
-        <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
+        <b-loading :is-full-page="false" :active.sync="isLoading" />
       </div>
     </div>
   </section>
@@ -65,7 +65,7 @@
 <script>
 import Config from './../services/Config'
 export default {
-  name: 'setup',
+  name: 'Setup',
   data () {
     return {
       currentStep: null,
@@ -74,13 +74,16 @@ export default {
       isLoading: false,
       // resources
       rSteps: this.$resource(Config.API_URL + 'setup/steps{/code}'),
-      rFields: this.$resource(Config.API_URL + 'setup/steps{/code}/fields')
+      rFields: this.$resource(Config.API_URL + 'setup/steps{/code}/fields'),
     }
   },
   computed: {
     isOnline () {
       return this.$store.state.isOnline
-    }
+    },
+  },
+  mounted () {
+    this.getSteps()
   },
   methods: {
     getSteps () {
@@ -144,10 +147,7 @@ export default {
             })
         }
       })
-    }
+    },
   },
-  mounted () {
-    this.getSteps()
-  }
 }
 </script>

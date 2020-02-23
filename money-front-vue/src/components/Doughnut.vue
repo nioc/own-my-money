@@ -10,20 +10,20 @@ export default {
   props: {
     chartData: {
       type: Object,
-      required: true
+      required: true,
     },
     options: {
       type: Object,
-      required: true
-    }
-  },
-  mounted () {
-    this.renderChart(this.chartData, this.options)
+      required: true,
+    },
   },
   watch: {
     chartData () {
       this.renderChart(this.chartData, this.options)
-    }
-  }
+    },
+  },
+  mounted () {
+    this.renderChart(this.chartData, this.options)
+  },
 }
 </script>

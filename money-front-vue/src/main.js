@@ -28,13 +28,13 @@ Vue.use(VueResource)
 
 const store = new Vuex.Store({
   state: {
-    isOnline: null
+    isOnline: null,
   },
   mutations: {
     setConnectivity (state, isOnline) {
       state.isOnline = isOnline
-    }
-  }
+    },
+  },
 })
 
 let locale = navigator.language
@@ -47,7 +47,7 @@ const i18n = new VueI18n({
   locale: locale,
   messages: messages,
   dateTimeFormats,
-  numberFormats
+  numberFormats,
 })
 Vue.http.headers.common['Accept-Language'] = locale
 document.querySelector('html').setAttribute('lang', locale)
@@ -57,12 +57,12 @@ Vue.use(VeeValidate, {
   i18n,
   dictionary: {
     en: { messages: validationMessagesEn.messages, attributes: messages.en.fieldnames },
-    fr: { messages: validationMessagesFr.messages, attributes: messages.fr.fieldnames }
-  }
+    fr: { messages: validationMessagesFr.messages, attributes: messages.fr.fieldnames },
+  },
 })
 
 Vue.use(VueMoment, {
-  moment
+  moment,
 })
 
 const localeData = Vue.moment.localeData()
@@ -71,7 +71,7 @@ Vue.use(Buefy, {
   defaultFirstDayOfWeek: localeData.firstDayOfWeek(),
   defaultMonthNames: localeData.months(),
   defaultDayNames: localeData.weekdaysMin(),
-  defaultDateFormatter: (date) => Vue.moment(date, 'L').format('L')
+  defaultDateFormatter: (date) => Vue.moment(date, 'L').format('L'),
 })
 
 // set header at init
@@ -127,5 +127,5 @@ new Vue({
   router,
   i18n,
   store,
-  render: (h) => h(App)
+  render: (h) => h(App),
 }).$mount('#money')

@@ -9,7 +9,7 @@ export default {
     authenticated: false,
     token: null,
     id: null,
-    login: null
+    login: null,
   },
 
   // send a request to the login URL and save the returned JWT
@@ -122,5 +122,5 @@ export default {
       console.error(e)
       return false
     }
-  }
+  },
 }

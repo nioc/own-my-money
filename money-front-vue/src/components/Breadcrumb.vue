@@ -2,12 +2,12 @@
   <div class="box is-radiusless has-background-white-bis">
     <nav class="breadcrumb container" aria-label="breadcrumbs">
       <ul>
-        <li v-for="item in items" :key="item.text" :class="{ 'is-active': item.isActive }">
+        <li v-for="item in items" :key="item.text" :class="{'is-active': item.isActive}">
           <router-link :to="item.link">
             <span v-if="item.icon" class="icon is-small">
-              <i class="fa" :class="item.icon" aria-hidden="true"></i>
+              <i class="fa" :class="item.icon" aria-hidden="true" />
             </span>
-            <span :class="{ 'is-hidden-mobile': item.icon }">{{item.text}}</span>
+            <span :class="{'is-hidden-mobile': item.icon}">{{ item.text }}</span>
           </router-link>
         </li>
       </ul>
@@ -20,9 +20,9 @@ export default {
   props: {
     items: {
       type: Array,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>
 <style>

@@ -1,6 +1,6 @@
 <template>
   <transition :name="transitionName" mode="out-in" :enter-active-class="transitionEnterActiveClass">
-    <slot/>
+    <slot />
   </transition>
 </template>
 
@@ -11,7 +11,7 @@ export default {
   data () {
     return {
       transitionName: DEFAULT_TRANSITION,
-      transitionEnterActiveClass: ''
+      transitionEnterActiveClass: '',
     }
   },
   created () {
@@ -32,7 +32,7 @@ export default {
       this.transitionName = transitionName
       next()
     })
-  }
+  },
 }
 </script>
 

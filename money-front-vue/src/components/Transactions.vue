@@ -3,40 +3,40 @@
     <b-collapse class="card" :open.sync="search.isActive">
       <div slot="trigger" class="card-header">
         <span class="card-header-icon">
-          <i class="fa" :class="search.isActive ? 'fa-angle-down' : 'fa-angle-right'"></i>
+          <i class="fa" :class="search.isActive ? 'fa-angle-down' : 'fa-angle-right'" />
         </span>
         <p class="card-header-title">{{ $t('labels.searchTransactions') }}</p>
       </div>
       <div class="card-content">
         <div class="field is-grouped is-grouped-multiline is-block-mobile">
-            <div class="control has-icons-left">
-              <input class="input" type="text" :placeholder="$t('labels.findATransaction')" v-model="search.query">
-              <span class="icon is-small is-left">
-                <i class="fa fa-search"></i>
-              </span>
+          <div class="control has-icons-left">
+            <input v-model="search.query" class="input" type="text" :placeholder="$t('labels.findATransaction')">
+            <span class="icon is-small is-left">
+              <i class="fa fa-search" />
+            </span>
+          </div>
+          <div class="control">
+            <b-datepicker v-model="search.periodStart" placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" @input="get()" />
+          </div>
+          <div class="control">
+            <b-datepicker v-model="search.periodEnd" placeholder="End date" icon="calendar" editable :max-date="search.currentDate" @input="get()" />
+          </div>
+          <div class="control">
+            <div class="select">
+              <select v-model="search.category" name="parent">
+                <option value="">-- {{ $tc('objects.category', 1) }} --</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.label }}</option>
+              </select>
             </div>
-            <div class="control">
-              <b-datepicker placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodStart" @input="get()"></b-datepicker>
+          </div>
+          <div v-if="search.category && categoriesAndSubcategoriesLookup[search.category].sub.length > 0" class="control">
+            <div class="select">
+              <select v-model="search.subcategory" name="parent">
+                <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
+                <option v-for="subcategory in categoriesAndSubcategoriesLookup[search.category].sub" :key="subcategory.id" :value="subcategory.id">{{ subcategory.label }}</option>
+              </select>
             </div>
-            <div class="control">
-              <b-datepicker placeholder="End date" icon="calendar" editable :max-date="search.currentDate" v-model="search.periodEnd" @input="get()"></b-datepicker>
-            </div>
-            <div class="control">
-              <div class="select">
-                <select name="parent" v-model="search.category">
-                  <option value="">-- {{ $tc('objects.category', 1) }} --</option>
-                  <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
-                </select>
-              </div>
-            </div>
-            <div class="control" v-if="search.category && categoriesAndSubcategoriesLookup[search.category].sub.length > 0">
-              <div class="select">
-                <select name="parent" v-model="search.subcategory">
-                  <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
-                  <option v-for="subcategory in categoriesAndSubcategoriesLookup[search.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
-                </select>
-              </div>
-            </div>
+          </div>
         </div>
       </div>
     </b-collapse>
@@ -44,7 +44,7 @@
     <b-collapse class="card" :open.sync="batch.isActive">
       <div slot="trigger" class="card-header">
         <span class="card-header-icon">
-          <i class="fa" :class="batch.isActive ? 'fa-angle-down' : 'fa-angle-right'"></i>
+          <i class="fa" :class="batch.isActive ? 'fa-angle-down' : 'fa-angle-right'" />
         </span>
         <p class="card-header-title">{{ $t('labels.batchUpdates') }}</p>
       </div>
@@ -57,42 +57,42 @@
             <div class="select">
               <select v-model="batch.category">
                 <option value="">-- {{ $tc('objects.category', 1) }} --</option>
-                <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.label }}</option>
               </select>
             </div>
           </div>
-          <div class="control" v-if="batch.category && categoriesAndSubcategoriesLookup[batch.category].sub.length > 0">
+          <div v-if="batch.category && categoriesAndSubcategoriesLookup[batch.category].sub.length > 0" class="control">
             <div class="select">
               <select v-model="batch.subcategory">
                 <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
-                <option v-for="subcategory in categoriesAndSubcategoriesLookup[batch.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
+                <option v-for="subcategory in categoriesAndSubcategoriesLookup[batch.category].sub" :key="subcategory.id" :value="subcategory.id">{{ subcategory.label }}</option>
               </select>
             </div>
           </div>
           <div class="control">
             <div class="select">
               <select v-model="batch.isRecurring">
-                <option :value=null>-- {{ $t('fieldnames.isRecurring') }} --</option>
-                <option :value=true>{{ $t('labels.isRecurring') }}</option>
-                <option :value=false>{{ $t('labels.isNotRecurring') }}</option>
+                <option :value="null">-- {{ $t('fieldnames.isRecurring') }} --</option>
+                <option :value="true">{{ $t('labels.isRecurring') }}</option>
+                <option :value="false">{{ $t('labels.isNotRecurring') }}</option>
               </select>
             </div>
           </div>
           <div class="control">
-            <button class="button is-primary" :class="{ 'is-loading': batch.isLoading }" @click="processBatchUpdate" :disabled="(batch.isLoading || !isOnline)"><span class="icon"><i class="fa fa-cogs"></i></span><span>{{ $t('actions.apply') }}</span></button>
+            <button class="button is-primary" :class="{'is-loading': batch.isLoading}" :disabled="(batch.isLoading || !isOnline)" @click="processBatchUpdate"><span class="icon"><i class="fa fa-cogs" /></span><span>{{ $t('actions.apply') }}</span></button>
           </div>
           <div class="control">
-            <button class="button is-light" @click="selectAll" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-check-square-o"></i></span><span>{{ $t('actions.selectAll') }}</span></button>
+            <button class="button is-light" :disabled="batch.isLoading" @click="selectAll"><span class="icon"><i class="fa fa-check-square-o" /></span><span>{{ $t('actions.selectAll') }}</span></button>
           </div>
           <div class="control">
-            <button class="button is-light" @click="selectNone" :disabled="batch.isLoading"><span class="icon"><i class="fa fa-square-o"></i></span><span>{{ $t('actions.clear') }}</span></button>
+            <button class="button is-light" :disabled="batch.isLoading" @click="selectNone"><span class="icon"><i class="fa fa-square-o" /></span><span>{{ $t('actions.clear') }}</span></button>
           </div>
         </div>
         <div class="field is-block-mobile">
           <progress class="progress" :value="batch.progress" max="1">{{ batch.progress }} %</progress>
         </div>
         <div class="field">
-          <div class="message is-danger" v-if="batch.result">
+          <div v-if="batch.result" class="message is-danger">
             <div class="message-body">
               {{ batch.result }}
             </div>
@@ -101,9 +101,9 @@
       </div>
     </b-collapse>
 
-    <b-table :data=displayedTransactions :row-class="(row, index) => row.isNew ? 'has-text-weight-bold' : ''" :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" @select="edit" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
+    <b-table :data="displayedTransactions" :row-class="(row, index) => row.isNew ? 'has-text-weight-bold' : ''" :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions" @select="edit">
       <template slot-scope="props">
-        <b-table-column field="icon" v-if="displayAccount" class="icon-transactions-account-col">
+        <b-table-column v-if="displayAccount" field="icon" class="icon-transactions-account-col">
           <span><img v-if="props.row.iconUrl" :src="props.row.iconUrl" :title="props.row.accountLabel" height="24" width="24"><span class="is-hidden-tablet">{{ props.row.accountLabel }}</span></span>
         </b-table-column>
         <b-table-column field="amount" :label="$t('fieldnames.amount')" sortable numeric>
@@ -113,32 +113,32 @@
           <span v-if="props.row.share !== 100" class="has-text-weight-light has-text-grey">{{ props.row.share }}%</span>
         </b-table-column>
         <b-table-column field="name" :label="$t('fieldnames.label')" sortable>
-          <span class="transaction-label">{{ props.row.fullname }}</span><span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
+          <span class="transaction-label">{{ props.row.fullname }}</span><span v-if="props.row.note" class="has-text-grey"> | {{ props.row.note }}</span>
         </b-table-column>
         <b-table-column field="datePosted" :label="$t('fieldnames.date')" sortable>
           {{ props.row.datePosted | moment("L") }}
         </b-table-column>
         <b-table-column field="isRecurring" :label="$t('fieldnames.isRecurring')" sortable>
-          <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']"></i>
+          <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']" />
         </b-table-column>
         <b-table-column field="category" :label="$tc('objects.category', 1)" sortable>
-          <span class="icon" v-if="props.row.categoryIcon"><i class="fa fa-fw" :class="props.row.categoryIcon"></i></span>
+          <span v-if="props.row.categoryIcon" class="icon"><i class="fa fa-fw" :class="props.row.categoryIcon" /></span>
           {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
         </b-table-column>
       </template>
       <template slot="empty">
         <section class="section">
-            <div class="content has-text-grey has-text-centered">
-                <p>{{ $t('labels.nothingToDisplay') }}</p>
-            </div>
+          <div class="content has-text-grey has-text-centered">
+            <p>{{ $t('labels.nothingToDisplay') }}</p>
+          </div>
         </section>
       </template>
       <template slot="bottom-left">
-        <a class="button is-light" @click="downloadData"><span class="icon"><i class="fa fa-download fa-lg"></i></span><span>{{ $t('actions.download') }}</span></a>
+        <a class="button is-light" @click="downloadData"><span class="icon"><i class="fa fa-download fa-lg" /></span><span>{{ $t('actions.download') }}</span></a>
       </template>
     </b-table>
     <b-modal :active.sync="modalTransaction.isActive" has-modal-card scroll="keep">
-      <transaction v-bind:transaction="modalTransaction.transaction" v-bind:rTransactions="rTransactions"></transaction>
+      <transaction :transaction="modalTransaction.transaction" :r-transactions="rTransactions" />
     </b-modal>
   </div>
 </template>
@@ -150,32 +150,32 @@ import CategoriesFactory from './../services/Categories'
 import exportFromJSON from 'export-from-json'
 import Config from './../services/Config'
 export default {
-  name: 'transactions',
+  name: 'Transactions',
   components: {
-    Transaction
+    Transaction,
   },
+  mixins: [CategoriesFactory],
   props: {
     url: {
       required: true,
-      type: String
+      type: String,
     },
     displayAccount: {
       required: false,
       type: Boolean,
-      default: false
+      default: false,
     },
     accountId: {
       required: false,
       type: Number,
-      default: null
+      default: null,
     },
     duration: {
       required: false,
       type: String,
-      default: 'P3M'
-    }
+      default: 'P3M',
+    },
   },
-  mixins: [CategoriesFactory],
   data () {
     const today = new Date()
     today.setHours(0, 0, 0)
@@ -191,7 +191,7 @@ export default {
         checkedTransactions: [],
         isRecurring: null,
         category: '',
-        subcategory: ''
+        subcategory: '',
       },
       // filter
       search: {
@@ -201,14 +201,14 @@ export default {
         periodStart: this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate(),
         periodEnd: today,
         category: '',
-        subcategory: ''
+        subcategory: '',
       },
       // modal
       modalTransaction: {
         isActive: false,
-        transaction: {}
+        transaction: {},
       },
-      rTransactions: this.$resource(this.url)
+      rTransactions: this.$resource(this.url),
     }
   },
   computed: {
@@ -239,7 +239,37 @@ export default {
     },
     transactionsCheckedSum () {
       return this.batch.checkedTransactions.length > 0 ? this.batch.checkedTransactions.reduce((sum, transaction) => sum + transaction.amount, 0) : 0
-    }
+    },
+  },
+  watch: {
+    'search.category' () {
+      // clear subcategory search field if category has changed
+      this.search.subcategory = ''
+    },
+    duration () {
+      const today = new Date()
+      today.setHours(0, 0, 0)
+      today.setMilliseconds(0)
+      this.search.periodStart = this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate()
+    },
+  },
+  mounted () {
+    this.get()
+    this.getCategories(true)
+    Bus.$on('transactions-updated', () => {
+      this.get()
+    })
+    Bus.$on('transactions-date-filtered', (search) => {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
+        this.search.periodStart = search.periodStart
+        this.search.periodEnd = search.periodEnd
+      }
+    })
+  },
+  beforeDestroy () {
+    // remove events listener
+    Bus.$off('transactions-updated')
+    Bus.$off('transactions-date-filtered')
   },
   methods: {
     // get transactions
@@ -252,10 +282,10 @@ export default {
       const config = {
         params: {
           periodStart: this.$moment(this.search.periodStart).format('X'),
-          periodEnd: this.$moment(this.search.periodEnd).format('X')
+          periodEnd: this.$moment(this.search.periodEnd).format('X'),
         },
         headers: {
-        }
+        },
       }
       // try to get last fetch date for highlighting new transactions
       if (this.accountId) {
@@ -357,37 +387,7 @@ export default {
     },
     selectNone () {
       this.batch.checkedTransactions = []
-    }
-  },
-  watch: {
-    'search.category' () {
-      // clear subcategory search field if category has changed
-      this.search.subcategory = ''
     },
-    duration () {
-      const today = new Date()
-      today.setHours(0, 0, 0)
-      today.setMilliseconds(0)
-      this.search.periodStart = this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate()
-    }
   },
-  mounted () {
-    this.get()
-    this.getCategories(true)
-    Bus.$on('transactions-updated', () => {
-      this.get()
-    })
-    Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
-        this.search.periodStart = search.periodStart
-        this.search.periodEnd = search.periodEnd
-      }
-    })
-  },
-  beforeDestroy () {
-    // remove events listener
-    Bus.$off('transactions-updated')
-    Bus.$off('transactions-date-filtered')
-  }
 }
 </script>

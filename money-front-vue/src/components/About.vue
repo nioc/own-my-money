@@ -4,42 +4,42 @@
       <breadcrumb
         :items="[
           {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
-          {link: '/about', icon: 'fa-info-circle', text: this.$t('labels.about'), isActive: true}
-        ]">
-      </breadcrumb>
+          {link: '/about', icon: 'fa-info-circle', text: this.$t('labels.about'), isActive: true},
+        ]"
+      />
     </div>
     <div class="hero-body">
       <div class="container box">
         <h1 class="title container">{{ $t('labels.about') }}</h1>
         <p class="subtitle has-text-grey">Own my money</p>
-        <div class="field" v-if="user.scope.admin">
+        <div v-if="user.scope.admin" class="field">
           <div class="control">
             <div class="select">
-              <select name="parent" v-model="releaseChannel" v-on:change="setSetting('releaseChannel', releaseChannel)" :disabled="!isOnline || !releaseChannelLoaded" :title="$t('labels.releaseChannel')">
+              <select v-model="releaseChannel" name="parent" :disabled="!isOnline || !releaseChannelLoaded" :title="$t('labels.releaseChannel')" @change="setSetting('releaseChannel', releaseChannel)">
                 <option value="stable">{{ $t('labels.stable') }}</option>
                 <option value="beta">{{ $t('labels.beta') }}</option>
               </select>
             </div>
           </div>
         </div>
-        <div class="content field is-grouped is-grouped-multiline" v-if="isLoaded">
+        <div v-if="isLoaded" class="content field is-grouped is-grouped-multiline">
           <div class="control">
             <div class="tags has-addons"><span class="tag is-dark">Installed version</span><span class="tag" :class="[isUpToDate ? 'is-success': 'is-danger']">{{ version.installed }}</span></div>
           </div>
-          <div class="control" v-if="!isUpToDate">
+          <div v-if="!isUpToDate" class="control">
             <div class="tags has-addons"><span class="tag is-dark">Latest version</span><span class="tag is-info">{{ version.latest }}</span></div>
           </div>
           <div class="control">
             <a href="https://github.com/nioc/own-my-money/releases/latest" target="_blank" rel="noreferrer">Changelog</a>
           </div>
         </div>
-        <section class="content" v-if="!isUpToDate && this.user.scope.admin">
-          <button class="button is-primary" @click="update" :class="{ 'is-loading': isUpdating }" :disabled="!isOnline || isUpdating"><span class="icon"><i class="fa fa-wrench"/></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
+        <section v-if="!isUpToDate && user.scope.admin" class="content">
+          <button class="button is-primary" :class="{'is-loading': isUpdating}" :disabled="!isOnline || isUpdating" @click="update"><span class="icon"><i class="fa fa-wrench" /></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
           <!-- eslint-disable-next-line vue/require-v-for-key-->
-          <pre class="section content" v-if="updateLogs"><span class="is-block" v-for="updateLog in updateLogs">{{ updateLog.timestamp | moment("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
+          <pre v-if="updateLogs" class="section content"><span v-for="updateLog in updateLogs" class="is-block">{{ updateLog.timestamp | moment("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
         </section>
-        <section class="content" v-html="$t('labels.aboutText')">
-        </section>
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <section class="content" v-html="$t('labels.aboutText')" />
       </div>
     </div>
   </section>
@@ -50,15 +50,15 @@ import Config from './../services/Config'
 import Auth from '@/services/Auth'
 import Breadcrumb from '@/components/Breadcrumb'
 export default {
-  name: 'about',
+  name: 'About',
   components: {
-    Breadcrumb
+    Breadcrumb,
   },
   data () {
     return {
       version: {
         installed: '',
-        latest: ''
+        latest: '',
       },
       isUpToDate: true,
       user: Auth.getProfile(),
@@ -69,13 +69,17 @@ export default {
       releaseChannelLoaded: false,
       // resources
       rSettings: this.$resource(Config.API_URL + 'settings{/key}'),
-      rVersions: this.$resource(Config.API_URL + 'setup/versions/latest')
+      rVersions: this.$resource(Config.API_URL + 'setup/versions/latest'),
     }
   },
   computed: {
     isOnline () {
       return this.$store.state.isOnline
-    }
+    },
+  },
+  mounted () {
+    this.get()
+    this.getSetting('releaseChannel')
   },
   methods: {
     get () {
@@ -145,11 +149,7 @@ export default {
           // remove loading overlay when API replies
           this.isUpdating = false
         })
-    }
+    },
   },
-  mounted () {
-    this.get()
-    this.getSetting('releaseChannel')
-  }
 }
 </script>

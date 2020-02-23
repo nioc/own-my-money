@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="validateBeforeSubmit" novalidate>
+  <form novalidate @submit.prevent="validateBeforeSubmit">
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">{{ $tc('objects.transaction', 1) }}</p>
@@ -8,34 +8,34 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.memo') }}</label>
           <div class="control">
-            <input class="input" type="text" name="memo" :placeholder="$t('fieldnames.memo')" v-model="localTransaction.memo" v-validate="'required'" :class="{ 'is-danger': errors.has('memo') }">
+            <input v-model="localTransaction.memo" v-validate="'required'" class="input" type="text" name="memo" :placeholder="$t('fieldnames.memo')" :class="{'is-danger': errors.has('memo')}">
             <span v-show="errors.has('memo')" class="help is-danger">{{ errors.first('memo') }}</span>
           </div>
         </div>
         <div class="field">
           <label class="label">{{ $t('fieldnames.label') }}</label>
           <div class="control">
-            <input class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" v-model="localTransaction.name" v-validate="'required'" :class="{ 'is-danger': errors.has('label') }">
+            <input v-model="localTransaction.name" v-validate="'required'" class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" :class="{'is-danger': errors.has('label')}">
             <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
           </div>
         </div>
         <div class="field">
           <label class="label">{{ $t('fieldnames.amount') }}</label>
           <div class="control">
-            <input class="input" type="number" name="amount" :placeholder="$t('fieldnames.amount')" v-model="localTransaction.amount" v-validate="'required|decimal:2'" :class="{ 'is-danger': errors.has('amount') }">
+            <input v-model="localTransaction.amount" v-validate="'required|decimal:2'" class="input" type="number" name="amount" :placeholder="$t('fieldnames.amount')" :class="{'is-danger': errors.has('amount')}">
             <span v-show="errors.has('amount')" class="help is-danger">{{ errors.first('amount') }}</span>
           </div>
         </div>
         <div class="field">
           <label class="label">{{ $t('fieldnames.date') }}</label>
           <div class="control">
-            <b-datepicker :placeholder="$t('fieldnames.date')" icon="calendar" :readonly="false" :max-date="currentDate" v-model="dateUser"></b-datepicker>
+            <b-datepicker v-model="dateUser" :placeholder="$t('fieldnames.date')" icon="calendar" :readonly="false" :max-date="currentDate" />
           </div>
         </div>
         <div class="field">
           <label class="label">{{ $t('fieldnames.note') }}</label>
           <div class="control">
-            <input class="input" type="text" name="note" :placeholder="$t('fieldnames.note')" v-model="localTransaction.note" v-validate="'max:30'" :class="{ 'is-danger': errors.has('note') }">
+            <input v-model="localTransaction.note" v-validate="'max:30'" class="input" type="text" name="note" :placeholder="$t('fieldnames.note')" :class="{'is-danger': errors.has('note')}">
             <span v-show="errors.has('note')" class="help is-danger">{{ errors.first('note') }}</span>
           </div>
         </div>
@@ -43,20 +43,20 @@
           <label class="label">{{ $tc('objects.category', 1) }}</label>
           <div class="control">
             <div class="select">
-              <select name="parent" v-model="localTransaction.category">
+              <select v-model="localTransaction.category" name="parent">
                 <option value="">-- {{ $tc('objects.category', 1) }} --</option>
-                <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.label }}</option>
               </select>
             </div>
           </div>
         </div>
-        <div class="field" v-if="localTransaction.category && categoriesAndSubcategoriesLookup[localTransaction.category] && categoriesAndSubcategoriesLookup[localTransaction.category].sub.length > 0">
+        <div v-if="localTransaction.category && categoriesAndSubcategoriesLookup[localTransaction.category] && categoriesAndSubcategoriesLookup[localTransaction.category].sub.length > 0" class="field">
           <label class="label">{{ $tc('objects.subcategory', 1) }}</label>
           <div class="control">
             <div class="select">
-              <select name="parent" v-model="localTransaction.subcategory">
+              <select v-model="localTransaction.subcategory" name="parent">
                 <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
-                <option v-for="subcategory in categoriesAndSubcategoriesLookup[localTransaction.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
+                <option v-for="subcategory in categoriesAndSubcategoriesLookup[localTransaction.category].sub" :key="subcategory.id" :value="subcategory.id">{{ subcategory.label }}</option>
               </select>
             </div>
           </div>
@@ -71,14 +71,14 @@
           <label class="label">{{ $t('fieldnames.dispatch') }}</label>
           <div class="field has-addons">
             <div class="control is-expanded">
-              <input class="input" name="dispatch" v-model.number="sharePercent" disabled>
+              <input v-model.number="sharePercent" class="input" name="dispatch" disabled>
             </div>
             <div class="control">
-              <button class="button" type="button" @click="getTransactionDispatch" :disabled="!isOnline"><i class="fa fa-pencil fa-fw fa-mr"/>{{ $t('actions.update') }}</button>
+              <button class="button" type="button" :disabled="!isOnline" @click="getTransactionDispatch"><i class="fa fa-pencil fa-fw fa-mr" />{{ $t('actions.update') }}</button>
             </div>
           </div>
           <div class="control">
-            <table class="table is-fullwidth" v-if="localTransaction.shares && localTransaction.shares.length > 0">
+            <table v-if="localTransaction.shares && localTransaction.shares.length > 0" class="table is-fullwidth">
               <thead>
                 <tr>
                   <th>{{ $tc('objects.user', 1) }}</th>
@@ -90,8 +90,8 @@
                   <td>
                     <div class="control">
                       <div class="select">
-                        <select name="user" v-model="share.user">
-                          <option v-for="holder in holders" :key="holder.id" v-bind:value="holder.id">{{ holder.name }}</option>
+                        <select v-model="share.user" name="user">
+                          <option v-for="holder in holders" :key="holder.id" :value="holder.id">{{ holder.name }}</option>
                         </select>
                       </div>
                     </div>
@@ -99,10 +99,10 @@
                   <td class="dispatch-slider">
                     <b-field grouped>
                       <b-field expanded>
-                        <b-slider v-model="share.share" :custom-formatter="val => val + '%'"></b-slider>
+                        <b-slider v-model="share.share" :custom-formatter="val => val + '%'" />
                       </b-field>
                       <b-field>
-                        <b-input type="number" v-model.number="share.share" min=0 max=100 ></b-input>
+                        <b-input v-model.number="share.share" type="number" min="0" max="100" />
                       </b-field>
                     </b-field>
                   </td>
@@ -111,24 +111,24 @@
               <tfoot>
                 <tr>
                   <td colspan="2">
-                    <button class="button is-light" type="button" @click="addShareLine"><i class="fa fa-plus-square fa-fw fa-mr"/>{{ $t('actions.create') }}</button>
+                    <button class="button is-light" type="button" @click="addShareLine"><i class="fa fa-plus-square fa-fw fa-mr" />{{ $t('actions.create') }}</button>
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
         </div>
-        <div class="message is-danger block" v-if="error">
+        <div v-if="error" class="message is-danger block">
           <div class="message-body">
             {{ error }}
           </div>
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-primary" :disabled="!isOnline"><i aria-hidden="true" class="fa fa-save fa-fw fa-mr"/>{{ $t('actions.save') }}</button>
-        <button class="button" type="button" @click="$parent.close()"><i aria-hidden="true" class="fa fa-ban fa-fw fa-mr"/>{{ $t('actions.cancel') }}</button>
+        <button class="button is-primary" :disabled="!isOnline"><i aria-hidden="true" class="fa fa-save fa-fw fa-mr" />{{ $t('actions.save') }}</button>
+        <button class="button" type="button" @click="$parent.close()"><i aria-hidden="true" class="fa fa-ban fa-fw fa-mr" />{{ $t('actions.cancel') }}</button>
       </footer>
-      <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
+      <b-loading :is-full-page="false" :active.sync="isLoading" />
     </div>
   </form>
 </template>
@@ -137,14 +137,23 @@
 import CategoriesFactory from '@/services/Categories'
 import HoldersFactory from '@/services/Holders'
 export default {
-  props: ['rTransactions', 'transaction'],
   mixins: [CategoriesFactory, HoldersFactory],
+  props: {
+    rTransactions: {
+      type: Object,
+      required: true,
+    },
+    transaction: {
+      type: Object,
+      required: true,
+    },
+  },
   data () {
     return {
       error: '',
       isLoading: false,
       currentDate: new Date(),
-      localTransaction: JSON.parse(JSON.stringify(this.transaction))
+      localTransaction: JSON.parse(JSON.stringify(this.transaction)),
     }
   },
   computed: {
@@ -157,11 +166,22 @@ export default {
       },
       set (newValue) {
         this.localTransaction.dateUser = this.$moment(newValue).format()
-      }
+      },
     },
     sharePercent () {
       return this.localTransaction.share + '%'
-    }
+    },
+  },
+  watch: {
+    'localTransaction.category' () {
+      // clear subcategory field if category has changed
+      this.localTransaction.subcategory = ''
+    },
+  },
+  mounted () {
+    this.getCategories(false)
+    this.getHolders()
+    this.$set(this.localTransaction, 'shares', [])
   },
   methods: {
     validateBeforeSubmit () {
@@ -237,19 +257,8 @@ export default {
     },
     addShareLine () {
       this.localTransaction.shares.push({ user: null, share: 0 })
-    }
+    },
   },
-  watch: {
-    'localTransaction.category' () {
-      // clear subcategory field if category has changed
-      this.localTransaction.subcategory = ''
-    }
-  },
-  mounted () {
-    this.getCategories(false)
-    this.getHolders()
-    this.$set(this.localTransaction, 'shares', [])
-  }
 }
 </script>
 <style>

@@ -8,7 +8,7 @@ export default {
   data () {
     return {
       holders: [],
-      rHolders: Vue.resource(Config.API_URL + 'holders')
+      rHolders: Vue.resource(Config.API_URL + 'holders'),
     }
   },
   methods: {
@@ -28,6 +28,6 @@ export default {
     },
     removeHoldersCache () {
       localStorage.removeItem(localStorageKey)
-    }
-  }
+    },
+  },
 }

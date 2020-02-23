@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="validateBeforeSubmit" novalidate>
+  <form novalidate @submit.prevent="validateBeforeSubmit">
     <div class="modal-card">
 
       <header class="modal-card-head">
@@ -10,7 +10,7 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.label') }}</label>
           <div class="control">
-            <input class="input" type="text" name="label" placeholder="Transaction name to be find" v-model.lazy="pattern.label" @change="count" v-validate="'required'" :class="{ 'is-danger': errors.has('label') }">
+            <input v-model.lazy="pattern.label" v-validate="'required'" class="input" type="text" name="label" placeholder="Transaction name to be find" :class="{'is-danger': errors.has('label')}" @change="count">
             <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
           </div>
           <p class="help">{{ $t('labels.patternWildcardHelper') }}<span v-if="matchingCount !== null"> - {{ matchingCount }} {{ $tc('objects.occurence', matchingCount).toLowerCase() }}</span></p>
@@ -19,20 +19,20 @@
           <label class="label">{{ $tc('objects.category', 1) }}</label>
           <div class="control">
             <div class="select">
-              <select name="parent" v-model="pattern.category">
+              <select v-model="pattern.category" name="parent">
                 <option value="">-- {{ $tc('objects.category', 1) }} --</option>
-                <option v-for="category in categories" :key="category.id" v-bind:value="category.id">{{ category.label }}</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.label }}</option>
               </select>
             </div>
           </div>
         </div>
-        <div class="field" v-if="pattern.category && categoriesAndSubcategoriesLookup[pattern.category] && categoriesAndSubcategoriesLookup[pattern.category].sub.length > 0">
+        <div v-if="pattern.category && categoriesAndSubcategoriesLookup[pattern.category] && categoriesAndSubcategoriesLookup[pattern.category].sub.length > 0" class="field">
           <label class="label">{{ $tc('objects.subcategory', 1) }}</label>
           <div class="control">
             <div class="select">
-              <select name="parent" v-model="pattern.subcategory">
+              <select v-model="pattern.subcategory" name="parent">
                 <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
-                <option v-for="subcategory in categoriesAndSubcategoriesLookup[pattern.category].sub" :key="subcategory.id" v-bind:value="subcategory.id">{{ subcategory.label }}</option>
+                <option v-for="subcategory in categoriesAndSubcategoriesLookup[pattern.category].sub" :key="subcategory.id" :value="subcategory.id">{{ subcategory.label }}</option>
               </select>
             </div>
           </div>
@@ -44,7 +44,7 @@
           </div>
         </div>
 
-        <div class="message is-danger block" v-if="error">
+        <div v-if="error" class="message is-danger block">
           <div class="message-body">
             {{ error }}
           </div>
@@ -52,12 +52,12 @@
       </section>
 
       <footer class="modal-card-foot">
-        <button class="button is-primary" :disabled="!isOnline"><span class="icon"><i class="fa fa-save"/></span><span>{{ $t('actions.save') }}</span></button>
+        <button class="button is-primary" :disabled="!isOnline"><span class="icon"><i class="fa fa-save" /></span><span>{{ $t('actions.save') }}</span></button>
         <button type="button" class="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
-        <button v-if="pattern.id" type="button" class="button is-danger" :disabled="!isOnline" @click="deletePattern"><span class="icon"><i class="fa fa-trash"/></span><span>{{ $t('actions.delete') }}</span></button>
+        <button v-if="pattern.id" type="button" class="button is-danger" :disabled="!isOnline" @click="deletePattern"><span class="icon"><i class="fa fa-trash" /></span><span>{{ $t('actions.delete') }}</span></button>
       </footer>
 
-      <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
+      <b-loading :is-full-page="false" :active.sync="isLoading" />
 
     </div>
   </form>
@@ -67,20 +67,38 @@
 import CategoriesFactory from './../services/Categories'
 import Config from './../services/Config'
 export default {
-  props: ['rPatterns', 'pattern'],
   mixins: [CategoriesFactory],
+  props: {
+    rPatterns: {
+      type: Object,
+      required: true,
+    },
+    pattern: {
+      type: Object,
+      required: true,
+    },
+  },
   data () {
     return {
       error: '',
       matchingCount: null,
       rTransactions: this.$resource(Config.API_URL + 'transactions'),
-      isLoading: false
+      isLoading: false,
     }
   },
   computed: {
     isOnline () {
       return this.$store.state.isOnline
-    }
+    },
+  },
+  watch: {
+    'pattern.category' () {
+      // clear subcategory field if category has changed
+      this.pattern.subcategory = ''
+    },
+  },
+  mounted () {
+    this.getCategories(false)
   },
   methods: {
     deletePattern () {
@@ -111,7 +129,7 @@ export default {
               }
               this.error = response.status + ' - ' + response.statusText
             })
-        }
+        },
       })
     },
     validateBeforeSubmit () {
@@ -163,16 +181,7 @@ export default {
           console.error(response)
         })
       }
-    }
+    },
   },
-  watch: {
-    'pattern.category' () {
-      // clear subcategory field if category has changed
-      this.pattern.subcategory = ''
-    }
-  },
-  mounted () {
-    this.getCategories(false)
-  }
 }
 </script>

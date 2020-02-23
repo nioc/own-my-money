@@ -1,13 +1,23 @@
 {
   "name": "money-front-vue",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "Web app for mananging personal bank account",
   "author": "nioc <dev@nioc.eu>",
+  "homepage": "https://github.com/nioc/own-my-money",
+  "bugs": {
+    "url": "https://github.com/nioc/own-my-money/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nioc/own-my-money.git"
+  },
+  "license": "AGPL-3.0-or-later",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "lint-no-fix": "vue-cli-service lint --no-fix"
   },
   "dependencies": {
     "buefy": "^0.8.10",

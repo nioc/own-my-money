@@ -3,24 +3,24 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          { link: '/', icon: 'fa-home', text: this.$t('labels.home') },
-          { link: '/accounts', icon: 'fa-table', text: this.$tc('objects.account', 2), isActive: true }
-        ]">
-      </breadcrumb>
+          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
+          {link: '/accounts', icon: 'fa-table', text: this.$tc('objects.account', 2), isActive: true},
+        ]"
+      />
     </div>
     <div class="hero-body">
       <div class="container box">
         <h1 class="title container">{{ $tc('objects.account', 2) }}</h1>
-        <div class="message is-danger" v-if="error">
+        <div v-if="error" class="message is-danger">
           <div class="message-body">
             {{ error }}
           </div>
         </div>
-        <div class="table-container" v-if="accounts.length">
+        <div v-if="accounts.length" class="table-container">
           <table class="table is-striped is-hoverable is-fullwidth">
             <thead>
               <tr>
-                <th></th>
+                <th />
                 <th>{{ $tc('objects.account', 1) }}</th>
                 <th>{{ $t('fieldnames.balance') }}</th>
                 <th>{{ $t('fieldnames.updated') }}</th>
@@ -29,9 +29,9 @@
             <tbody>
               <tr v-for="account in accounts" :key="account.id">
                 <td class="icon-account"><img v-if="account.iconUrl" :src="account.iconUrl" height="24" width="24"></td>
-                <td><router-link :to="{ name: 'account', params: { id: account.id }}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link></td>
+                <td><router-link :to="{name: 'account', params: {id: account.id}}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link></td>
                 <td>{{ $n(account.balance, 'currency') }}</td>
-                <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("from", "now") }}</td><td v-else></td>
+                <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("from", "now") }}</td><td v-else />
               </tr>
             </tbody>
           </table>
@@ -41,25 +41,25 @@
         </div>
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" @click="isCreateAccountModalActive = true" :disabled="!isOnline"><i class="fa fa-plus fa-mr"/>{{ $t('actions.addAccount') }}</button>
+            <button class="button is-primary" role="button" :disabled="!isOnline" @click="isCreateAccountModalActive = true"><i class="fa fa-plus fa-mr" />{{ $t('actions.addAccount') }}</button>
           </p>
           <p class="control">
             <b-field class="file">
-              <b-upload v-model="upload.file" @input="uploadDataset" :disabled="(!isOnline || upload.isUploading)">
+              <b-upload v-model="upload.file" :disabled="(!isOnline || upload.isUploading)" @input="uploadDataset">
                 <a class="button is-primary" :disabled="(!isOnline || upload.isUploading)">
-                  <b-icon icon="upload"></b-icon>
+                  <b-icon icon="upload" />
                   <span>{{ $t('actions.uploadOfx') }}</span>
                 </a>
               </b-upload>
-              <span class="file-name" v-if="upload.file">
+              <span v-if="upload.file" class="file-name">
                 {{ upload.file.name }} ({{ $tc('objects.byte', upload.file.size) }})
               </span>
             </b-field>
           </p>
         </div>
-        <div class="field is-horizontal" >
+        <div class="field is-horizontal">
           <div class="field-body">
-            <div class="message is-danger"  v-if="upload.result">
+            <div v-if="upload.result" class="message is-danger">
               <div class="message-body">
                 {{ upload.result }}
               </div>
@@ -67,9 +67,9 @@
           </div>
         </div>
         <b-modal :active.sync="isCreateAccountModalActive" has-modal-card scroll="keep">
-          <create-account></create-account>
+          <create-account />
         </b-modal>
-        <b-loading :is-full-page="false" :active.sync="isLoading"></b-loading>
+        <b-loading :is-full-page="false" :active.sync="isLoading" />
       </div>
     </div>
   </section>
@@ -80,10 +80,10 @@ import Config from './../services/Config'
 import Breadcrumb from '@/components/Breadcrumb'
 import CreateAccount from '@/components/CreateAccount'
 export default {
-  name: 'accounts',
+  name: 'Accounts',
   components: {
     Breadcrumb,
-    CreateAccount
+    CreateAccount,
   },
   data () {
     return {
@@ -95,17 +95,20 @@ export default {
       upload: {
         file: null,
         isUploading: false,
-        result: ''
+        result: '',
       },
       // resources
       rAccounts: this.$resource(Config.API_URL + 'accounts{/id}'),
-      rDatasets: this.$resource(Config.API_URL + 'dataset')
+      rDatasets: this.$resource(Config.API_URL + 'dataset'),
     }
   },
   computed: {
     isOnline () {
       return this.$store.state.isOnline
-    }
+    },
+  },
+  mounted () {
+    this.getAccounts()
   },
   methods: {
     getAccounts () {
@@ -169,10 +172,7 @@ export default {
           this.upload.isUploading = false
           this.isLoading = false
         })
-    }
+    },
   },
-  mounted () {
-    this.getAccounts()
-  }
 }
 </script>
