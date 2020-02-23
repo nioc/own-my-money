@@ -216,6 +216,19 @@ class Transaction
             //return false and detailed error message
             return false;
         }
+        if ($this->shares) {
+            if (array_sum(array_column($this->shares, 'share')) !== 100) {
+                $error = 'total dispatch must be equal to 100%';
+                //return false and detailed error message
+                return false;
+            }
+            $shareUsers = array_column($this->shares, 'user');
+            if (count(array_unique($shareUsers)) !== count($shareUsers)) {
+                $error = 'there is duplication in dispatch';
+                //return false and detailed error message
+                return false;
+            }
+        }
         //Convert datetime from ISO8601 to Unix timestamp
         if (isset($this->datePosted)) {
             $this->datePosted = strtotime($this->datePosted);
