@@ -85,10 +85,14 @@ td.icon-account, .icon-account {
   }
 }
 
-.icon-transactions-account > img {
+td.icon-transactions-account-col {
+  min-width: 48px;
+}
+
+.icon-transactions-account-col img {
   vertical-align: middle;
 }
-.icon-transactions-account > span {
+.icon-transactions-account-col > span> span {
   margin: 0 0 0 8px;
 }
 
@@ -98,6 +102,11 @@ td.icon-account, .icon-account {
   height: 40px;
   border-color: rgb(219, 219, 219);
   border-style: solid;
+}
+
+.transaction-label {
+  text-overflow: ellipsis;
+  word-break: break-all;
 }
 
 .chart-header {

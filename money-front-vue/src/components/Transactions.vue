@@ -103,8 +103,8 @@
 
     <b-table :data=displayedTransactions :row-class="(row, index) => row.isNew ? 'has-text-weight-bold' : ''" :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" @select="edit" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions">
       <template slot-scope="props">
-        <b-table-column field="icon" v-if="displayAccount">
-          <span class="icon-transactions-account"><img v-if="props.row.iconUrl" :src="props.row.iconUrl" :title="props.row.accountLabel" height="24" width="24"><span class="is-hidden-tablet">{{ props.row.accountLabel }}</span></span>
+        <b-table-column field="icon" v-if="displayAccount" class="icon-transactions-account-col">
+          <span><img v-if="props.row.iconUrl" :src="props.row.iconUrl" :title="props.row.accountLabel" height="24" width="24"><span class="is-hidden-tablet">{{ props.row.accountLabel }}</span></span>
         </b-table-column>
         <b-table-column field="amount" :label="$t('fieldnames.amount')" sortable numeric>
           <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
@@ -113,7 +113,7 @@
           <span v-if="props.row.share !== 100" class="has-text-weight-light has-text-grey">{{ props.row.share }}%</span>
         </b-table-column>
         <b-table-column field="name" :label="$t('fieldnames.label')" sortable>
-          {{ props.row.fullname }}<span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
+          <span class="transaction-label">{{ props.row.fullname }}</span><span class="has-text-grey" v-if="props.row.note"> | {{ props.row.note }}</span>
         </b-table-column>
         <b-table-column field="datePosted" :label="$t('fieldnames.date')" sortable>
           {{ props.row.datePosted | moment("L") }}
