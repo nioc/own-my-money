@@ -15,21 +15,28 @@
         <h1 class="title container">{{ $tc('objects.pattern', 2) }}</h1>
         <p class="subtitle has-text-grey">{{ $t('labels.patternsLabel') }}</p>
 
-        <b-table :data="patterns" :striped="true" :hoverable="true" class="table-container" @select="edit">
+        <div class="field">
+          <div class="control has-icons-left">
+            <input v-model="search" class="input" type="text" :placeholder="$t('actions.findAPattern')">
+            <span class="icon is-small is-left"><i class="fa fa-search" /></span>
+          </div>
+        </div>
+
+        <b-table :data="displayedPatterns" :striped="true" :hoverable="true" class="table-container" default-sort-direction="desc" @select="edit">
           <template slot-scope="props">
-            <b-table-column :label="$t('fieldnames.label')">
+            <b-table-column field="label" :label="$t('fieldnames.label')" sortable>
               {{ props.row.label }}
             </b-table-column>
-            <b-table-column :label="$t('fieldnames.share')">
+            <b-table-column field="share" :label="$t('fieldnames.share')" sortable>
               <span v-if="props.row.share !== 100" class="has-text-weight-light has-text-grey">{{ props.row.share }}%</span>
             </b-table-column>
-            <b-table-column :label="$tc('objects.category', 1)">
+            <b-table-column field="category" :label="$tc('objects.category', 1)" sortable>
               <span v-if="props.row.category && categoriesAndSubcategoriesLookup[props.row.category]">{{ categoriesAndSubcategoriesLookup[props.row.category].label }}</span>
             </b-table-column>
-            <b-table-column :label="$tc('objects.subcategory', 1)">
+            <b-table-column field="subcategory" :label="$tc('objects.subcategory', 1)" sortable>
               <span v-if="props.row.subcategory && categoriesAndSubcategoriesLookup[props.row.subcategory]">{{ categoriesAndSubcategoriesLookup[props.row.subcategory].label }}</span>
             </b-table-column>
-            <b-table-column :label="$t('fieldnames.isRecurring')">
+            <b-table-column field="isRecurring" :label="$t('fieldnames.isRecurring')" sortable>
               <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']" />
             </b-table-column>
           </template>
@@ -99,6 +106,7 @@ export default {
       suggestedPatterns: [],
       error: '',
       isLoading: false,
+      search: '',
       // modal
       modalPattern: {
         isActive: false,
@@ -112,6 +120,13 @@ export default {
   computed: {
     isOnline () {
       return this.$store.state.isOnline
+    },
+    displayedPatterns () {
+      if (!this.search) {
+        return this.patterns
+      }
+      const search = this.search.toLowerCase()
+      return this.patterns.filter((pattern) => pattern.label.toLowerCase().indexOf(search) > -1)
     },
   },
   mounted () {
