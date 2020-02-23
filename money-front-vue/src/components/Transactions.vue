@@ -51,9 +51,6 @@
       <div class="card-content">
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <div class="input is-static">{{ $tc('objects.transactionsSelected', batch.checkedTransactions.length) }} ({{ $n(transactionsCheckedSum, 'currency') }})</div>
-          </div>
-          <div class="control">
             <div class="select">
               <select v-model="batch.category">
                 <option value="">-- {{ $tc('objects.category', 1) }} --</option>
@@ -78,6 +75,54 @@
               </select>
             </div>
           </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <table class="table is-fullwidth">
+              <thead>
+                <tr>
+                  <th>{{ $tc('objects.user', 1) }}</th>
+                  <th>{{ $t('fieldnames.share') }}</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(share, index) in batch.shares" :key="share.user">
+                  <td>
+                    <div class="control">
+                      <div class="select">
+                        <select v-model="share.user" name="user">
+                          <option v-for="holder in holders" :key="holder.id" :value="holder.id">{{ holder.name }}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="dispatch-slider">
+                    <b-field grouped>
+                      <b-field expanded>
+                        <b-slider v-model="share.share" :custom-formatter="val => val + '%'" />
+                      </b-field>
+                      <b-field>
+                        <b-input v-model.number="share.share" type="number" min="0" max="100" />
+                      </b-field>
+                    </b-field>
+                  </td>
+                  <td>
+                    <button class="button is-light" type="button" @click="removeShareLine(index)"><i class="fa fa-trash fa-fw fa-mr" /><span class="is-hidden-mobile">{{ $t('actions.delete') }}</span></button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3">
+                    <button class="button is-light" type="button" @click="addShareLine()"><i class="fa fa-plus-square fa-fw fa-mr" />{{ $t('actions.add') }}</button>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="field is-grouped is-grouped-multiline">
           <div class="control">
             <button class="button is-primary" :class="{'is-loading': batch.isLoading}" :disabled="(batch.isLoading || !isOnline)" @click="processBatchUpdate"><span class="icon"><i class="fa fa-cogs" /></span><span>{{ $t('actions.apply') }}</span></button>
           </div>
@@ -86,6 +131,9 @@
           </div>
           <div class="control">
             <button class="button is-light" :disabled="batch.isLoading" @click="selectNone"><span class="icon"><i class="fa fa-square-o" /></span><span>{{ $t('actions.clear') }}</span></button>
+          </div>
+          <div class="control">
+            <div class="input is-static">{{ $tc('objects.transactionsSelected', batch.checkedTransactions.length) }} ({{ $n(transactionsCheckedSum, 'currency') }})</div>
           </div>
         </div>
         <div class="field is-block-mobile">
@@ -147,6 +195,7 @@
 import Bus from './../services/Bus'
 import Transaction from '@/components/Transaction'
 import CategoriesFactory from './../services/Categories'
+import HoldersFactory from '@/services/Holders'
 import exportFromJSON from 'export-from-json'
 import Config from './../services/Config'
 export default {
@@ -154,7 +203,7 @@ export default {
   components: {
     Transaction,
   },
-  mixins: [CategoriesFactory],
+  mixins: [CategoriesFactory, HoldersFactory],
   props: {
     url: {
       required: true,
@@ -192,6 +241,7 @@ export default {
         isRecurring: null,
         category: '',
         subcategory: '',
+        shares: [],
       },
       // filter
       search: {
@@ -240,6 +290,9 @@ export default {
     transactionsCheckedSum () {
       return this.batch.checkedTransactions.length > 0 ? this.batch.checkedTransactions.reduce((sum, transaction) => sum + transaction.amount, 0) : 0
     },
+    sharesSum () {
+      return this.batch.shares.filter(share => share.user !== null).reduce((acc, item) => acc + item.share, 0)
+    },
   },
   watch: {
     'search.category' () {
@@ -264,6 +317,9 @@ export default {
         this.search.periodStart = search.periodStart
         this.search.periodEnd = search.periodEnd
       }
+    })
+    this.getCurrentHolderId().then((holderId) => {
+      this.addShareLine({ user: holderId, share: 100 })
     })
   },
   beforeDestroy () {
@@ -352,6 +408,7 @@ export default {
         const category = this.batch.category
         const subcategory = this.batch.subcategory
         const isRecurring = this.batch.isRecurring
+        const shares = this.batch.shares.filter(share => share.user !== null)
         this.batch.result = ''
         for (const transaction of this.batch.checkedTransactions) {
           if (category) {
@@ -363,8 +420,31 @@ export default {
           if (isRecurring !== null) {
             transaction.isRecurring = isRecurring
           }
+          if (shares.length) {
+            // check shares sum
+            if (this.sharesSum !== 100) {
+              this.batch.result = this.$t('labels.invalidDispatch')
+              this.batch.isLoading = false
+              return
+            }
+            // check duplicates
+            const sharesByUser = shares.reduce(function (acc, item) {
+              if (typeof acc[item.user] === 'undefined') {
+                acc[item.user] = 0
+              }
+              acc[item.user]++
+              return acc
+            }, [])
+            if (sharesByUser.some(share => share > 1)) {
+              this.batch.result = this.$t('labels.duplicatesShares')
+              this.batch.isLoading = false
+              return
+            }
+            transaction.shares = shares
+          }
           this.rTransactions.update({ id: transaction.id }, transaction)
             .then((response) => {
+              transaction.share = response.body.share
             }, (response) => {
               if (response.body.message) {
                 this.batch.result += transaction.id + ' : ' + response.body.message + '. '
@@ -387,6 +467,15 @@ export default {
     },
     selectNone () {
       this.batch.checkedTransactions = []
+    },
+    addShareLine (share) {
+      if (!share) {
+        share = { user: null, share: 100 - this.sharesSum }
+      }
+      this.batch.shares.push(share)
+    },
+    removeShareLine (index) {
+      this.batch.shares.splice(index, 1)
     },
   },
 }

@@ -83,10 +83,11 @@
                 <tr>
                   <th>{{ $tc('objects.user', 1) }}</th>
                   <th>{{ $t('fieldnames.share') }}</th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="share in localTransaction.shares" :key="share.user">
+                <tr v-for="(share, index) in localTransaction.shares" :key="share.user">
                   <td>
                     <div class="control">
                       <div class="select">
@@ -106,12 +107,15 @@
                       </b-field>
                     </b-field>
                   </td>
+                  <td>
+                    <button class="button is-light" type="button" @click="removeShareLine(index)"><i class="fa fa-trash fa-fw fa-mr" /></button>
+                  </td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="2">
-                    <button class="button is-light" type="button" @click="addShareLine"><i class="fa fa-plus-square fa-fw fa-mr" />{{ $t('actions.create') }}</button>
+                  <td colspan="3">
+                    <button class="button is-light" type="button" @click="addShareLine()"><i class="fa fa-plus-square fa-fw fa-mr" />{{ $t('actions.add') }}</button>
                   </td>
                 </tr>
               </tfoot>
@@ -171,6 +175,9 @@ export default {
     sharePercent () {
       return this.localTransaction.share + '%'
     },
+    sharesSum () {
+      return this.localTransaction.shares.filter(share => share.user !== null).reduce((acc, item) => acc + item.share, 0)
+    },
   },
   watch: {
     'localTransaction.category' () {
@@ -180,7 +187,6 @@ export default {
   },
   mounted () {
     this.getCategories(false)
-    this.getHolders()
     this.$set(this.localTransaction, 'shares', [])
   },
   methods: {
@@ -190,8 +196,7 @@ export default {
       this.$validator.validateAll().then((result) => {
         if (this.localTransaction.shares.length > 0) {
           // calcul shares sum
-          const sum = this.localTransaction.shares.reduce((acc, item) => acc + item.share, 0)
-          if (sum !== 100) {
+          if (this.sharesSum !== 100) {
             this.error = this.$t('labels.invalidDispatch')
             result = false
           }
@@ -244,9 +249,11 @@ export default {
       this.rTransactions.get({ id: this.localTransaction.id })
         .then(response => {
           this.localTransaction.shares = response.body.shares
-          if (this.localTransaction.shares.length === 0) {
-            this.addShareLine()
-          }
+          this.getCurrentHolderId().then((holderId) => {
+            if (this.localTransaction.shares.length === 0) {
+              this.addShareLine({ user: holderId, share: 100 })
+            }
+          })
         }, (response) => {
           if (response.body.message) {
             this.error = response.body.message
@@ -255,8 +262,14 @@ export default {
           this.error = response.status + ' - ' + response.statusText
         })
     },
-    addShareLine () {
-      this.localTransaction.shares.push({ user: null, share: 0 })
+    addShareLine (share) {
+      if (!share) {
+        share = { user: null, share: 100 - this.sharesSum }
+      }
+      this.localTransaction.shares.push(share)
+    },
+    removeShareLine (index) {
+      this.localTransaction.shares.splice(index, 1)
     },
   },
 }
