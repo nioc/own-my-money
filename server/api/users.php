@@ -28,6 +28,7 @@ switch ($api->method) {
                     $user = new stdClass();
                     $user->id = (int) $rawUser->id;
                     $user->name = $rawUser->login;
+                    $user->current = ($user->id === $api->requesterId);
                     array_push($users, $user);
                 }
             }
