@@ -247,8 +247,10 @@ class Transaction
         if (is_int($this->id)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
             $connection = new DatabaseConnection();
-            $query = $connection->prepare('UPDATE `transaction` SET `category`=:category, `subcategory`=:subcategory, `note`=:note, `isRecurring`=:isRecurring WHERE `id`=:id;');
+            $query = $connection->prepare('UPDATE `transaction` SET `name`=:name, `memo`=:memo, `category`=:category, `subcategory`=:subcategory, `note`=:note, `isRecurring`=:isRecurring WHERE `id`=:id;');
             $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+            $query->bindValue(':name', $this->name, PDO::PARAM_STR);
+            $query->bindValue(':memo', $this->memo, PDO::PARAM_STR);
             $query->bindValue(':category', $this->category, PDO::PARAM_INT);
             $query->bindValue(':subcategory', $this->subcategory, PDO::PARAM_INT);
             $query->bindValue(':note', $this->note, PDO::PARAM_STR);

@@ -6,6 +6,13 @@
       </header>
       <section class="modal-card-body">
         <div class="field">
+          <label class="label">{{ $t('fieldnames.memo') }}</label>
+          <div class="control">
+            <input class="input" type="text" name="memo" :placeholder="$t('fieldnames.memo')" v-model="localTransaction.memo" v-validate="'required'" :class="{ 'is-danger': errors.has('memo') }">
+            <span v-show="errors.has('memo')" class="help is-danger">{{ errors.first('memo') }}</span>
+          </div>
+        </div>
+        <div class="field">
           <label class="label">{{ $t('fieldnames.label') }}</label>
           <div class="control">
             <input class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" v-model="localTransaction.name" v-validate="'required'" :class="{ 'is-danger': errors.has('label') }">
@@ -189,6 +196,7 @@ export default {
             .then((response) => {
               // update transaction for rendering
               this.localTransaction = response.body
+              this.transaction.memo = this.localTransaction.memo
               this.transaction.name = this.localTransaction.name
               this.transaction.amount = this.localTransaction.amount
               this.transaction.dateUser = this.localTransaction.dateUser
