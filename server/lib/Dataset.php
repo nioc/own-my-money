@@ -73,6 +73,9 @@ class Dataset
     public function parseTransactionsFromOfx($account)
     {
         $transactions = [];
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Configuration.php';
+        $configuration = new Configuration();
+        $regexp = $configuration->get('ofxRemoveRegex');
         foreach ($account->transactions as $currentTransaction) {
             $transaction = new Transaction();
             $transaction->datePosted = $currentTransaction->date->getTimestamp();
@@ -81,7 +84,7 @@ class Dataset
             $transaction->amount = $currentTransaction->amount;
             $transaction->fitid = $currentTransaction->uniqueId;
             $transaction->name = $currentTransaction->name;
-            $transaction->memo = $currentTransaction->memo;
+            $transaction->memo = ($regexp !== '') ? preg_replace($regexp, '', $currentTransaction->memo) : $currentTransaction->memo;
             $transaction->type = 'DEBIT';
             if ($transaction->amount > 0) {
                 $transaction->type = 'CREDIT';
