@@ -14,11 +14,14 @@ fr {
     keyMustBeProvidedInPath { "L'attribut Key doit être fourni dans l'url" }
     valueMustBeProvided { "L'attribut Value doit être fourni" }
     userIdMustBeProvidedInPath { "L'identifiant de l'utilisateur doit être fourni dans l'url" }
+    userIdMustBeProvided { "L'identifiant de l'utilisateur doit être fourni" }
     loginAndPasswordMustBeProvided { "L'identifiant et le password doivent être fournis" }
     typeMustBeProvidedInQuery { "L'attribut Type doit être fourni dans la chaine de recherche" }
     typeMustBeInEnum { "L'attribut Type doit être `debit` ou `credit`" }
     userCreationError { "Erreur lors de la création de l'utilisateur" }
     invalidCredentials { "Identifiants de connexion invalides" }
+    userNotHolder { "L'utilisateur n'est pas titulaire du compte" }
+    ownerIsHolder { "Le propriétaire du compte ne peut pas être retiré des titulaires" }
     putMethodMustBeCalledOnASpecificResource { "La méthode PUT doit être appelée sur une ressource spécifique" }
     deleteMethodMustBeCalledOnASpecificResource { "La méthode DELETE doit être appelée sur une ressource spécifique" }
     userCanBeUpdatedByHimselfOnly { "L'utilisateur ne peut être mis à jour que par lui-même" }

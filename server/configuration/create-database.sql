@@ -12,6 +12,13 @@ CREATE TABLE `account` (
   `lastUpdate` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `account_holder`;
+CREATE TABLE `account_holder` (
+  `account` smallint(5) UNSIGNED NOT NULL,
+  `user` smallint(3) UNSIGNED NOT NULL,
+  `isReadOnly` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `account_icon`;
 CREATE TABLE `account_icon` (
   `aid` smallint(5) UNSIGNED NOT NULL,
@@ -119,6 +126,10 @@ ALTER TABLE `account`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_user_id` (`user`);
 
+ALTER TABLE `account_holder`
+  ADD PRIMARY KEY (`account`,`user`),
+  ADD KEY `account_holder_user` (`user`);
+
 ALTER TABLE `account_icon`
   ADD PRIMARY KEY (`aid`);
 
@@ -178,6 +189,10 @@ ALTER TABLE `user`
 
 ALTER TABLE `account`
   ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE `account_holder`
+  ADD CONSTRAINT `account_holder_aid` FOREIGN KEY (`account`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `account_holder_user` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `account_icon`
   ADD CONSTRAINT `fk_account id_icon` FOREIGN KEY (`aid`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;

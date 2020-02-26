@@ -14,11 +14,14 @@ en {
     keyMustBeProvidedInPath { "Key attribute must be provided in path" }
     valueMustBeProvided { "Value attribute must be provided" }
     userIdMustBeProvidedInPath { "User identifier must be provided in path" }
+    userIdMustBeProvided { "User identifier must be provided" }
     loginAndPasswordMustBeProvided { "Both login and password must be provided" }
     typeMustBeProvidedInQuery { "Type attribute must be provided in query string" }
     typeMustBeInEnum { "Type attribute must be `debit` or `credit`" }
     userCreationError { "Error during user creation" }
     invalidCredentials { "Invalid credentials" }
+    userNotHolder { "User is not an account holder" }
+    ownerIsHolder { "Account owner can not be removed from holders" }
     putMethodMustBeCalledOnASpecificResource { "PUT method must be called on a specific resource" }
     deleteMethodMustBeCalledOnASpecificResource { "DELETE method must be called on a specific resource" }
     userCanBeUpdatedByHimselfOnly { "User can be updated by himself only" }

@@ -394,6 +394,115 @@ class Account
     }
 
     /**
+     * Get account holders.
+     *
+     * @param string $error The returned error message
+     *
+     * @return mixed Holders list or false on failure
+     */
+    public function getHolders(&$error)
+    {
+        $error = '';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT `user`, `isReadOnly` FROM `account_holder` WHERE `account` = :aid;');
+        $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
+        if (!$query->execute()) {
+            $error = ': ' . $query->errorInfo()[2];
+            error_log('Error when querying account holders' . $error);
+            //returns an error occurs
+            return false;
+        }
+        $holders = $query->fetchAll(PDO::FETCH_OBJ);
+        foreach ($holders as $holder) {
+            $holder->userId = (int) $holder->user;
+            unset($holder->user);
+            $holder->isReadOnly = (bool) $holder->isReadOnly;
+        }
+        //returns holders
+        return $holders;
+    }
+
+    /**
+     * Check if account is hold by provided user.
+     *
+     * @param int $userId User identifier
+     * @param string $error The returned error message
+     *
+     * @return boolean Does the user is an account holder
+     */
+    public function isHoldBy($userId, &$error)
+    {
+        $error = '';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT `isReadOnly` FROM `account_holder` WHERE `account` = :aid AND `user` = :userId LIMIT 1;');
+        $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':userId', $userId, PDO::PARAM_INT);
+        if (!$query->execute()) {
+            $error = ': ' . $query->errorInfo()[2];
+            error_log('Error when checking account holder' . $error);
+            //returns an error occurs
+            return false;
+        }
+        return $query->rowCount() === 1;
+    }
+
+    /**
+     * Add provided user as account holder.
+     *
+     * @param int $userId User identifier
+     * @param boolean $isReadOnly Does the user has read-only limitation
+     * @param string $error The returned error message
+     *
+     * @return boolean True on success or false on failure
+     */
+    public function setHolder($userId, $isReadOnly, &$error)
+    {
+        $error = '';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('REPLACE INTO `account_holder` (`account`, `user`, `isReadOnly`) VALUES (:aid, :userId, :isReadOnly);');
+        $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $query->bindValue(':isReadOnly', $isReadOnly, PDO::PARAM_BOOL);
+        if (!$query->execute()) {
+            $error = ': ' . $query->errorInfo()[2];
+            error_log('Error when inserting account holder' . $error);
+            //returns insertion has encountered an error
+            return false;
+        }
+        //returns insertion was successfully processed
+        return ['userId' => (int) $userId, 'isReadOnly' => (bool) $isReadOnly];
+    }
+
+    /**
+     * Remove provided user from account holders.
+     *
+     * @param int $userId User identifier
+     * @param string $error The returned error message
+     *
+     * @return boolean True on success or false on failure
+     */
+    public function removeHolder($userId, &$error)
+    {
+        $error = '';
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('DELETE FROM `account_holder` WHERE `account` = :aid AND `user` = :userId LIMIT 1;');
+        $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':userId', $userId, PDO::PARAM_INT);
+        if (!$query->execute()) {
+            $error = ': ' . $query->errorInfo()[2];
+            error_log('Error when deleting account holder' . $error);
+            //returns insertion has encountered an error
+            return false;
+        }
+        //returns insertion was successfully processed
+        return true;
+    }
+
+    /**
      * Store account icon.
      *
      * @param string $file Icon filename

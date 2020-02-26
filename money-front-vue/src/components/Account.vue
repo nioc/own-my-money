@@ -191,6 +191,18 @@
                 <div class="field-label is-normal" />
                 <div class="field-body">
                   <div class="field">
+                    <button type="button" class="button" role="button" :disabled="!isOnline" @click="modalHolders.isActive = true"><i class="fa fa-users fa-mr" />{{ $t('actions.manageHolders') }}</button>
+                  </div>
+                </div>
+              </div>
+              <b-modal :active.sync="modalHolders.isActive" has-modal-card scroll="keep">
+                <account-holders :account-id="account.id" />
+              </b-modal>
+
+              <div class="field is-horizontal">
+                <div class="field-label is-normal" />
+                <div class="field-body">
+                  <div class="field">
                     <div class="buttons">
                       <button type="submit" class="button is-primary" role="button" :disabled="!isOnline"><i class="fa fa-save fa-mr" />{{ $t('actions.save') }}</button>
                       <button type="button" class="button is-danger" role="button" :disabled="!isOnline" @click="deleteAccount"><i class="fa fa-trash fa-mr" />{{ $t('actions.delete') }}</button>
@@ -213,6 +225,7 @@ import Config from './../services/Config'
 import Bus from './../services/Bus'
 import Breadcrumb from '@/components/Breadcrumb'
 import Transactions from '@/components/Transactions'
+import AccountHolders from '@/components/Holders'
 import TransactionsHistoryChart from '@/components/TransactionsHistoryChart'
 export default {
   name: 'Account',
@@ -220,6 +233,7 @@ export default {
     Breadcrumb,
     TransactionsHistoryChart,
     Transactions,
+    AccountHolders,
   },
   data () {
     const today = new Date()
@@ -246,6 +260,10 @@ export default {
       isLoading: false,
       isLoaded: false,
       updatedAccount: {
+      },
+      // modal
+      modalHolders: {
+        isActive: false,
       },
       // maps
       maps: [],
