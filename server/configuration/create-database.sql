@@ -53,6 +53,14 @@ CREATE TABLE `pattern` (
   `isRecurring` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `pattern_user_dispatch`;
+CREATE TABLE `pattern_user_dispatch` (
+  `user` smallint(3) UNSIGNED NOT NULL,
+  `id` mediumint(8) UNSIGNED NOT NULL,
+  `userShare` smallint(3) UNSIGNED NOT NULL,
+  `share` tinyint(3) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `token`;
 CREATE TABLE `token` (
   `user` smallint(3) UNSIGNED NOT NULL,
@@ -105,6 +113,7 @@ CREATE TABLE `version` (
   `version` varchar(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `version` (`version`) VALUES ('0.11.0');
 
 ALTER TABLE `account`
   ADD PRIMARY KEY (`id`),
@@ -128,6 +137,11 @@ ALTER TABLE `pattern`
   ADD KEY `id` (`id`),
   ADD KEY `fk_pattern_category_1` (`category`),
   ADD KEY `fk_pattern_subcategory_1` (`subcategory`);
+
+ALTER TABLE `pattern_user_dispatch`
+  ADD PRIMARY KEY (`user`,`id`,`userShare`),
+  ADD KEY `id` (`id`),
+  ADD KEY `fk_dispatch_pattern_share_userid` (`userShare`);
 
 ALTER TABLE `token`
   ADD KEY `fk_token_user_1` (`user`);
@@ -179,6 +193,11 @@ ALTER TABLE `pattern`
   ADD CONSTRAINT `fk_pattern_subcategory_1` FOREIGN KEY (`subcategory`) REFERENCES `category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_pattern_user_1` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE `pattern_user_dispatch`
+  ADD CONSTRAINT `fk_dispatch_pattern_id` FOREIGN KEY (`id`) REFERENCES `pattern` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_dispatch_pattern_share_userid` FOREIGN KEY (`userShare`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_dispatch_pattern_userid` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
 ALTER TABLE `token`
   ADD CONSTRAINT `fk_token_user_1` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -190,5 +209,3 @@ ALTER TABLE `transaction`
 ALTER TABLE `transaction_user_dispatch`
   ADD CONSTRAINT `fk_ratio_transaction_id` FOREIGN KEY (`transaction`) REFERENCES `transaction` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_ratio_user_id` FOREIGN KEY (`user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-INSERT INTO `version` (`version`) VALUES ('0.11.0');
