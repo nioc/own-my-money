@@ -91,7 +91,7 @@ export default {
       toast.type = this.isOnline ? 'is-success' : 'is-danger'
       toast.position = 'is-bottom'
       toast.queue = false
-      this.$toast.open(toast)
+      this.$buefy.toast.open(toast)
     },
     setLocale (locale) {
       Vue.http.headers.common['Accept-Language'] = locale
@@ -99,7 +99,7 @@ export default {
       this.$i18n.locale = locale
       this.$moment.locale(locale)
       const localeData = this.$moment.localeData()
-      this.$buefy.setOptions({
+      this.$buefy.config.setOptions({
         defaultIconPack: 'fa',
         defaultFirstDayOfWeek: localeData.firstDayOfWeek(),
         defaultMonthNames: localeData.months(),
