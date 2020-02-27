@@ -339,7 +339,8 @@ class User
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT SUM(`balance`) AS `balance` FROM `account` WHERE `account`.`user` =:user;');
+        //get current balance by summing all accounts (owned and holded)
+        $query = $connection->prepare('SELECT SUM(`balance`) AS `balance` FROM `account` WHERE (`account`.`user` =:user OR `account`.`id` IN (SELECT `account` FROM `account_holder` WHERE `user` =:user));');
         $query->bindValue(':user', $this->id, PDO::PARAM_INT);
         if (!$query->execute()) {
             return false;
@@ -349,7 +350,7 @@ class User
         if ($period === null) {
             return $balance;
         }
-        $query = $connection->prepare('SELECT SUM(`amount`) AS `balance` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :period AND (`isBudgeted` =:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL);');
+        $query = $connection->prepare('SELECT ROUND(SUM(`amount`*IF(`share` is null, IF(`account`.`user` = :user, 1, 0), `share`/100)), 2) AS `balance` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id` LEFT JOIN `transaction_user_dispatch` ON `transaction_user_dispatch`.`user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND (`account`.`user` =:user OR `account`.`id` IN (SELECT `account` FROM `account_holder` WHERE `user` =:user)) AND `datePosted` > :period AND (`isBudgeted` =:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL);');
         $query->bindValue(':user', $this->id, PDO::PARAM_INT);
         $query->bindValue(':period', $period, PDO::PARAM_INT);
         $query->bindValue(':isBudgeted', $budgetedOnly, PDO::PARAM_BOOL);
@@ -371,14 +372,14 @@ class User
             $countType = 'countCredit';
         }
         if ($category === null && $subcategory === null) {
-            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS :type, COUNT(1) AS :countType FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user`=:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL) AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, ROUND(SUM(`amount`*IF(`share` is null, IF(`account`.`user` = :user, 1, 0), `share`/100)), 2) AS :type, COUNT(1) AS :countType FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id` LEFT JOIN `transaction_user_dispatch` ON `transaction_user_dispatch`.`user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND (`account`.`user` =:user OR `account`.`id` IN (SELECT `account` FROM `account_holder` WHERE `user` =:user)) AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL) AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
         } elseif ($subcategory === null) {
             //query only transactions in the specific category
-            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS :type, COUNT(1) AS :countType FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user`=:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND `category`=:category AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, ROUND(SUM(`amount`*IF(`share` is null, IF(`account`.`user` = :user, 1, 0), `share`/100)), 2) AS :type, COUNT(1) AS :countType FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `transaction_user_dispatch`.`user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND (`account`.`user` =:user OR `account`.`id` IN (SELECT `account` FROM `account_holder` WHERE `user` =:user)) AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND `category`=:category AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
             $query->bindValue(':category', $category, PDO::PARAM_INT);
         } else {
             //query only transactions in the specific subcategory
-            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, SUM(`amount`) AS :type, COUNT(1) AS :countType FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user`=:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND `subcategory`=:subcategory AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
+            $query = $connection->prepare('SELECT FROM_UNIXTIME(`datePosted`, :format) AS `date`, ROUND(SUM(`amount`*IF(`share` is null, IF(`account`.`user` = :user, 1, 0), `share`/100)), 2) AS :type, COUNT(1) AS :countType FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `transaction_user_dispatch`.`user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND (`account`.`user` =:user OR `account`.`id` IN (SELECT `account` FROM `account_holder` WHERE `user` =:user)) AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND `subcategory`=:subcategory AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY FROM_UNIXTIME(`datePosted`, :format) ORDER BY `datePosted` ASC;');
             $query->bindValue(':subcategory', $subcategory, PDO::PARAM_INT);
         }
         $query->bindValue(':user', $this->id, PDO::PARAM_INT);
@@ -531,9 +532,9 @@ class User
     public function getTransactionsDistribution($periodStart, $periodEnd, $type, $key, $value = null, $budgetedOnly = true, $isRecurringOnly = false)
     {
         if ($key === 'categories') {
-            $queryString = 'SELECT `category` AS `key`, SUM(`amount`) AS `amount` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user`=:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL) AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY `category` ORDER BY SUM(ABS(`amount`)) DESC;';
+            $queryString = 'SELECT `category` AS `key`, ROUND(SUM(`amount` * IF(`share` is null, IF(`account`.`user` = :user, 1, 0), `share` / 100)), 2) AS `amount` FROM `transaction` LEFT JOIN `category` ON `transaction`.`category`=`category`.`id` LEFT JOIN `transaction_user_dispatch` ON `transaction_user_dispatch`.`user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND (`account`.`user` =:user OR `account`.`id` IN (SELECT `account` FROM `account_holder` WHERE `user` =:user)) AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `type`=:type AND (`isBudgeted` =:isBudgeted OR `isBudgeted`=TRUE OR `isBudgeted` IS NULL) AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY `category` ORDER BY SUM(ABS(`amount`)) DESC;';
         } elseif ($key === 'subcategories' && $value !== null) {
-            $queryString = 'SELECT `subcategory` AS `key`, SUM(`amount`) AS `amount` FROM `transaction`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user`=:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `category`=:category AND `type`=:type AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY `subcategory` ORDER BY SUM(ABS(`amount`)) DESC;';
+            $queryString = 'SELECT `subcategory` AS `key`, ROUND(SUM(`amount` * IF(`share` is null, IF(`account`.`user` = :user, 1, 0), `share` / 100)), 2) AS `amount` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `transaction_user_dispatch`.`user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND (`account`.`user` =:user OR `account`.`id` IN (SELECT `account` FROM `account_holder` WHERE `user` =:user)) AND `datePosted` > :periodStart AND `datePosted` < :periodEnd AND `category`=:category AND `type`=:type AND (`isRecurring`=:isRecurring OR `isRecurring`=TRUE) GROUP BY `subcategory` ORDER BY SUM(ABS(`amount`)) DESC;';
         } else {
             //invalid request
             return false;
