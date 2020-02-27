@@ -29,7 +29,7 @@
             <tbody>
               <tr v-for="account in accounts" :key="account.id">
                 <td class="icon-account"><img v-if="account.iconUrl" :src="account.iconUrl" height="24" width="24"></td>
-                <td><router-link :to="{name: 'account', params: {id: account.id}}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link></td>
+                <td><router-link :to="{name: 'account', params: {id: account.id}}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link><span v-if="!account.isOwned" class="tag is-danger is-light">{{ $t('labels.readOnly') }}</span></td>
                 <td>{{ $n(account.balance, 'currency') }}</td>
                 <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("from", "now") }}</td><td v-else />
               </tr>

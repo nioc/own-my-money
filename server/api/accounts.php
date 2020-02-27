@@ -38,11 +38,12 @@ switch ($api->method) {
             //indicate the account was not found
             return;
         }
-        if ($account->user !== $api->requesterId) {
+        if ($account->user !== $api->requesterId && !$account->isHoldBy($api->requesterId, $error)) {
             $api->output(403, $api->getMessage('transactionsCanBeQueriedByAccountOwnerOnly'));
             //indicate the requester is not the account owner and is not allowed to query it
             return;
         }
+        $account->isOwned = $account->user === $api->requesterId;
         $api->output(200, $account->structureData());
         break;
     case 'POST':

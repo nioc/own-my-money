@@ -27,7 +27,7 @@
             </div>
             <transactions v-if="isLoaded" :url="url" :duration="account.duration" :account-id="account.id" />
 
-            <div class="field is-grouped">
+            <div v-if="account.isOwned" class="field is-grouped">
               <p class="control">
                 <b-field class="file">
                   <b-upload v-model="upload.file" :disabled="(!isOnline || upload.isUploading)" @input="uploadDataset">
@@ -50,7 +50,7 @@
                 </div>
               </div>
             </div>
-            <div class="field is-horizontal">
+            <div v-if="account.isOwned" class="field is-horizontal">
               <div class="field-body">
                 <div v-if="upload.result" class="message is-danger">
                   <div class="message-body">
@@ -61,7 +61,7 @@
             </div>
           </b-tab-item>
 
-          <b-tab-item :label="$t('actions.edit')" icon="pencil">
+          <b-tab-item v-if="account.isOwned" :label="$t('actions.edit')" icon="pencil">
             <form novalidate class="section is-max-width-form" @submit.prevent="validateUpdateBeforeSubmit">
               <div class="field is-horizontal">
                 <div class="field-label is-normal">
@@ -251,6 +251,7 @@ export default {
         duration: 'P3M',
         iconUrl: null,
         transactions: [],
+        isOwned: null,
       },
       icon: {
         file: null,
@@ -331,6 +332,7 @@ export default {
         if (response.body.iconUrl) {
           this.account.iconUrl = Config.API_URL + response.body.iconUrl
         }
+        this.account.isOwned = response.body.isOwned
         this.updatedAccount = JSON.parse(JSON.stringify(this.account))
         delete (this.updatedAccount.transactions)
         this.date.duration = this.account.duration

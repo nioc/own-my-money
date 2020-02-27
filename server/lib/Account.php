@@ -656,6 +656,9 @@ class Account
         if ($this->hasIcon) {
             $account->iconUrl = "accounts/$this->id/icons";
         }
+        if (property_exists($this, 'isOwned')) {
+            $account->isOwned = (bool) $this->isOwned;
+        }
         unset($account->hasIcon);
         unset($account->transactions);
         //return structured account

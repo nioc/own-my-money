@@ -290,7 +290,7 @@ class User
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT * FROM `account` WHERE `user`=:user;');
+        $query = $connection->prepare('SELECT *, 1 AS `isOwned` FROM `account` WHERE `user`=:user UNION SELECT *, 0 AS `isOwned` FROM `account` WHERE `account`.`user`<>:user AND `account`.`id` IN (SELECT `account` FROM `account_holder` WHERE `account_holder`.`user`=:user);');
         $query->bindValue(':user', $this->id, PDO::PARAM_STR);
         if ($query->execute()) {
             //return array of accounts

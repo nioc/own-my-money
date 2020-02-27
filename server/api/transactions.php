@@ -34,7 +34,7 @@ switch ($api->method) {
                 //check requestor is the transaction account owner
                 $account = new Account($transaction->aid);
                 $account->get();
-                if ($account->user !== $api->requesterId) {
+                if ($account->user !== $api->requesterId && !$account->isHoldBy($api->requesterId, $error)) {
                     $api->output(403, $api->getMessage('transactionsCanBeQueriedByAccountOwnerOnly'));
                     //indicate the requester is not the account owner and is not allowed to query it
                     return;
@@ -66,7 +66,7 @@ switch ($api->method) {
         //check requestor is the account owner
         $account = new Account($aid);
         $account->get();
-        if ($account->user !== $api->requesterId) {
+        if ($account->user !== $api->requesterId && !$account->isHoldBy($api->requesterId, $error)) {
             $api->output(403, $api->getMessage('transactionsCanBeQueriedByAccountOwnerOnly'));
             //indicate the requester is not the account owner and is not allowed to query it
             return;
