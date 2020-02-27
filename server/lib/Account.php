@@ -179,12 +179,13 @@ class Account
     /**
      * Return all account transactions.
      *
+     * @param int $requesterId User identifier who is querying
      * @param int $periodStart Start timestamp for requesting
      * @param int $periodEnd End timestamp for requesting
      *
      * @return array All account transactions
      */
-    public function getTransactions($periodStart = 0, $periodEnd = null)
+    public function getTransactions($requesterId, $periodStart = 0, $periodEnd = null)
     {
         if ($periodEnd === null) {
             $periodEnd = time();
@@ -192,15 +193,18 @@ class Account
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT `transaction`.*, IFNULL(`share`, 100) AS `share` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id` WHERE `aid` = :aid AND `datePosted` > :periodStart AND `datePosted` < :periodEnd ORDER BY `datePosted` DESC;');
+        $query = $connection->prepare('SELECT `transaction`.*, IFNULL(`share`, :accountShare) AS `share` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id` WHERE `aid` = :aid AND `datePosted` > :periodStart AND `datePosted` < :periodEnd ORDER BY `datePosted` DESC;');
         $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
         $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
+        $query->bindValue(':accountShare', $this->user === $requesterId ? 100 : 0, PDO::PARAM_INT);
         if ($query->execute()) {
             //return array of transactions
             return $query->fetchAll(PDO::FETCH_CLASS, 'Transaction');
         }
+        $error = $query->errorInfo()[2];
+        error_log('Error during querying transactions: ' . $error);
         //indicate there is a problem during querying
         return false;
     }

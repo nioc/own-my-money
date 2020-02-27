@@ -84,7 +84,7 @@ switch ($api->method) {
             return;
         }
         //Request all transactions of the account (in date interval)
-        $transactionsList = $account->getTransactions($periodStart, $periodEnd);
+        $transactionsList = $account->getTransactions($api->requesterId, $periodStart, $periodEnd);
         $transactions = array();
         //get last fetch date in request header
         $lastFetch = null;

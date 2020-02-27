@@ -315,7 +315,7 @@ class User
         }
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT `transaction`.*, `account`.`hasIcon`, `account`.`label` AS `accountLabel`, IFNULL(`share`, 100) AS `share` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `transaction_user_dispatch`.`user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND `account`.`user` =:user AND `datePosted` > :periodStart AND `datePosted` < :periodEnd;');
+        $query = $connection->prepare('SELECT `transaction`.*, `account`.`hasIcon`, `account`.`label` AS `accountLabel`, IFNULL(`share`, IF(`account`.`user` = :user, 100, 0)) AS `share` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `transaction_user_dispatch`.`user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id`, `account` WHERE `account`.`id`=`transaction`.`aid` AND (`account`.`user` =:user OR `account`.`id` IN (SELECT `account` FROM `account_holder` WHERE `user` =:user)) AND `datePosted` > :periodStart AND `datePosted` < :periodEnd;');
         $query->bindValue(':user', $this->id, PDO::PARAM_STR);
         $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
