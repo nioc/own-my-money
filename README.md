@@ -13,6 +13,7 @@ Own my money is a simple way to stay on top of your banking from any web browser
 - data input from OFX or JSON file from you bank,
 - transactions classification (manual and automatic using data mining),
 - budget repartition analysis,
+- joint accounts,
 - transactions annotations for your memory,
 - export transactions to CSV,
 - progressive web app (offline access),
