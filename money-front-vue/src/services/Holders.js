@@ -17,6 +17,7 @@ export default {
         if (localStorage.getItem(localStorageKey)) {
           this.holders = JSON.parse(localStorage.getItem(localStorageKey))
           resolve(this.holders)
+          return
         }
         this.rHolders.query().then((response) => {
           this.holders = response.body
@@ -39,6 +40,7 @@ export default {
           const currentHolder = holders.filter(holder => holder.current)
           if (currentHolder.length === 1) {
             resolve(currentHolder[0].id)
+            return
           }
           resolve(null)
         }, () => {
