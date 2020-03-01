@@ -243,6 +243,102 @@ class Account
         return $balance;
     }
 
+    /**
+     * Return account dispatch by categories.
+     *
+     * @param int $periodStart Start timestamp for requesting
+     * @param int $periodEnd End timestamp for requesting
+     *
+     * @return array Account categories dispatch by users
+     */
+    public function getTransactionsDispatch($periodStart, $periodEnd)
+    {
+        require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
+        $connection = new DatabaseConnection();
+        $query = $connection->prepare('SELECT `category`, `subcategory`, `transaction_user_dispatch`.`user`, ROUND(SUM(`amount`*IF(`share` is null, 1, `share`/100)), 2) AS sum FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `transaction_user_dispatch`.`transaction` = `transaction`.`id` WHERE `transaction`.`aid` =:id AND `datePosted` > :periodStart AND `datePosted` < :periodEnd GROUP BY `category`, `subcategory` , `transaction_user_dispatch`.`user` ORDER BY `category`, `subcategory`, `user`;');
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+        $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
+        $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
+        if (!$query->execute()) {
+            $error = ': ' . $query->errorInfo()[2];
+            error_log('Error when querying account dispatch' . $error);
+            //returns an error occurs
+            return false;
+        }
+        $raws = $query->fetchAll(PDO::FETCH_OBJ);
+        $arr_categories = [];
+        foreach ($raws as $raw) {
+            //group by category
+            if (!array_key_exists($raw->category, $arr_categories)) {
+                //category does not exists in array, create it
+                $category = new StdClass();
+                $category->id = $raw->category;
+                $category->shares = [];
+                $category->subcategories = [];
+                $arr_categories[$raw->category] = $category;
+            }
+            //set holder share
+            if ($raw->user !== null) {
+                $raw->user = (int) $raw->user;
+            } else {
+                //default user for transaction is account owner, but set 0 to show there is no breakdown
+                $raw->user = 0;
+            }
+            //group by category>user
+            if (!array_key_exists($raw->user, $arr_categories[$raw->category]->shares)) {
+                //user does not exists in category array, create it
+                $share = new StdClass();
+                $share->userId = $raw->user;
+                $share->share = 0;
+                $arr_categories[$raw->category]->shares[$raw->user] = $share;
+            }
+            $arr_categories[$raw->category]->shares[$raw->user]->share += $raw->sum;
+            //group by category>subcategory
+            if (!array_key_exists($raw->subcategory, $arr_categories[$raw->category]->subcategories)) {
+                //subcategory does not exists in category array, create it
+                $subcategory = new StdClass();
+                $subcategory->id = $raw->subcategory;
+                $subcategory->shares = [];
+                $arr_categories[$raw->category]->subcategories[$raw->subcategory] = $subcategory;
+            }
+            //group by category>subcategory>user
+            if (!array_key_exists($raw->user, $arr_categories[$raw->category]->subcategories[$raw->subcategory]->shares)) {
+                //user does not exists in category array, create it
+                $share = new StdClass();
+                $share->userId = $raw->user;
+                $share->share = 0;
+                $arr_categories[$raw->category]->subcategories[$raw->subcategory]->shares[$raw->user] = $share;
+            }
+            $arr_categories[$raw->category]->subcategories[$raw->subcategory]->shares[$raw->user]->share += $raw->sum;
+        }
+        //transform associative array to array of objects
+        $categories = [];
+        foreach ($arr_categories as $category) {
+            //category>users
+            $categoryShares = [];
+            foreach ($category->shares as $share) {
+                array_push($categoryShares, $share);
+            }
+            $category->shares = $categoryShares;
+            //category>subcategories
+            $categorySubcategories = [];
+            foreach ($category->subcategories as $subcategory) {
+                //category>subcategory>users
+                $subcategoryShares = [];
+                foreach ($subcategory->shares as $share) {
+                    array_push($subcategoryShares, $share);
+                }
+                $subcategory->shares = $subcategoryShares;
+                //store subcategories
+                array_push($categorySubcategories, $subcategory);
+            }
+            $category->subcategories = $categorySubcategories;
+            //store categories
+            array_push($categories, $category);
+        }
+        return $categories;
+    }
+
     private function getTransactionsByType($type, $sqlFormat, $isRecurringOnly, $periodStart, $periodEnd, $budgetedOnly, $category, $subcategory)
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';

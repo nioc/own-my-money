@@ -61,6 +61,10 @@
             </div>
           </b-tab-item>
 
+          <b-tab-item v-if="isLoaded" :label="$t('labels.breakdown')" icon="balance-scale" class="has-half-margin-mobile">
+            <account-dispatch :id="account.id" :duration="account.duration" />
+          </b-tab-item>
+
           <b-tab-item v-if="account.isOwned" :label="$t('actions.edit')" icon="pencil">
             <form novalidate class="section is-max-width-form" @submit.prevent="validateUpdateBeforeSubmit">
               <div class="field is-horizontal">
@@ -227,6 +231,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import Transactions from '@/components/Transactions'
 import AccountHolders from '@/components/Holders'
 import TransactionsHistoryChart from '@/components/TransactionsHistoryChart'
+import AccountDispatch from '@/components/AccountDispatch'
 export default {
   name: 'Account',
   components: {
@@ -234,6 +239,7 @@ export default {
     TransactionsHistoryChart,
     Transactions,
     AccountHolders,
+    AccountDispatch,
   },
   data () {
     const today = new Date()

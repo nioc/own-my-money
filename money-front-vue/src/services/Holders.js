@@ -46,5 +46,9 @@ export default {
         })
       })
     },
+    getHolderName (holderId, unknownUserName) {
+      const holder = this.holders.find((holder) => holder.id === holderId)
+      return holder ? holder.name : unknownUserName
+    },
   },
 }
