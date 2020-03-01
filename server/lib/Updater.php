@@ -228,7 +228,11 @@ class Updater
         $this->output($lang->getMessage('done'), false);
 
         //change back-end url
-        $domain = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+        $scheme = 'http';
+        if ($_SERVER['REQUEST_SCHEME'] === 'https' || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' && $_SERVER["REQUEST_SCHEME"] === 'http')) {
+            $scheme = 'https';
+        }
+        $domain = $scheme . '://' . $_SERVER['HTTP_HOST'];
         if ($handle = opendir("$this->rootFolder/own-my-money/money-front-vue/dist/js/")) {
             while (false !== ($entry = readdir($handle))) {
                 $current = "$this->rootFolder/own-my-money/money-front-vue/dist/js/$entry";
