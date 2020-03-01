@@ -193,12 +193,11 @@ class Account
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Transaction.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT `transaction`.*, IFNULL(`share`, :accountShare) AS `share` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id` WHERE `aid` = :aid AND `datePosted` > :periodStart AND `datePosted` < :periodEnd ORDER BY `datePosted` DESC;');
+        $query = $connection->prepare('SELECT `transaction`.*, `share` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id` WHERE `aid` = :aid AND `datePosted` > :periodStart AND `datePosted` < :periodEnd ORDER BY `datePosted` DESC;');
         $query->bindValue(':aid', $this->id, PDO::PARAM_INT);
         $query->bindValue(':periodStart', $periodStart, PDO::PARAM_INT);
         $query->bindValue(':periodEnd', $periodEnd, PDO::PARAM_INT);
         $query->bindValue(':user', $this->user, PDO::PARAM_INT);
-        $query->bindValue(':accountShare', $this->user === $requesterId ? 100 : 0, PDO::PARAM_INT);
         if ($query->execute()) {
             //return array of transactions
             return $query->fetchAll(PDO::FETCH_CLASS, 'Transaction');

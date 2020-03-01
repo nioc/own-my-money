@@ -140,6 +140,7 @@
 <script>
 import CategoriesFactory from '@/services/Categories'
 import HoldersFactory from '@/services/Holders'
+import Auth from '@/services/Auth'
 export default {
   mixins: [CategoriesFactory, HoldersFactory],
   props: {
@@ -158,6 +159,7 @@ export default {
       isLoading: false,
       currentDate: new Date(),
       localTransaction: JSON.parse(JSON.stringify(this.transaction)),
+      userId: Auth.getProfile().id,
     }
   },
   computed: {
@@ -173,7 +175,7 @@ export default {
       },
     },
     sharePercent () {
-      return this.localTransaction.share + '%'
+      return ((this.localTransaction.share) ? this.localTransaction.share : (this.localTransaction.accountOwner === this.userId) ? 100 : 0) + '%'
     },
     sharesSum () {
       return this.localTransaction.shares.filter(share => share.user !== null).reduce((acc, item) => acc + item.share, 0)

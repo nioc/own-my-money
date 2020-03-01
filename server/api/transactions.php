@@ -39,6 +39,7 @@ switch ($api->method) {
                     //indicate the requester is not the account owner and is not allowed to query it
                     return;
                 }
+                $transaction->accountOwner = $account->user;
                 $api->output(200, $transaction->structureData());
                 //return requested transaction
                 return;
@@ -79,6 +80,7 @@ switch ($api->method) {
                 //indicate the account was not found
                 return;
             }
+            $transaction->accountOwner = $account->user;
             $api->output(200, $transaction->structureData());
             //return requested transaction
             return;
@@ -95,8 +97,9 @@ switch ($api->method) {
                 }
             }
         }
-        //clean data
+        //clean data and set account owner
         foreach ($transactionsList as $transaction) {
+            $transaction->accountOwner = $account->user;
             array_push($transactions, $transaction->structureData());
         }
         $api->output(200, $transactions);
@@ -149,6 +152,7 @@ switch ($api->method) {
             return;
         }
         $transaction->get($api->requesterId);
+        $transaction->accountOwner = $account->user;
         $api->output(200, $transaction->structureData());
         //return transaction
         return;

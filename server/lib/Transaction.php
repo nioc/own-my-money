@@ -153,7 +153,7 @@ class Transaction
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('SELECT `transaction`.*, IFNULL(`share`, 100) AS `share` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id` WHERE `id`=:id LIMIT 1;');
+        $query = $connection->prepare('SELECT `transaction`.*, `share` FROM `transaction` LEFT JOIN `transaction_user_dispatch` ON `user` = :user AND `transaction_user_dispatch`.`transaction` = `transaction`.`id` WHERE `id`=:id LIMIT 1;');
         $query->bindValue(':id', $this->id, PDO::PARAM_INT);
         $query->bindValue(':user', $userId, PDO::PARAM_INT);
         $query->setFetchMode(PDO::FETCH_INTO, $this);
@@ -404,6 +404,9 @@ class Transaction
                 $transaction->iconUrl= "accounts/$transaction->aid/icons";
             }
             unset($transaction->hasIcon);
+        }
+        if (isset($transaction->accountOwner)) {
+            $transaction->accountOwner = (int) $transaction->accountOwner;
         }
         if (isset($transaction->isRecurring)) {
             $transaction->isRecurring = (bool) $transaction->isRecurring;

@@ -158,7 +158,7 @@
           <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
         </b-table-column>
         <b-table-column field="share" :label="$t('fieldnames.share')" sortable numeric>
-          <span v-if="props.row.share !== 100" class="has-text-weight-light has-text-grey">{{ props.row.share }}%</span>
+          <span v-if="props.row.share" class="has-text-weight-light has-text-grey-dark">{{ props.row.share }}%</span><span v-else class="has-text-weight-light has-text-grey-light">{{ props.row.accountOwner === userId ? 100 : 0 }}%</span>
         </b-table-column>
         <b-table-column field="name" :label="$t('fieldnames.label')" sortable>
           <span class="transaction-label">{{ props.row.fullname }}</span><span v-if="props.row.note" class="has-text-grey"> | {{ props.row.note }}</span>
@@ -198,6 +198,7 @@ import CategoriesFactory from './../services/Categories'
 import HoldersFactory from '@/services/Holders'
 import exportFromJSON from 'export-from-json'
 import Config from './../services/Config'
+import Auth from '@/services/Auth'
 export default {
   name: 'Transactions',
   components: {
@@ -243,6 +244,7 @@ export default {
         subcategory: '',
         shares: [],
       },
+      userId: Auth.getProfile().id,
       // filter
       search: {
         isActive: false,
