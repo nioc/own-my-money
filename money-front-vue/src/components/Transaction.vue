@@ -8,14 +8,14 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.memo') }}</label>
           <div class="control">
-            <input v-model="localTransaction.memo" v-validate="'required'" class="input" type="text" name="memo" :placeholder="$t('fieldnames.memo')" :class="{'is-danger': errors.has('memo')}">
+            <input v-model="localTransaction.memo" v-validate="'max:255'" class="input" type="text" name="memo" :placeholder="$t('fieldnames.memo')" :class="{'is-danger': errors.has('memo')}">
             <span v-show="errors.has('memo')" class="help is-danger">{{ errors.first('memo') }}</span>
           </div>
         </div>
         <div class="field">
           <label class="label">{{ $t('fieldnames.label') }}</label>
           <div class="control">
-            <input v-model="localTransaction.name" v-validate="'required'" class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" :class="{'is-danger': errors.has('label')}">
+            <input v-model="localTransaction.name" v-validate="'required|max:200'" class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" :class="{'is-danger': errors.has('label')}">
             <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
           </div>
         </div>
@@ -35,7 +35,7 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.note') }}</label>
           <div class="control">
-            <input v-model="localTransaction.note" v-validate="'max:30'" class="input" type="text" name="note" :placeholder="$t('fieldnames.note')" :class="{'is-danger': errors.has('note')}">
+            <input v-model="localTransaction.note" v-validate="'max:50'" class="input" type="text" name="note" :placeholder="$t('fieldnames.note')" :class="{'is-danger': errors.has('note')}">
             <span v-show="errors.has('note')" class="help is-danger">{{ errors.first('note') }}</span>
           </div>
         </div>
