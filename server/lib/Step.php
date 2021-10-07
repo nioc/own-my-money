@@ -168,6 +168,7 @@ class Step
                 $hasDatabaseAlter = true;
                 break;
             case '0.11.0':
+            case '0.11.1':
                 break;
             default:
                 return $lang->getMessage('unknownInstalledVersion');
