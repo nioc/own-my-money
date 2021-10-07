@@ -361,6 +361,7 @@ class Transaction
         foreach ($patterns as $pattern) {
             //escape regular expression characters in pattern
             $pattern->label = preg_quote($pattern->label, '/');
+            $pattern->label = preg_replace('/\\\\\*/', '.*', $pattern->label);
             if (preg_match("/^$pattern->label$/i", $transactionLabel)) {
                 // apply pattern and end the loop
                 $this->category = $pattern->category;
