@@ -1,12 +1,14 @@
 <template>
   <div>
     <b-collapse class="card" :open.sync="search.isActive">
-      <div slot="trigger" class="card-header">
-        <span class="card-header-icon">
-          <i class="fa" :class="search.isActive ? 'fa-angle-down' : 'fa-angle-right'" />
-        </span>
-        <p class="card-header-title">{{ $t('labels.searchTransactions') }}</p>
-      </div>
+      <template #trigger>
+        <div class="card-header">
+          <span class="card-header-icon">
+            <i class="fa" :class="search.isActive ? 'fa-angle-down' : 'fa-angle-right'" />
+          </span>
+          <p class="card-header-title">{{ $t('labels.searchTransactions') }}</p>
+        </div>
+      </template>
       <div class="card-content">
         <div class="field is-grouped is-grouped-multiline is-block-mobile">
           <div class="control has-icons-left">
@@ -42,12 +44,14 @@
     </b-collapse>
 
     <b-collapse class="card" :open.sync="batch.isActive">
-      <div slot="trigger" class="card-header">
-        <span class="card-header-icon">
-          <i class="fa" :class="batch.isActive ? 'fa-angle-down' : 'fa-angle-right'" />
-        </span>
-        <p class="card-header-title">{{ $t('labels.batchUpdates') }}</p>
-      </div>
+      <template #trigger>
+        <div class="card-header">
+          <span class="card-header-icon">
+            <i class="fa" :class="batch.isActive ? 'fa-angle-down' : 'fa-angle-right'" />
+          </span>
+          <p class="card-header-title">{{ $t('labels.batchUpdates') }}</p>
+        </div>
+      </template>
       <div class="card-content">
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
@@ -149,39 +153,37 @@
       </div>
     </b-collapse>
 
-    <b-table :data="displayedTransactions" :row-class="(row, index) => row.isNew ? 'has-text-weight-bold' : ''" :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions" @select="edit">
-      <template slot-scope="props">
-        <b-table-column v-if="displayAccount" field="icon" class="icon-transactions-account-col">
-          <span><img v-if="props.row.iconUrl" :src="props.row.iconUrl" :title="props.row.accountLabel" height="24" width="24"><span class="is-hidden-tablet">{{ props.row.accountLabel }}</span></span>
-        </b-table-column>
-        <b-table-column field="amount" :label="$t('fieldnames.amount')" sortable numeric>
-          <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
-        </b-table-column>
-        <b-table-column field="share" :label="$t('fieldnames.share')" sortable numeric>
-          <span v-if="props.row.share" class="has-text-weight-light has-text-grey-dark">{{ props.row.share }}%</span><span v-else class="has-text-weight-light has-text-grey-light">{{ props.row.accountOwner === userId ? 100 : 0 }}%</span>
-        </b-table-column>
-        <b-table-column field="name" :label="$t('fieldnames.label')" sortable>
-          <span class="transaction-label">{{ props.row.fullname }}</span><span v-if="props.row.note" class="has-text-grey"> | {{ props.row.note }}</span>
-        </b-table-column>
-        <b-table-column field="datePosted" :label="$t('fieldnames.date')" sortable>
-          {{ props.row.datePosted | moment("L") }}
-        </b-table-column>
-        <b-table-column field="isRecurring" :label="$t('fieldnames.isRecurring')" sortable>
-          <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']" />
-        </b-table-column>
-        <b-table-column field="category" :label="$tc('objects.category', 1)" sortable>
-          <span v-if="props.row.categoryIcon" class="icon"><i class="fa fa-fw" :class="props.row.categoryIcon" /></span>
-          {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
-        </b-table-column>
-      </template>
-      <template slot="empty">
+    <b-table class="mt-1" :data="displayedTransactions" :row-class="(row, index) => row.isNew ? 'has-text-weight-bold' : ''" :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions" @select="edit">
+      <b-table-column v-if="displayAccount" v-slot="props" field="icon" cell-class="icon-transactions-account-col">
+        <span><img v-if="props.row.iconUrl" :src="props.row.iconUrl" :title="props.row.accountLabel" height="24" width="24"><span class="is-hidden-tablet">{{ props.row.accountLabel }}</span></span>
+      </b-table-column>
+      <b-table-column v-slot="props" field="amount" :label="$t('fieldnames.amount')" sortable numeric>
+        <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
+      </b-table-column>
+      <b-table-column v-slot="props" field="share" :label="$t('fieldnames.share')" sortable numeric>
+        <span v-if="props.row.share" class="has-text-weight-light has-text-grey-dark">{{ props.row.share }}%</span><span v-else class="has-text-weight-light has-text-grey-light">{{ props.row.accountOwner === userId ? 100 : 0 }}%</span>
+      </b-table-column>
+      <b-table-column v-slot="props" field="name" :label="$t('fieldnames.label')" sortable>
+        <span class="transaction-label">{{ props.row.fullname }}</span><span v-if="props.row.note" class="has-text-grey"> | {{ props.row.note }}</span>
+      </b-table-column>
+      <b-table-column v-slot="props" field="datePosted" :label="$t('fieldnames.date')" sortable>
+        {{ props.row.datePosted | moment("L") }}
+      </b-table-column>
+      <b-table-column v-slot="props" field="isRecurring" :label="$t('fieldnames.isRecurring')" sortable>
+        <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']" />
+      </b-table-column>
+      <b-table-column v-slot="props" field="category" :label="$tc('objects.category', 1)" sortable>
+        <span v-if="props.row.categoryIcon" class="icon"><i class="fa fa-fw" :class="props.row.categoryIcon" /></span>
+        {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
+      </b-table-column>
+      <template #empty>
         <section class="section">
           <div class="content has-text-grey has-text-centered">
             <p>{{ $t('labels.nothingToDisplay') }}</p>
           </div>
         </section>
       </template>
-      <template slot="bottom-left">
+      <template #bottom-left>
         <a class="button is-light" @click="downloadData"><span class="icon"><i class="fa fa-download fa-lg" /></span><span>{{ $t('actions.download') }}</span></a>
       </template>
     </b-table>

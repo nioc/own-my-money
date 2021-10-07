@@ -25,7 +25,7 @@
                 />
               </div>
             </div>
-            <transactions v-if="isLoaded" :url="url" :duration="account.duration" :account-id="account.id" />
+            <transactions v-if="isLoaded" :url="url" :duration="account.duration" :account-id="account.id" class="pb-5" />
 
             <div v-if="account.isOwned" class="field is-grouped">
               <p class="control">

@@ -14,20 +14,18 @@
         <h1 class="title container">{{ $tc('objects.user', 2) }}</h1>
 
         <b-table :data="displayedUsers" :striped="true" :hoverable="true" class="table-container" @select="edit">
-          <template slot-scope="props">
-            <b-table-column :label="$t('fieldnames.login')">
-              {{ props.row.login }}
-            </b-table-column>
-            <b-table-column :label="$t('fieldnames.email')">
-              {{ props.row.mail }}
-            </b-table-column>
-            <b-table-column :label="$t('fieldnames.admin')">
-              <b-switch v-model="props.row.isAdmin" disabled />
-            </b-table-column>
-            <b-table-column :label="$t('fieldnames.status')">
-              <b-switch v-model="props.row.status" disabled />
-            </b-table-column>
-          </template>
+          <b-table-column v-slot="props" :label="$t('fieldnames.login')">
+            {{ props.row.login }}
+          </b-table-column>
+          <b-table-column v-slot="props" :label="$t('fieldnames.email')">
+            {{ props.row.mail }}
+          </b-table-column>
+          <b-table-column v-slot="props" :label="$t('fieldnames.admin')">
+            <b-switch v-model="props.row.isAdmin" disabled />
+          </b-table-column>
+          <b-table-column v-slot="props" :label="$t('fieldnames.status')">
+            <b-switch v-model="props.row.status" disabled />
+          </b-table-column>
         </b-table>
 
         <div class="field is-grouped">

@@ -15,28 +15,26 @@
     <!-- dispatch table -->
     <b-table v-if="!isLoading" :data="accountDispatchs" :striped="true" :hoverable="true" default-sort-direction="desc" detailed custom-detail-row :mobile-cards="false">
       <!-- categories / users as main slot -->
-      <template slot-scope="props">
-        <b-table-column field="id" :label="$tc('objects.category', 1)" sortable>
-          <span v-if="props.row.id">{{ categoriesAndSubcategoriesLookup[props.row.id].label }}</span><span v-else>{{ $t('labels.uncategorizedTransaction') }}</span>
-        </b-table-column>
-        <b-table-column v-for="user in displayedUsers" :key="user" :field="user.toString()" :label="getHolderName(user, $t('labels.NonAssigned'))" sortable numeric>
-          <span :class="[getUserShare(user, props.row) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getUserShare(user, props.row), 'currency') }}</span>
-        </b-table-column>
-        <b-table-column field="total" :label="$t('labels.total')" sortable numeric>
-          <span :class="[getTotalShare(props.row) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getTotalShare(props.row), 'currency') }}</span>
-        </b-table-column>
-      </template>
+      <b-table-column v-slot="props" field="id" :label="$tc('objects.category', 1)" sortable>
+        <span v-if="props.row.id">{{ categoriesAndSubcategoriesLookup[props.row.id].label }}</span><span v-else>{{ $t('labels.uncategorizedTransaction') }}</span>
+      </b-table-column>
+      <b-table-column v-for="user in displayedUsers" :key="user" v-slot="props" :field="user.toString()" :label="getHolderName(user, $t('labels.NonAssigned'))" sortable numeric>
+        <span :class="[getUserShare(user, props.row) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getUserShare(user, props.row), 'currency') }}</span>
+      </b-table-column>
+      <b-table-column v-slot="props" field="total" :label="$t('labels.total')" sortable numeric>
+        <span :class="[getTotalShare(props.row) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getTotalShare(props.row), 'currency') }}</span>
+      </b-table-column>
       <!-- subcategories as details slot -->
-      <template slot="detail" slot-scope="props">
+      <template #detail="props">
         <tr v-for="subcategory in props.row.subcategories" :key="subcategory.id">
           <td />
-          <td class="has-ph-2"><span v-if="subcategory.id">{{ categoriesAndSubcategoriesLookup[subcategory.id].label }}</span><span v-else>{{ $t('labels.uncategorizedTransaction') }}</span></td>
+          <td class="px-5"><span v-if="subcategory.id">{{ categoriesAndSubcategoriesLookup[subcategory.id].label }}</span><span v-else>{{ $t('labels.uncategorizedTransaction') }}</span></td>
           <td v-for="user in displayedUsers" :key="user" class="has-text-right"><span :class="[getUserShare(user, subcategory) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getUserShare(user, subcategory), 'currency') }}</span></td>
           <td class="has-text-right"><span :class="[getTotalShare(subcategory) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getTotalShare(subcategory), 'currency') }}</span></td>
         </tr>
       </template>
       <!-- total by user as footer slot -->
-      <template v-if="accountDispatchs.length" slot="footer">
+      <template v-if="accountDispatchs.length" #footer>
         <th />
         <th class="is-hidden-mobile">
           <div class="th-wrap">Total</div>
@@ -49,7 +47,7 @@
         </th>
       </template>
       <!-- no data -->
-      <template slot="empty">
+      <template #empty>
         <section class="section">
           <div class="content has-text-grey has-text-centered">
             <p>{{ $t('labels.nothingToDisplay') }}</p>
