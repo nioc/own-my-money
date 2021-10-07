@@ -319,7 +319,11 @@ class Step
                 }
                 $query = $connection->prepare('CREATE USER :login@:client IDENTIFIED BY :password;');
                 $query->bindValue(':login', $dbLogin, PDO::PARAM_STR);
-                $query->bindValue(':client', 'localhost', PDO::PARAM_STR);
+                if ($host === 'localhost') {
+                    $query->bindValue(':client', 'localhost', PDO::PARAM_STR);
+                } else {
+                    $query->bindValue(':client', '%', PDO::PARAM_STR);
+                }
                 $query->bindValue(':password', $dbPassword, PDO::PARAM_STR);
                 if (!$query->execute()) {
                     //returns error
@@ -341,7 +345,11 @@ class Step
                 //grant created user privileges on created database
                 $query = $connection->prepare('GRANT ALL PRIVILEGES ON '.$dbName.'.* TO :login@:client WITH GRANT OPTION;');
                 $query->bindValue(':login', $dbLogin, PDO::PARAM_STR);
-                $query->bindValue(':client', 'localhost', PDO::PARAM_STR);
+                if ($host === 'localhost') {
+                    $query->bindValue(':client', 'localhost', PDO::PARAM_STR);
+                } else {
+                    $query->bindValue(':client', '%', PDO::PARAM_STR);
+                }
                 if (!$query->execute()) {
                     //returns error
                     return $query->errorInfo()[2];

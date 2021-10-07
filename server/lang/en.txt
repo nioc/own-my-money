@@ -121,6 +121,7 @@ en {
     folderNotWritable { "Folder '{0}' is not writable, you should run: chown {1} {0} -R" }
     downloadArchive { "Download archive..." }
     archiveNotWritable { "Unable to write archive at {0}/{1}" }
+    noUpdateContainer { "Application is running in container, update docker image" }
     extractArchive { "Extract archive to {0}..." }
     applicationUpdated { "Application is updated, you may have to configure at: {0}/#/setup" }
     downloadError { "download error: " }

@@ -129,6 +129,7 @@ export default {
       monthly: 'Monthly',
       isOnline: 'You are back online',
       isOffline: 'You are offline',
+      containerUpdateText: 'Application is running with an outdated Docker image, update to the latest version by following <a href="https://github.com/nioc/own-my-money/wiki/Installation#update-image" target="_blank" rel="noreferrer">wiki</a> instructions.',
       aboutText: '<p>Own my money is a simple way to track your bank activity on any device connected to the web (pc, smartphone, tablet, ...).</p><p>If you have any issues or feature requests, please create an <a href="https://github.com/nioc/own-my-money/issues" target="_blank" rel="noreferrer">issue</a>.</p><p>This project is licensed under the <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank" rel="noreferrer">GNU Affero General Public License v3.0</a>.</p>',
     },
     objects: {
@@ -279,6 +280,7 @@ export default {
       monthly: 'Par mois',
       isOnline: 'Vous êtes à nouveau connecté',
       isOffline: 'Vous êtes hors-ligne',
+      containerUpdateText: 'L\'application utilise une image Docker obsolète, veuillez consulter le <a href="https://github.com/nioc/own-my-money/wiki/Installation#update-image" target="_blank" rel="noreferrer">wiki</a> pour les instructions de mise à jour.',
       aboutText: '<p>Own my money est un outil pour suivre facilement votre activité bancaire depuis n\'importe quel équipement connecté à internet (pc, smartphone, tablette, ...).</p><p>En cas de problème ou pour toute suggestion, merci de créer un <a href="https://github.com/nioc/own-my-money/issues" target="_blank" rel="noreferrer">ticket</a>.</p><p>Ce projet est sous la licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.html" target="_blank" rel="noreferrer">GNU Affero General Public License v3.0</a>.</p>',
     },
     objects: {

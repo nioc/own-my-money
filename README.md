@@ -4,6 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/nioc/own-my-money.svg)](https://github.com/nioc/own-my-money/releases/latest)
 [![Codacy grade](https://img.shields.io/codacy/grade/dcddd6d1c1284ea496b9a1015e775b2d.svg)](https://www.codacy.com/app/nioc/own-my-money)
 [![Build Status](https://travis-ci.org/nioc/own-my-money.svg?branch=master)](https://travis-ci.org/nioc/own-my-money)
+[![Docker Pulls](https://img.shields.io/docker/pulls/nioc/own-my-money)](https://hub.docker.com/r/nioc/own-my-money)
 
 Own my money is a simple way to stay on top of your banking from any web browser.
 
@@ -17,7 +18,8 @@ Own my money is a simple way to stay on top of your banking from any web browser
 - transactions annotations for your memory,
 - export transactions to CSV,
 - progressive web app (offline access),
-- internationalized and localized.
+- internationalized and localized,
+- Docker containerized.
 
 [Live demo](https://nioc.github.io/own-my-money).
 

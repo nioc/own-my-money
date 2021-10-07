@@ -28,6 +28,7 @@ switch ($api->method) {
         $configuration = new Configuration();
         $version = new stdClass();
         $version->installed = $configuration->get('version');
+        $version->isContainerized = $configuration->get('containerized') === '1';
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Updater.php';
         $updater = new Updater($api->language);
         if (!$updater->getLastVersion()) {
@@ -49,6 +50,12 @@ switch ($api->method) {
         if (!$api->checkScope('admin')) {
             $api->output(403, $api->getMessage('adminScopeRequired'));
             //indicate the requester is not allowed to update application
+            return;
+        }
+        $configuration = new Configuration();
+        if ($configuration->get('containerized') === '1') {
+            $api->output(501, $api->getMessage('noUpdateContainer'));
+            //indicate application is running in Docker container
             return;
         }
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/Updater.php';

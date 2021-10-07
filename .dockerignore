@@ -1,0 +1,16 @@
+# Exclude all files
+*
+
+# Include specific files/folders
+!docker/php.ini
+!docker/apache.conf
+!docker/vhost-001-money.conf
+!docker/docker-entrypoint.sh
+!money-front-vue
+!server
+
+# Exclude specific files/folders
+.git
+money-front-vue/dist
+money-front-vue/node_modules
+**/.php_cs.cache

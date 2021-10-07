@@ -34,9 +34,13 @@
           </div>
         </div>
         <section v-if="!isUpToDate && user.scope.admin" class="content">
-          <button class="button is-primary" :class="{'is-loading': isUpdating}" :disabled="!isOnline || isUpdating" @click="update"><span class="icon"><i class="fa fa-wrench" /></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
-          <!-- eslint-disable-next-line vue/require-v-for-key-->
-          <pre v-if="updateLogs" class="section content"><span v-for="updateLog in updateLogs" class="is-block">{{ updateLog.timestamp | moment("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
+          <div v-if="!version.isContainerized">
+            <button class="button is-primary" :class="{'is-loading': isUpdating}" :disabled="!isOnline || isUpdating" @click="update"><span class="icon"><i class="fa fa-wrench" /></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
+            <!-- eslint-disable-next-line vue/require-v-for-key-->
+            <pre v-if="updateLogs" class="section content"><span v-for="updateLog in updateLogs" class="is-block">{{ updateLog.timestamp | moment("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
+          </div>
+          <!-- eslint-disable-next-line vue/no-v-html -->
+          <div v-else class="notification is-danger is-light" v-html="$t('labels.containerUpdateText')" />
         </section>
         <!-- eslint-disable-next-line vue/no-v-html -->
         <section class="content" v-html="$t('labels.aboutText')" />
@@ -59,6 +63,7 @@ export default {
       version: {
         installed: '',
         latest: '',
+        isContainerized: false,
       },
       isUpToDate: true,
       user: Auth.getProfile(),

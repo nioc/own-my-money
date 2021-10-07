@@ -121,6 +121,7 @@ fr {
     folderNotWritable { "Le dossier '{0}' n'est pas accessible en écriture, vous devriez lancer la commande suivante : chown {1} {0} -R" }
     downloadArchive { "Téléchargement de l'archive..." }
     archiveNotWritable { "Impossible d'écrire l'archive à l'emplacement {0}/{1}" }
+    noUpdateContainer { "L'application s'execute dans un conteneur, mettez à jour l'image docker" }
     extractArchive { "Extraction de l'archive vers {0}..." }
     applicationUpdated { "L'application a été mise à jour, il peut être nécessaire de finaliser la configuration ici : {0}/#/setup" }
     downloadError { "erreur lors du téléchargement : " }
