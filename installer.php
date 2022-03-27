@@ -198,9 +198,9 @@ do {
         output("'$domain' is not a valid domain", true);
     }
 } while (!$isValid);
-if ($handle = opendir("$rootFolder/own-my-money/money-front-vue/dist/js/")) {
+if ($handle = opendir("$rootFolder/own-my-money/money-front-vue/dist/assets/")) {
     while (false !== ($entry = readdir($handle))) {
-        $current = "$rootFolder/own-my-money/money-front-vue/dist/js/$entry";
+        $current = "$rootFolder/own-my-money/money-front-vue/dist/assets/$entry";
         if (is_file($current)) {
             $content = file_get_contents($current);
             $content = str_replace('http://localhost', $domain, $content);

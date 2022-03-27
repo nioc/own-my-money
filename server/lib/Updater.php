@@ -233,9 +233,9 @@ class Updater
             $scheme = 'https';
         }
         $domain = $scheme . '://' . $_SERVER['HTTP_HOST'];
-        if ($handle = opendir("$this->rootFolder/own-my-money/money-front-vue/dist/js/")) {
+        if ($handle = opendir("$this->rootFolder/own-my-money/money-front-vue/dist/assets/")) {
             while (false !== ($entry = readdir($handle))) {
-                $current = "$this->rootFolder/own-my-money/money-front-vue/dist/js/$entry";
+                $current = "$this->rootFolder/own-my-money/money-front-vue/dist/assets/$entry";
                 if (is_file($current)) {
                     $content = file_get_contents($current);
                     $content = str_replace('http://localhost', $domain, $content);
