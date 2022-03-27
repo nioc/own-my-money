@@ -263,7 +263,7 @@ export default {
     async count () {
       if (this.currentPattern.label) {
         try {
-          const response = await this.$http.get('transactions', { query: { pattern: this.currentPattern.label } })
+          const response = await this.$http.get('transactions', { params: { pattern: this.currentPattern.label } })
           this.matchingCount = response.data.length
         } catch (error) {
           // @TODO : add error handling
