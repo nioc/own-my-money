@@ -3,8 +3,8 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
-          {link: '/accounts', icon: 'fa-table', text: this.$tc('objects.account', 2), isActive: true},
+          {link: '/', icon: 'fas fa-home', text: $t('labels.home')},
+          {link: '/accounts', icon: 'fas fa-table', text: $tc('objects.account', 2), isActive: true},
         ]"
       />
     </div>
@@ -30,8 +30,8 @@
               <tr v-for="account in accounts" :key="account.id">
                 <td class="icon-account"><img v-if="account.iconUrl" :src="account.iconUrl" height="24" width="24"></td>
                 <td><router-link :to="{name: 'account', params: {id: account.id}}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link><span v-if="!account.isOwned" class="tag is-danger is-light">{{ $t('labels.readOnly') }}</span></td>
-                <td>{{ $n(account.balance, 'currency') }}</td>
-                <td v-if="account.lastUpdate">{{ account.lastUpdate | moment("from", "now") }}</td><td v-else />
+                <td><span v-if="account.balance">{{ $n(account.balance, 'currency') }}</span></td>
+                <td v-if="account.lastUpdate">{{ $dayjs(account.lastUpdate).fromNow() }}</td><td v-else />
               </tr>
             </tbody>
           </table>
@@ -41,20 +41,20 @@
         </div>
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" :disabled="!isOnline" @click="isCreateAccountModalActive = true"><i class="fa fa-plus fa-mr" />{{ $t('actions.addAccount') }}</button>
+            <button class="button is-primary" role="button" :disabled="!isOnline" @click="isCreateAccountModalActive = true"><span class="icon"><i class="fas fa-plus-square" /></span><span>{{ $t('actions.addAccount') }}</span></button>
           </p>
           <p class="control">
-            <b-field class="file">
-              <b-upload v-model="upload.file" :disabled="(!isOnline || upload.isUploading)" @input="uploadDataset">
-                <a class="button is-primary" :disabled="(!isOnline || upload.isUploading)">
-                  <b-icon icon="upload" />
+            <o-field class="file">
+              <o-upload v-model="upload.file" :disabled="(!isOnline || upload.isUploading)" @input="uploadDataset">
+                <a class="button is-primary">
+                  <o-icon icon="upload" />
                   <span>{{ $t('actions.uploadOfx') }}</span>
                 </a>
-              </b-upload>
+              </o-upload>
               <span v-if="upload.file" class="file-name">
                 {{ upload.file.name }} ({{ $tc('objects.byte', upload.file.size) }})
               </span>
-            </b-field>
+            </o-field>
           </p>
         </div>
         <div class="field is-horizontal">
@@ -66,19 +66,20 @@
             </div>
           </div>
         </div>
-        <b-modal :active.sync="isCreateAccountModalActive" has-modal-card scroll="keep">
-          <create-account />
-        </b-modal>
-        <b-loading :is-full-page="false" :active.sync="isLoading" />
+        <o-modal v-model:active="isCreateAccountModalActive" has-modal-card scroll="keep">
+          <create-account @close="isCreateAccountModalActive = false" @created="getAccounts" />
+        </o-modal>
+        <o-loading :active="isLoading" :full-page="false" />
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import Config from './../services/Config'
-import Breadcrumb from '@/components/Breadcrumb'
-import CreateAccount from '@/components/CreateAccount'
+import Config from '@/services/Config'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+import CreateAccount from '@/components/CreateAccount.vue'
+
 export default {
   name: 'Accounts',
   components: {
@@ -97,45 +98,35 @@ export default {
         isUploading: false,
         result: '',
       },
-      // resources
-      rAccounts: this.$resource(Config.API_URL + 'accounts{/id}'),
-      rDatasets: this.$resource(Config.API_URL + 'dataset'),
     }
   },
   computed: {
     isOnline () {
-      return this.$store.state.isOnline
+      return this.$store.isOnline
     },
   },
   mounted () {
     this.getAccounts()
   },
   methods: {
-    getAccounts () {
+    async getAccounts () {
       this.isLoading = true
-      this.rAccounts.query()
-        .then((response) => {
-          this.accounts = response.body
-          this.accounts.map((account) => {
-            account.iconUrl = account.iconUrl ? Config.API_URL + account.iconUrl : null
-            return account
-          })
-        }, (response) => {
-          if (response.body.message) {
-            this.error = response.body.message
-            return
-          }
-          this.error = response.status + ' - ' + response.statusText
+      try {
+        const response = await this.$http.get('accounts')
+        this.accounts = response.data
+        this.accounts.map((account) => {
+          account.iconUrl = account.iconUrl ? Config.API_URL + account.iconUrl : null
+          return account
         })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.isLoading = false
-        })
+      } catch (error) {
+        this.error = error.message
+      }
+      this.isLoading = false
     },
-    uploadDataset () {
+    async uploadDataset (event) {
       this.upload.result = ''
       // get file
-      const file = this.upload.file
+      const file = event.target.files[0]
       var data = new FormData()
       data.append('Content-Type', file.type || 'application/octet-stream')
       data.append('file', file)
@@ -148,30 +139,22 @@ export default {
       this.upload.isUploading = true
       this.isLoading = true
       // call API
-      this.rDatasets.save({}, data)
-        .then((response) => {
-          if (response.body.message) {
-            this.upload.result = response.body.message
-          }
-          if (response.body.accounts && response.body.insertTime) {
-            response.body.accounts.forEach(account => {
-              sessionStorage.setItem('accounts:' + account + ':transactions:lastFetch', response.body.insertTime)
-            })
-          }
-          this.getAccounts()
-        }, (response) => {
-        // upload failed, inform user
-          if (response.body.message) {
-            this.upload.result = response.body.message
-            return
-          }
-          this.upload.result = response.status + ' - ' + response.statusText
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.upload.isUploading = false
-          this.isLoading = false
-        })
+      try {
+        const response = await this.$http.post('dataset', data)
+        if (response.data.message) {
+          this.upload.result = response.data.message
+        }
+        if (response.data.accounts && response.data.insertTime) {
+          response.data.accounts.forEach(account => {
+            sessionStorage.setItem('accounts:' + account + ':transactions:lastFetch', response.data.insertTime)
+          })
+        }
+        this.getAccounts()
+      } catch (error) {
+        this.upload.result = error.message
+      }
+      this.upload.isUploading = false
+      this.isLoading = false
     },
   },
 }

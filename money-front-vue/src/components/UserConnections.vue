@@ -1,21 +1,22 @@
 <template>
-  <b-table :data="connections" :mobile-cards="false" :striped="true" narrowed default-sort="creation" default-sort-direction="desc">
-    <b-table-column v-slot="props" field="creation" :label="$t('fieldnames.date')" sortable>
-      {{ props.row.creation | moment("L LTS") }}
-    </b-table-column>
-    <b-table-column v-slot="props" field="ip" :label="$t('fieldnames.ipAddress')" sortable>
+  <o-table :data="connections" :mobile-cards="false" :striped="true" narrowed default-sort="creation" default-sort-direction="desc">
+    <o-table-column v-slot="props" field="creation" :label="$t('fieldnames.date')" sortable>
+      {{ $dayjs(props.row.creation).format("L LTS") }}
+    </o-table-column>
+    <o-table-column v-slot="props" field="ip" :label="$t('fieldnames.ipAddress')" sortable>
       {{ props.row.ip }}
-    </b-table-column>
-    <b-table-column v-slot="props" field="userAgent" :label="$t('fieldnames.userAgent')" sortable>
+    </o-table-column>
+    <o-table-column v-slot="props" field="userAgent" :label="$t('fieldnames.userAgent')" sortable>
       <span :title="props.row.userAgent">{{ props.row.browser }} / {{ props.row.os }}<span v-if="props.row.device"> / {{ props.row.device }}</span></span>
-    </b-table-column>
-  </b-table>
+    </o-table-column>
+  </o-table>
 </template>
 
 <script>
 import UAParser from 'ua-parser-js'
-import Config from './../services/Config'
+
 export default {
+  name: 'UserConnections',
   props: {
     id: {
       type: Number,
@@ -25,36 +26,30 @@ export default {
   data () {
     return {
       connections: [],
-      // resources
-      rConnections: this.$resource(Config.API_URL + 'users/' + this.id + '/tokens'),
     }
   },
   mounted () {
     this.get()
   },
   methods: {
-    get () {
-      this.rConnections.query()
-        .then((response) => {
-          this.connections = response.body
-          const parser = new UAParser()
-          this.connections.forEach(function (connection) {
-            parser.setUA(connection.userAgent)
-            const userAgent = parser.getResult()
-            connection.browser = userAgent.browser.name + ' ' + userAgent.browser.major
-            connection.os = userAgent.os.name + ' ' + userAgent.os.version
-            if (userAgent.device.model) {
-              connection.device = userAgent.device.model
-            }
-          })
-        }, (response) => {
-          // @todo : handle error
-          if (response.body.message) {
-            console.log(response.body.message)
-            return
+    async get () {
+      try {
+        const response = await this.$http.get(`users/${this.id}/tokens`)
+        const parser = new UAParser()
+        this.connections = response.data.map((connection) => {
+          parser.setUA(connection.userAgent)
+          const userAgent = parser.getResult()
+          connection.browser = `${userAgent.browser.name} ${userAgent.browser.major}`
+          connection.os = `${userAgent.os.name} ${userAgent.os.version}`
+          if (userAgent.device.model !== undefined) {
+            connection.device = userAgent.device.model
           }
-          console.log(response.status + ' - ' + response.statusText)
+          return connection
         })
+      } catch (error) {
+        // @todo : handle error
+        console.log(error)
+      }
     },
   },
 }

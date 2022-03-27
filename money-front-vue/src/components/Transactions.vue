@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-collapse class="card" :open.sync="search.isActive">
+    <o-collapse :open="search.isActive" class="card">
       <template #trigger>
         <div class="card-header">
           <span class="card-header-icon">
@@ -18,10 +18,10 @@
             </span>
           </div>
           <div class="control">
-            <b-datepicker v-model="search.periodStart" placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" @input="get()" />
+            <o-datepicker v-model="search.periodStart" placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" lists-class="field has-addons" @update:model-value="get()" />
           </div>
           <div class="control">
-            <b-datepicker v-model="search.periodEnd" placeholder="End date" icon="calendar" editable :max-date="search.currentDate" @input="get()" />
+            <o-datepicker v-model="search.periodEnd" placeholder="End date" icon="calendar" editable :max-date="search.currentDate" lists-class="field has-addons" @update:model-value="get()" />
           </div>
           <div class="control">
             <div class="select">
@@ -41,9 +41,9 @@
           </div>
         </div>
       </div>
-    </b-collapse>
+    </o-collapse>
 
-    <b-collapse class="card" :open.sync="batch.isActive">
+    <o-collapse v-model:open="batch.isActive" class="card">
       <template #trigger>
         <div class="card-header">
           <span class="card-header-icon">
@@ -58,7 +58,7 @@
             <div class="select">
               <select v-model="batch.category">
                 <option value="">-- {{ $tc('objects.category', 1) }} --</option>
-                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.label }}</option>
+                <option v-for="category in activeCategories" :key="category.id" :value="category.id">{{ category.label }}</option>
               </select>
             </div>
           </div>
@@ -102,24 +102,24 @@
                     </div>
                   </td>
                   <td class="dispatch-slider">
-                    <b-field grouped>
-                      <b-field expanded>
-                        <b-slider v-model="share.share" :custom-formatter="val => val + '%'" />
-                      </b-field>
-                      <b-field>
-                        <b-input v-model.number="share.share" type="number" min="0" max="100" />
-                      </b-field>
-                    </b-field>
+                    <o-field grouped>
+                      <o-field expanded root-class="is-expanded">
+                        <o-slider v-model="share.share" :custom-formatter="val => val + '%'" />
+                      </o-field>
+                      <o-field>
+                        <o-input v-model.number="share.share" type="number" min="0" max="100" />
+                      </o-field>
+                    </o-field>
                   </td>
                   <td>
-                    <button class="button is-light" type="button" @click="removeShareLine(index)"><i class="fa fa-trash fa-fw fa-mr" /><span class="is-hidden-mobile">{{ $t('actions.delete') }}</span></button>
+                    <button class="button is-light" type="button" @click="removeShareLine(index)"><span class="icon"><i class="fas fa-trash-alt" /></span><span class="is-hidden-mobile">{{ $t('actions.delete') }}</span></button>
                   </td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td colspan="3">
-                    <button class="button is-light" type="button" @click="addShareLine()"><i class="fa fa-plus-square fa-fw fa-mr" />{{ $t('actions.add') }}</button>
+                    <button class="button is-light" type="button" @click="addShareLine()"><span class="icon"><i class="fas fa-plus-square" /></span><span>{{ $t('actions.add') }}</span></button>
                   </td>
                 </tr>
               </tfoot>
@@ -128,13 +128,13 @@
         </div>
         <div class="field is-grouped is-grouped-multiline">
           <div class="control">
-            <button class="button is-primary" :class="{'is-loading': batch.isLoading}" :disabled="(batch.isLoading || !isOnline)" @click="processBatchUpdate"><span class="icon"><i class="fa fa-cogs" /></span><span>{{ $t('actions.apply') }}</span></button>
+            <button class="button is-primary" :class="{'is-loading': batch.isLoading}" :disabled="(batch.isLoading || !isOnline)" @click="processBatchUpdate"><span class="icon"><i class="fas fa-cogs" /></span><span>{{ $t('actions.apply') }}</span></button>
           </div>
           <div class="control">
-            <button class="button is-light" :disabled="batch.isLoading" @click="selectAll"><span class="icon"><i class="fa fa-check-square-o" /></span><span>{{ $t('actions.selectAll') }}</span></button>
+            <button class="button is-light" :disabled="batch.isLoading" @click="selectAll"><span class="icon"><i class="far fa-check-square" /></span><span>{{ $t('actions.selectAll') }}</span></button>
           </div>
           <div class="control">
-            <button class="button is-light" :disabled="batch.isLoading" @click="selectNone"><span class="icon"><i class="fa fa-square-o" /></span><span>{{ $t('actions.clear') }}</span></button>
+            <button class="button is-light" :disabled="batch.isLoading" @click="selectNone"><span class="icon"><i class="far fa-square" /></span><span>{{ $t('actions.clear') }}</span></button>
           </div>
           <div class="control">
             <div class="input is-static">{{ $tc('objects.transactionsSelected', batch.checkedTransactions.length) }} ({{ $n(transactionsCheckedSum, 'currency') }})</div>
@@ -151,31 +151,39 @@
           </div>
         </div>
       </div>
-    </b-collapse>
+    </o-collapse>
 
-    <b-table class="mt-1" :data="displayedTransactions" :row-class="(row, index) => row.isNew ? 'has-text-weight-bold' : ''" :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" :checkable="batch.isActive" :checked-rows.sync="batch.checkedTransactions" @select="edit">
-      <b-table-column v-if="displayAccount" v-slot="props" field="icon" cell-class="icon-transactions-account-col">
-        <span><img v-if="props.row.iconUrl" :src="props.row.iconUrl" :title="props.row.accountLabel" height="24" width="24"><span class="is-hidden-tablet">{{ props.row.accountLabel }}</span></span>
-      </b-table-column>
-      <b-table-column v-slot="props" field="amount" :label="$t('fieldnames.amount')" sortable numeric>
+    <o-table v-model:checked-rows="batch.checkedTransactions" table-class="mt-1" :data="displayedTransactions" :row-class="(row, index) => row.isNew ? 'has-text-weight-bold' : ''" :paginated="true" :striped="true" :hoverable="true" :loading="isLoading" default-sort="datePosted" default-sort-direction="desc" :checkable="batch.isActive" wrapper-class="table-container" @select="edit">
+      <o-table-column v-if="displayAccount" v-slot="props" field="icon">
+        <o-tooltip v-if="props.row.iconUrl" :label="props.row.accountLabel" variant="black">
+          <img class="transaction-account-icon" :src="props.row.iconUrl" alt="" height="24" width="24">
+        </o-tooltip>
+      </o-table-column>
+      <o-table-column v-slot="props" field="amount" :label="$t('fieldnames.amount')" sortable numeric position="right">
         <span :class="[props.row.amount < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(props.row.amount, 'currency') }}</span>
-      </b-table-column>
-      <b-table-column v-slot="props" field="share" :label="$t('fieldnames.share')" sortable numeric>
+      </o-table-column>
+      <o-table-column v-slot="props" field="share" :label="$t('fieldnames.share')" sortable numeric position="right">
         <span v-if="props.row.share" class="has-text-weight-light has-text-grey-dark">{{ props.row.share }}%</span><span v-else class="has-text-weight-light has-text-grey-light">{{ props.row.accountOwner === userId ? 100 : 0 }}%</span>
-      </b-table-column>
-      <b-table-column v-slot="props" field="name" :label="$t('fieldnames.label')" sortable>
-        <span class="transaction-label">{{ props.row.fullname }}</span><span v-if="props.row.note" class="has-text-grey"> | {{ props.row.note }}</span>
-      </b-table-column>
-      <b-table-column v-slot="props" field="datePosted" :label="$t('fieldnames.date')" sortable>
-        {{ props.row.datePosted | moment("L") }}
-      </b-table-column>
-      <b-table-column v-slot="props" field="isRecurring" :label="$t('fieldnames.isRecurring')" sortable>
+      </o-table-column>
+      <o-table-column v-slot="props" field="name" :label="$t('fieldnames.label')" sortable>
+        <o-tooltip :label="props.row.fullname" variant="black">
+          <span class="has-no-wrap is-flex">
+            <span class="transaction-label">{{ props.row.fullname }}</span><span v-if="props.row.note" class="has-text-grey">&nbsp;|&nbsp;{{ props.row.note }}</span>
+          </span>
+        </o-tooltip>
+      </o-table-column>
+      <o-table-column v-slot="props" field="datePosted" :label="$t('fieldnames.date')" sortable>
+        {{ $dayjs(props.row.datePosted).format("L") }}
+      </o-table-column>
+      <o-table-column v-slot="props" field="isRecurring" :label="$t('fieldnames.isRecurring')" sortable position="centered">
         <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']" />
-      </b-table-column>
-      <b-table-column v-slot="props" field="category" :label="$tc('objects.category', 1)" sortable>
-        <span v-if="props.row.categoryIcon" class="icon"><i class="fa fa-fw" :class="props.row.categoryIcon" /></span>
-        {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
-      </b-table-column>
+      </o-table-column>
+      <o-table-column v-slot="props" field="category" :label="$tc('objects.category', 1)" sortable>
+        <span class="has-no-wrap">
+          <span v-if="props.row.categoryIcon" class="icon"><i class="fa fa-fw" :class="props.row.categoryIcon" /></span>
+          {{ props.row.categoryLabel }}<span v-if="props.row.subcategory"> / {{ props.row.subcategoryLabel }}</span>
+        </span>
+      </o-table-column>
       <template #empty>
         <section class="section">
           <div class="content has-text-grey has-text-centered">
@@ -186,27 +194,26 @@
       <template #bottom-left>
         <a class="button is-light" @click="downloadData"><span class="icon"><i class="fa fa-download fa-lg" /></span><span>{{ $t('actions.download') }}</span></a>
       </template>
-    </b-table>
-    <b-modal :active.sync="modalTransaction.isActive" has-modal-card scroll="keep">
-      <transaction :transaction="modalTransaction.transaction" :r-transactions="rTransactions" />
-    </b-modal>
+    </o-table>
+    <o-modal v-model:active="modalTransaction.isActive" has-modal-card scroll="keep">
+      <transaction v-if="modalTransaction.isActive" :transaction="modalTransaction.transaction" :url="url" @close="modalTransaction.isActive = false" @updated="update" />
+    </o-modal>
   </div>
 </template>
 
 <script>
-import Bus from './../services/Bus'
-import Transaction from '@/components/Transaction'
-import CategoriesFactory from './../services/Categories'
-import HoldersFactory from '@/services/Holders'
+import Transaction from '@/components/Transaction.vue'
+import { useStore } from '@/store'
+import { mapState } from 'pinia'
 import exportFromJSON from 'export-from-json'
-import Config from './../services/Config'
+import Config from '@/services/Config'
 import Auth from '@/services/Auth'
+
 export default {
   name: 'Transactions',
   components: {
     Transaction,
   },
-  mixins: [CategoriesFactory, HoldersFactory],
   props: {
     url: {
       required: true,
@@ -252,7 +259,7 @@ export default {
         isActive: false,
         query: '',
         currentDate: today,
-        periodStart: this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate(),
+        periodStart: this.$dayjs(today).subtract(this.$dayjs.duration(this.duration)).toDate(),
         periodEnd: today,
         category: '',
         subcategory: '',
@@ -262,13 +269,9 @@ export default {
         isActive: false,
         transaction: {},
       },
-      rTransactions: this.$resource(this.url),
     }
   },
   computed: {
-    isOnline () {
-      return this.$store.state.isOnline
-    },
     displayedTransactions () {
       const query = this.search.query
       const periodStart = this.search.periodStart
@@ -297,6 +300,7 @@ export default {
     sharesSum () {
       return this.batch.shares.filter(share => share.user !== null).reduce((acc, item) => acc + item.share, 0)
     },
+    ...mapState(useStore, ['isOnline', 'activeCategories', 'categories', 'categoriesAndSubcategoriesLookup', 'holders', 'holderId']),
   },
   watch: {
     'search.category' () {
@@ -307,33 +311,25 @@ export default {
       const today = new Date()
       today.setHours(0, 0, 0)
       today.setMilliseconds(0)
-      this.search.periodStart = this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate()
+      this.search.periodStart = this.$dayjs(today).subtract(this.$dayjs.duration(this.duration)).toDate()
     },
   },
-  mounted () {
-    this.get()
-    this.getCategories(true)
-    Bus.$on('transactions-updated', () => {
+  async mounted () {
+    await this.get()
+    this.$bus.on('transactions-updated', () => {
       this.get()
     })
-    Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
-        this.search.periodStart = search.periodStart
-        this.search.periodEnd = search.periodEnd
-      }
-    })
-    this.getCurrentHolderId().then((holderId) => {
-      this.addShareLine({ user: holderId, share: 100 })
-    })
+    this.$bus.on('transactions-date-filtered', this.handleTransactionsDateFiltered)
+    this.addShareLine({ user: this.holderId, share: 100 })
   },
-  beforeDestroy () {
+  beforeUnmount () {
     // remove events listener
-    Bus.$off('transactions-updated')
-    Bus.$off('transactions-date-filtered')
+    this.$bus.off('transactions-updated')
+    this.$bus.off('transactions-date-filtered', this.handleTransactionsDateFiltered)
   },
   methods: {
     // get transactions
-    get () {
+    async get () {
       if (this.isLoading) {
         // exit if already loading
         return
@@ -341,8 +337,8 @@ export default {
       this.isLoading = true
       const config = {
         params: {
-          periodStart: this.$moment(this.search.periodStart).format('X'),
-          periodEnd: this.$moment(this.search.periodEnd).format('X'),
+          periodStart: this.$dayjs(this.search.periodStart).format('X'),
+          periodEnd: this.$dayjs(this.search.periodEnd).format('X'),
         },
         headers: {
         },
@@ -354,19 +350,17 @@ export default {
           config.headers = { 'Omm-Last-Fetch': transactionsLastFetchDate }
         }
       }
-      this.$http.get(this.url, config).then((response) => {
-        this.transactions = response.body
-        this.transactions.map((transaction) => {
+      try {
+        const response = await this.$http.get(this.url, config)
+        this.transactions = response.data.map((transaction) => {
           transaction.iconUrl = transaction.iconUrl ? Config.API_URL + transaction.iconUrl : null
           return transaction
         })
-      }, (response) => {
+      } catch (error) {
         // @TODO : add error handling
-        console.error(response)
-      }).finally(function () {
-        // remove loading overlay when API replies
-        this.isLoading = false
-      })
+        console.error(error)
+      }
+      this.isLoading = false
     },
     // edit transaction in modal form
     edit (item) {
@@ -383,16 +377,27 @@ export default {
         }
       }
     },
+    update (transaction) {
+      const index = this.transactions.findIndex(t => t.id === transaction.id)
+      if (index !== -1) {
+        this.transactions[index] = { ...this.transactions[index], ...transaction }
+        return
+      }
+      this.get()
+    },
     downloadData () {
       const transactions = JSON.parse(JSON.stringify(this.displayedTransactions)).map((t) => {
         t.amount = this.$n(t.amount, { style: 'decimal', useGrouping: false })
-        t.datePosted = this.$moment(t.datePosted).format('L')
-        t.dateUser = this.$moment(t.dateUser).format('L')
+        t.datePosted = this.$dayjs(t.datePosted).format('L')
+        t.dateUser = this.$dayjs(t.dateUser).format('L')
         delete (t.id)
         delete (t.fitid)
         delete (t.type)
         delete (t.category)
         delete (t.subcategory)
+        delete (t.categoryIcon)
+        delete (t.iconUrl)
+        delete (t.accountOwner)
         delete (t.fullname)
         for (var property in t) {
           if (t[property] === null) {
@@ -401,9 +406,43 @@ export default {
         }
         return t
       })
-      exportFromJSON({ data: transactions, fileName: 'transactions', exportType: exportFromJSON.types.csv, withBOM: true })
+      exportFromJSON({
+        data: transactions,
+        fileName: 'transactions',
+        exportType: exportFromJSON.types.csv,
+        withBOM: true,
+        beforeTableEncode: entries => entries.map(({ fieldName, fieldValues }) => ({ fieldName: this.formatTitle(fieldName), fieldValues })),
+      })
     },
-    processBatchUpdate () {
+    formatTitle(name) {
+      switch (name) {
+      case 'datePosted':
+        return this.$t('fieldnames.date')
+      case 'dateUser':
+        return this.$t('fieldnames.dateUser')
+      case 'amount':
+        return this.$t('fieldnames.amount')
+      case 'name':
+        return this.$t('fieldnames.label')
+      case 'memo':
+        return this.$t('fieldnames.memo')
+      case 'note':
+        return this.$t('fieldnames.note')
+      case 'isRecurring':
+        return this.$t('fieldnames.isRecurring')
+      case 'accountLabel':
+        return this.$t('objects.account')
+      case 'share':
+        return this.$t('fieldnames.share')
+      case 'categoryLabel':
+        return this.$t('objects.category')
+      case 'subcategoryLabel':
+        return this.$t('objects.subcategory')
+      default:
+        return name
+      }
+    },
+    async processBatchUpdate () {
       const length = this.batch.checkedTransactions.length
       if (length > 0) {
         this.batch.isLoading = true
@@ -417,9 +456,7 @@ export default {
         for (const transaction of this.batch.checkedTransactions) {
           if (category) {
             transaction.category = category
-            if (subcategory) {
-              transaction.subcategory = subcategory
-            }
+            transaction.subcategory = subcategory
           }
           if (isRecurring !== null) {
             transaction.isRecurring = isRecurring
@@ -446,23 +483,17 @@ export default {
             }
             transaction.shares = shares
           }
-          this.rTransactions.update({ id: transaction.id }, transaction)
-            .then((response) => {
-              transaction.share = response.body.share
-            }, (response) => {
-              if (response.body.message) {
-                this.batch.result += transaction.id + ' : ' + response.body.message + '. '
-                return
-              }
-              this.batch.result += transaction.id + ' : ' + response.status + ' - ' + response.statusText + '. '
-            })
-            .finally(function () {
-              processed++
-              this.batch.progress = processed / length
-              if (processed === length) {
-                this.batch.isLoading = false
-              }
-            })
+          try {
+            const response = await this.$http.put(`${this.url}/${transaction.id}`, transaction)
+            transaction.share = response.data.share
+          } catch (error) {
+            this.batch.result += `${transaction.id} : ${error.message}. `
+          }
+          processed++
+          this.batch.progress = processed / length
+          if (processed === length) {
+            this.batch.isLoading = false
+          }
         }
       }
     },
@@ -480,6 +511,12 @@ export default {
     },
     removeShareLine (index) {
       this.batch.shares.splice(index, 1)
+    },
+    handleTransactionsDateFiltered (search) {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime())) {
+        this.search.periodStart = search.periodStart
+        this.search.periodEnd = search.periodEnd
+      }
     },
   },
 }

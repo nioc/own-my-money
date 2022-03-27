@@ -1,7 +1,7 @@
 <template>
   <section class="hero">
     <div class="hero-head">
-      <breadcrumb :items.sync="breadcrumbItems" />
+      <breadcrumb :items="breadcrumbItems" />
     </div>
     <div class="hero-body">
       <div class="container box">
@@ -9,24 +9,24 @@
         <p class="subtitle has-text-grey">{{ $t('actions.editCategory') }}</p>
         <form novalidate class="section is-max-width-form" @submit.prevent="validateBeforeSubmit">
 
-          <div class="field is-horizontal">
+          <div class="field is-horizontal is-required">
             <div class="field-label is-normal">
               <label class="label">{{ $t('fieldnames.label') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <input v-model="category.label" v-validate="'required|min:3'" class="input" type="text" name="label" placeholder="Type a short description" :class="{'is-danger': errors.has('label')}">
-                  <span v-show="errors.has('label')" class="icon is-small is-right">
-                    <i class="fa fa-exclamation-triangle" />
+                  <input v-model="category.label" class="input" type="text" name="label" placeholder="Type a short description" :class="{'is-danger': errors.label}" @input="validate">
+                  <span v-show="errors.label" class="icon is-small is-right">
+                    <i class="fas fa-exclamation-triangle has-text-danger" />
                   </span>
-                  <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
+                  <span v-if="errors.label" class="help is-danger">{{ errors.label.message }}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div v-if="!isCategory" class="field is-horizontal">
+          <div v-if="!isCategory" class="field is-horizontal is-required">
             <div class="field-label is-normal">
               <label class="label">{{ $t('fieldnames.parent') }}</label>
             </div>
@@ -34,7 +34,7 @@
               <div class="field">
                 <div class="control">
                   <div class="select">
-                    <select v-model="category.parentId" v-validate="'required'" name="parent" :class="{'is-danger': errors.has('label')}">
+                    <select v-model="category.parentId" name="parent" :class="{'is-danger': errors.label}" @input="validate">
                       <option v-for="parentCategory in parentCategories" :key="parentCategory.id" :value="parentCategory.id">{{ parentCategory.label }}</option>
                     </select>
                   </div>
@@ -43,43 +43,48 @@
             </div>
           </div>
 
-          <div v-if="isCategory" class="field is-horizontal">
+          <div v-if="isCategory" class="field is-horizontal is-required">
             <div class="field-label is-normal">
               <label class="label">{{ $t('fieldnames.icon') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
                 <div class="control has-icons-right">
-                  <div v-show="!isIconPickerDisplayed" class="button" @click="toggleIconPicker"><i class="fa fa-fw" :class="category.icon" /></div>
-                  <icon-picker v-show="isIconPickerDisplayed" @selectIcon="setIcon" />
-                  <span v-show="!category.icon" class="help is-danger">Icon is required.</span>
+                  <div v-show="!isIconPickerDisplayed" class="button" @click="toggleIconPicker"><i class="fa-fw" :class="category.icon" /></div>
+                  <input v-if="isIconPickerDisplayed" v-model="category.icon" class="input" type="text" name="icon" placeholder="Icon name" :class="{'is-danger': errors.icon}">
+                  <span v-if="errors.icon" class="help is-danger">{{ errors.icon.message }}</span>
                 </div>
+                <icon-picker v-if="isIconPickerDisplayed" :name="category.icon" class="mb-3" @select="setIcon" />
               </div>
             </div>
           </div>
 
-          <div v-if="isCategory" class="field is-horizontal">
+          <div v-if="isCategory" class="field is-horizontal is-required">
             <div class="field-label">
               <label class="label">{{ $t('fieldnames.isBudgeted') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <b-switch v-model="category.isBudgeted">{{ category.isBudgeted ? $t('labels.isBudgeted') : $t('labels.isNotBudgeted') }}</b-switch>
+                  <o-switch v-model="category.isBudgeted">
+                    {{ category.isBudgeted ? $t('labels.isBudgeted') : $t('labels.isNotBudgeted') }}
+                  </o-switch>
                 </div>
                 <p class="help">{{ $t('labels.isBudgetedHelp') }}</p>
               </div>
             </div>
           </div>
 
-          <div class="field is-horizontal">
+          <div class="field is-horizontal is-required">
             <div class="field-label">
               <label class="label">{{ $t('fieldnames.status') }}</label>
             </div>
             <div class="field-body">
               <div class="field">
                 <div class="control">
-                  <b-switch v-model="category.status">{{ category.status ? $t('labels.active') : $t('labels.disabled') }}</b-switch>
+                  <o-switch v-model="category.status">
+                    {{ category.status ? $t('labels.active') : $t('labels.disabled') }}
+                  </o-switch>
                 </div>
               </div>
             </div>
@@ -90,10 +95,10 @@
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary" :disabled="!isOnline"><span class="fa fa-save fa-fw fa-mr" aria-hidden="true" />{{ $t('actions.save') }}</button>
+                  <button class="button is-primary" :disabled="!isOnline"><span class="icon"><i class="fas fa-save" aria-hidden="true" /></span><span>{{ $t('actions.save') }}</span></button>
                 </div>
                 <div class="control">
-                  <a class="button is-light" @click="$router.go(-1)"><span class="fa fa-ban fa-fw fa-mr" aria-hidden="true" />{{ $t('actions.cancel') }}</a>
+                  <a class="button is-light" @click="$router.go(-1)"><span class="icon"><i class="fas fa-ban" aria-hidden="true" /></span><span>{{ $t('actions.cancel') }}</span></a>
                 </div>
               </div>
             </div>
@@ -110,7 +115,7 @@
             </div>
           </div>
 
-          <b-loading :is-full-page="false" :active.sync="isLoading" />
+          <o-loading :active="isLoading" :full-page="false" />
         </form>
       </div>
     </div>
@@ -118,29 +123,31 @@
 </template>
 
 <script>
-import Config from './../services/Config'
-import Breadcrumb from '@/components/Breadcrumb'
-import { fontAwesomePicker } from 'font-awesome-picker'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+import IconPicker from '@/components/IconPicker.vue'
+import { useValidator } from '@/services/Validator'
+
 export default {
   name: 'Category',
   components: {
     Breadcrumb,
-    'icon-picker': fontAwesomePicker,
+    IconPicker,
   },
   props: {
     isCategory: {
       type: Boolean,
     },
   },
+  setup() {
+    const { errors, validationRules, validate, validateForm } = useValidator()
+    return { errors, validationRules, validate, validateForm }
+  },
   data () {
     return {
-      rCategories: this.$resource(Config.API_URL + 'categories{/id}'),
-      // category
       category: {
         id: parseInt(this.$route.params.id),
         status: true,
       },
-      parentCategories: [],
       isIconPickerDisplayed: false,
       breadcrumbItems: [],
       isLoading: false,
@@ -149,13 +156,23 @@ export default {
   },
   computed: {
     isOnline () {
-      return this.$store.state.isOnline
+      return this.$store.isOnline
     },
+    parentCategories () {
+      return this.$store.categories
+    },
+  },
+  created () {
+    this.validationRules = {
+      label: 'required|min:3',
+      parent: 'required',
+      icon: 'required',
+    }
   },
   mounted () {
     this.breadcrumbItems = [
-      { link: '/', icon: 'fa-home', text: this.$t('labels.home') },
-      { link: '/categories', icon: 'fa-folder-open-o', text: this.$tc('objects.category', 2) },
+      { link: '/', icon: 'fas fa-home', text: this.$t('labels.home') },
+      { link: '/categories', icon: 'far fa-folder-open', text: this.$tc('objects.category', 2) },
     ]
     if (this.category.id) {
       // for existing category, get data
@@ -164,28 +181,23 @@ export default {
     if (!this.isCategory) {
       // for subcategory, get parent category id from path and get all ids/labels
       this.category.parentId = parseInt(this.$route.params.pid)
-      this.getParentCategories()
     } else if (!this.category.icon) {
       // set default icon for new category
-      this.category.icon = 'fa-question'
+      this.category.icon = 'fas fa-question'
     }
   },
   methods: {
     // get category informations
-    get () {
+    async get () {
       this.isLoading = true
-      this.rCategories.get({ id: this.category.id })
-        .then((response) => {
-          this.category = response.body
-          this.updateBreadcrumbItems()
-        }, (response) => {
-        // @TODO : add error handling
-          console.error(response)
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.isLoading = false
-        })
+      try {
+        const response = await this.$http.get(`categories/${this.category.id}`)
+        this.category = response.data
+        this.updateBreadcrumbItems()
+      } catch (error) {
+        console.error(error)
+      }
+      this.isLoading = false
     },
     updateBreadcrumbItems () {
       // need to copy breadcrumb items array for sync
@@ -214,78 +226,42 @@ export default {
       // update breadcrumbs items
       this.breadcrumbItems = breadcrumbItems.slice()
     },
-    getParentCategories () {
-      // try to get categories from local storage
-      if (localStorage.getItem('categories')) {
-        this.parentCategories = JSON.parse(localStorage.getItem('categories'))
-        this.updateBreadcrumbItems()
-        return
-      }
-      // categories was not found in local storage, call API
-      this.rCategories.query({ status: 'all' })
-        .then((response) => {
-          this.parentCategories = response.body
-          this.updateBreadcrumbItems()
-        }, (response) => {
-        // @TODO : add error handling
-          console.error(response)
-        })
-    },
     toggleIconPicker () {
       this.isIconPickerDisplayed = !this.isIconPickerDisplayed
     },
     setIcon (selectedIcon) {
-      this.category.icon = selectedIcon.className
+      this.category.icon = selectedIcon
       this.toggleIconPicker()
+      this.validate({ target: { name: 'icon', value: selectedIcon } })
     },
-    validateBeforeSubmit () {
+    async validateBeforeSubmit (submitEvent) {
       this.error = null
-      // call the async validator
-      this.$validator.validateAll().then((result) => {
-        if (result) {
-          this.isLoading = true
-          // if validation is ok, call category API
-          if (!this.category.id) {
-            // creating new (sub)category
-            this.rCategories.save(this.category)
-              .then((response) => {
-                localStorage.removeItem('categoriesActives')
-                localStorage.removeItem('categories')
-                // return to categories
-                this.$router.replace({ name: 'categories' })
-              }, (response) => {
-                if (response.body.message) {
-                  this.error = response.body.message
-                  return
-                }
-                this.error = response.status + ' - ' + response.statusText
-              })
-              .finally(function () {
-                // remove loading overlay when API replies
-                this.isLoading = false
-              })
-            return
-          }
-          // updating new (sub)category
-          this.rCategories.update({ id: this.category.id }, this.category)
-            .then((response) => {
-              localStorage.removeItem('categoriesActives')
-              localStorage.removeItem('categories')
-              // return to categories
-              this.$router.replace({ name: 'categories' })
-            }, (response) => {
-              if (response.body.message) {
-                this.error = response.body.message
-                return
-              }
-              this.error = response.status + ' - ' + response.statusText
-            })
-            .finally(function () {
-              // remove loading overlay when API replies
-              this.isLoading = false
-            })
+      if (!this.validateForm(submitEvent)) {
+        return
+      }
+      this.isLoading = true
+      if (!this.category.id) {
+        // creating new (sub)category
+        try {
+          await this.$http.post('categories', this.category)
+          // return to categories this will reload categories array to store
+          this.$router.replace({ name: 'categories' })
+        } catch (error) {
+          this.error = error.message
         }
-      })
+        // remove loading overlay when API replies
+        this.isLoading = false
+        return
+      }
+      // updating new (sub)category
+      try {
+        await this.$http.put(`categories/${this.category.id}`, this.category)
+        // return to categories this will reload categories array to store
+        this.$router.replace({ name: 'categories' })
+      } catch (error) {
+        this.error = error.message
+      }
+      this.isLoading = false
     },
   },
 }

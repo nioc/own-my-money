@@ -4,9 +4,8 @@ module.exports = {
     node: true,
   },
   extends: [
-    'plugin:vue/recommended',
-    '@vue/standard',
-    'eslint:recommended',
+    "plugin:vue/vue3-recommended",
+    "eslint:recommended",
   ],
   rules: {
     // 'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
@@ -49,11 +48,10 @@ module.exports = {
     'vue/key-spacing': 'error',
     'key-spacing': 'error',
     'vue/object-curly-spacing': 'error',
-    'object-curly-spacing': 'error',
+    "object-curly-spacing": ["error", "always"],
     'vue/space-unary-ops': 'error',
     'space-unary-ops': 'error',
-  },
-  parserOptions: {
-    parser: 'babel-eslint',
+    "vue/multi-word-component-names": "off",
+    'indent': ['error', 2],
   },
 }

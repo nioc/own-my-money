@@ -7,11 +7,11 @@
       </header>
 
       <section class="modal-card-body">
-        <div class="field">
+        <div class="field is-required">
           <label class="label">{{ $t('fieldnames.label') }}</label>
           <div class="control">
-            <input v-model.lazy="pattern.label" v-validate="'required'" class="input" type="text" name="label" placeholder="Transaction name to be find" :class="{'is-danger': errors.has('label')}" @change="count">
-            <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
+            <input v-model.lazy="currentPattern.label" class="input" type="text" name="label" placeholder="Transaction name to be find" :class="{'is-danger': errors.label}" @change="count">
+            <span v-if="errors.label" class="help is-danger">{{ errors.label.message }}</span>
           </div>
           <p class="help">{{ $t('labels.patternWildcardHelper') }}<span v-if="matchingCount !== null"> - {{ matchingCount }} {{ $tc('objects.occurence', matchingCount).toLowerCase() }}</span></p>
         </div>
@@ -19,20 +19,20 @@
           <label class="label">{{ $tc('objects.category', 1) }}</label>
           <div class="control">
             <div class="select">
-              <select v-model="pattern.category" name="parent">
+              <select v-model="currentPattern.category" name="category">
                 <option value="">-- {{ $tc('objects.category', 1) }} --</option>
                 <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.label }}</option>
               </select>
             </div>
           </div>
         </div>
-        <div v-if="pattern.category && categoriesAndSubcategoriesLookup[pattern.category] && categoriesAndSubcategoriesLookup[pattern.category].sub.length > 0" class="field">
+        <div v-if="currentPattern.category && categoriesAndSubcategoriesLookup[currentPattern.category] && categoriesAndSubcategoriesLookup[currentPattern.category].sub.length > 0" class="field">
           <label class="label">{{ $tc('objects.subcategory', 1) }}</label>
           <div class="control">
             <div class="select">
-              <select v-model="pattern.subcategory" name="parent">
+              <select v-model="currentPattern.subcategory" name="subcategory">
                 <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
-                <option v-for="subcategory in categoriesAndSubcategoriesLookup[pattern.category].sub" :key="subcategory.id" :value="subcategory.id">{{ subcategory.label }}</option>
+                <option v-for="subcategory in categoriesAndSubcategoriesLookup[currentPattern.category].sub" :key="subcategory.id" :value="subcategory.id">{{ subcategory.label }}</option>
               </select>
             </div>
           </div>
@@ -40,13 +40,15 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.isRecurring') }}</label>
           <div class="control">
-            <b-switch v-model="pattern.isRecurring">{{ pattern.isRecurring ? $t('labels.isRecurring') : $t('labels.isNotRecurring') }}</b-switch>
+            <o-switch v-model="currentPattern.isRecurring">
+              {{ currentPattern.isRecurring ? $t('labels.isRecurring') : $t('labels.isNotRecurring') }}
+            </o-switch>
           </div>
         </div>
         <div class="field">
           <label class="label">{{ $t('fieldnames.dispatch') }}</label>
           <div class="control">
-            <table v-if="pattern.shares && pattern.shares.length > 0" class="table is-fullwidth">
+            <table v-if="currentPattern.shares && currentPattern.shares.length > 0" class="table is-fullwidth">
               <thead>
                 <tr>
                   <th>{{ $tc('objects.user', 1) }}</th>
@@ -55,7 +57,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(share, index) in pattern.shares" :key="share.user">
+                <tr v-for="(share, index) in currentPattern.shares" :key="share.user">
                   <td>
                     <div class="control">
                       <div class="select">
@@ -66,24 +68,24 @@
                     </div>
                   </td>
                   <td class="dispatch-slider">
-                    <b-field grouped>
-                      <b-field expanded>
-                        <b-slider v-model="share.share" :custom-formatter="val => val + '%'" />
-                      </b-field>
-                      <b-field>
-                        <b-input v-model.number="share.share" type="number" min="0" max="100" />
-                      </b-field>
-                    </b-field>
+                    <o-field grouped>
+                      <o-field expanded root-class="is-expanded">
+                        <o-slider v-model="share.share" :custom-formatter="val => val + '%'" />
+                      </o-field>
+                      <o-field>
+                        <o-input v-model.number="share.share" type="number" min="0" max="100" />
+                      </o-field>
+                    </o-field>
                   </td>
                   <td>
-                    <button class="button is-light" type="button" @click="removeShareLine(index)"><i class="fa fa-trash fa-fw fa-mr" /></button>
+                    <button class="button is-light" type="button" @click="removeShareLine(index)"><span class="icon"><i class="fas fa-trash-alt" /></span></button>
                   </td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td colspan="3">
-                    <button class="button is-light" type="button" @click="addShareLine()"><i class="fa fa-plus-square fa-fw fa-mr" />{{ $t('actions.add') }}</button>
+                    <button class="button is-light" type="button" @click="addShareLine()"><span class="icon"><i class="fas fa-plus-square" /></span><span>{{ $t('actions.add') }}</span></button>
                   </td>
                 </tr>
               </tfoot>
@@ -98,175 +100,185 @@
       </section>
 
       <footer class="modal-card-foot">
-        <button class="button is-primary" :disabled="!isOnline"><span class="icon"><i class="fa fa-save" /></span><span>{{ $t('actions.save') }}</span></button>
-        <button type="button" class="button" @click="$parent.close()">{{ $t('actions.cancel') }}</button>
-        <button v-if="pattern.id" type="button" class="button is-danger" :disabled="!isOnline" @click="deletePattern"><span class="icon"><i class="fa fa-trash" /></span><span>{{ $t('actions.delete') }}</span></button>
+        <button class="button is-primary" :disabled="!isOnline"><span class="icon"><i class="fas fa-save" /></span><span>{{ $t('actions.save') }}</span></button>
+        <button type="button" class="button" @click="$emit('close')"><span class="icon"><i class="fas fa-ban" /></span><span>{{ $t('actions.cancel') }}</span></button>
+        <button v-if="currentPattern.id" type="button" class="button is-danger" :disabled="!isOnline" @click="deletePattern"><span class="icon"><i class="fas fa-trash-alt" /></span><span>{{ $t('actions.delete') }}</span></button>
       </footer>
 
-      <b-loading :is-full-page="false" :active.sync="isLoading" />
+      <o-loading :active="isLoading" :full-page="false" />
 
     </div>
   </form>
 </template>
 
 <script>
-import CategoriesFactory from './../services/Categories'
-import HoldersFactory from '@/services/Holders'
-import Config from './../services/Config'
+import { useStore } from '@/store'
+import { mapState } from 'pinia'
+import { useValidator } from '@/services/Validator'
+import Modal from '@/components/Modal.vue'
+
 export default {
-  mixins: [CategoriesFactory, HoldersFactory],
+  name: 'Pattern',
   props: {
-    rPatterns: {
-      type: Object,
-      required: true,
-    },
     pattern: {
       type: Object,
       required: true,
     },
   },
+  emits: [
+    'close',
+    'pattern-updated',
+    'pattern-created',
+    'pattern-deleted',
+  ],
+  setup() {
+    const { errors, validationRules, validate, validateForm, resetValidation } = useValidator()
+    return { errors, validationRules, validate, validateForm, resetValidation }
+  },
   data () {
     return {
+      currentPattern: { ...this.pattern },
       error: '',
       matchingCount: null,
-      rTransactions: this.$resource(Config.API_URL + 'transactions'),
       isLoading: false,
     }
   },
   computed: {
-    isOnline () {
-      return this.$store.state.isOnline
-    },
     sharesSum () {
-      return this.pattern.shares.filter(share => share.user !== null).reduce((acc, item) => acc + item.share, 0)
+      return this.currentPattern.shares.filter(share => share.user !== null).reduce((acc, item) => acc + item.share, 0)
     },
+    ...mapState(useStore, ['categories', 'categoriesAndSubcategoriesLookup', 'holders', 'holderId', 'isOnline']),
   },
   watch: {
-    'pattern.category' () {
+    'currentPattern.category' () {
       // clear subcategory field if category has changed
-      this.pattern.subcategory = ''
+      this.currentPattern.subcategory = ''
+    },
+    pattern () {
+      this.currentPattern = { ...this.pattern }
+      if (this.currentPattern.shares && this.currentPattern.shares.length === 0) {
+        this.addShareLine({ user: this.holderId, share: 100 })
+      }
+      this.resetValidation()
     },
   },
-  mounted () {
-    this.getCategories(false)
-    this.getCurrentHolderId().then((holderId) => {
-      if (this.pattern.shares.length === 0) {
-        this.addShareLine({ user: holderId, share: 100 })
-      }
-    })
+  created () {
+    this.validationRules = {
+      label: 'required',
+    }
+    if (this.currentPattern.shares.length === 0) {
+      this.addShareLine({ user: this.holderId, share: 100 })
+    }
   },
   methods: {
-    deletePattern () {
-      this.$buefy.dialog.confirm({
-        message: this.$t('labels.deletePatternMsg'),
-        title: this.$t('labels.deletePattern'),
-        type: 'is-danger',
-        hasIcon: true,
-        icon: 'trash',
-        confirmText: this.$t('actions.deletePattern'),
-        cancelText: this.$t('actions.cancel'),
-        focusOn: 'cancel',
-        onConfirm: () => {
-          this.isLoading = true
-          this.rPatterns.delete({ id: this.pattern.id })
-            .then((response) => {
-              // close modal and remove deleted pattern
-              this.$parent.close()
-              const patterns = this.$parent.$parent.patterns
-              const index = patterns.map((pattern) => pattern.id).indexOf(this.pattern.id)
-              patterns.splice(index, 1)
-            }, (response) => {
-              // remove loading overlay when API replies
-              this.isLoading = false
-              if (response.body.message) {
-                this.error = response.body.message
-                return
-              }
-              this.error = response.status + ' - ' + response.statusText
-            })
-        },
-      })
+    async deletePattern () {
+      if (!await new Promise((resolve) =>
+        this.$oruga.modal.open({
+          rootClass: 'dialog',
+          trapFocus: true,
+          component: Modal,
+          onCancel: () => resolve(false),
+          props: {
+            message: this.$t('labels.deletePatternMsg'),
+            title: this.$t('labels.deletePattern'),
+            type: 'is-danger',
+            hasIcon: true,
+            iconClass: 'fas fa-trash-alt fa-2x',
+            hasCancelButton: true,
+            confirmText: this.$t('actions.deletePattern'),
+            cancelText: this.$t('actions.cancel'),
+            onConfirm: resolve,
+            onCancel: () => {
+              resolve(false)
+            },
+          },
+        }))) {
+        return
+      }
+      this.isLoading = true
+      try {
+        await this.$http.delete(`patterns/${this.currentPattern.id}`)
+        // emit patternId deleted and close modal
+        this.$emit('pattern-deleted', this.currentPattern.id)
+        this.$parent.$parent.close()
+      } catch (error) {
+        this.error = error.message
+      }
+      this.isLoading = false
     },
-    validateBeforeSubmit () {
+    async validateBeforeSubmit (submitEvent) {
       this.error = ''
-      // call the async validator
-      this.$validator.validateAll().then((result) => {
-        if (this.pattern.shares.length > 0) {
-          // calcul shares sum
-          if (this.sharesSum !== 100) {
-            this.error = this.$t('labels.invalidDispatch')
-            result = false
-          }
-          // check duplicates
-          const sharesByUser = this.pattern.shares.reduce(function (acc, item) {
-            if (typeof acc[item.user] === 'undefined') {
-              acc[item.user] = 0
-            }
-            acc[item.user]++
-            return acc
-          }, [])
-          if (sharesByUser.some(share => share > 1)) {
-            this.error = this.$t('labels.duplicatesShares')
-            result = false
-          }
+      if (!this.validateForm(submitEvent)) {
+        return
+      }
+      let result = true
+      if (this.currentPattern.shares.length > 0) {
+        // calcul shares sum
+        if (this.sharesSum !== 100) {
+          this.error = this.$t('labels.invalidDispatch')
+          result = false
         }
-        if (result) {
-          // if validation is ok, call accounts API
-          this.isLoading = true
-          if (!this.pattern.id) {
-            // create new pattern
-            this.rPatterns.save(this.pattern)
-              .then((response) => {
-                this.pattern.id = response.body.id
-                this.pattern.share = response.body.share
-                this.$parent.close()
-              }, (response) => {
-                // remove loading overlay when API replies
-                this.isLoading = false
-                if (response.body.message) {
-                  this.error = response.body.message
-                  return
-                }
-                this.error = response.status + ' - ' + response.statusText
-              })
-            return
+        // check duplicates
+        const sharesByUser = this.currentPattern.shares.reduce(function (acc, item) {
+          if (typeof acc[item.user] === 'undefined') {
+            acc[item.user] = 0
           }
-          this.rPatterns.update({ id: this.pattern.id }, this.pattern)
-            // update existing pattern
-            .then((response) => {
-              this.pattern.share = response.body.share
-              this.$parent.close()
-            }, (response) => {
-              // remove loading overlay when API replies
-              this.isLoading = false
-              if (response.body.message) {
-                this.error = response.body.message
-                return
-              }
-              this.error = response.status + ' - ' + response.statusText
-            })
+          acc[item.user]++
+          return acc
+        }, [])
+        if (sharesByUser.some(share => share > 1)) {
+          this.error = this.$t('labels.duplicatesShares')
+          result = false
         }
-      })
+      }
+      if (result) {
+        // if validation is ok, call accounts API
+        this.isLoading = true
+        if (!this.currentPattern.id) {
+          // create new pattern
+          try {
+            const response = await this.$http.post('patterns', this.currentPattern)
+            this.currentPattern.id = response.data.id
+            this.currentPattern.share = response.data.share
+            this.$emit('pattern-created', this.currentPattern)
+            this.$parent.$parent.close()
+          } catch (error) {
+            this.error = error.message
+          }
+          this.isLoading = false
+          return
+        }
+        // update existing pattern
+        try {
+          const response = await this.$http.put(`patterns/${this.currentPattern.id}`, this.currentPattern)
+          this.currentPattern.share = response.data.share
+          this.$emit('pattern-updated', this.currentPattern)
+          this.$parent.$parent.close()
+        } catch (error) {
+          this.error = error.message
+        }
+        this.isLoading = false
+      }
     },
-    count () {
-      if (this.pattern.label) {
-        this.rTransactions.query({ pattern: this.pattern.label }).then((response) => {
-          this.matchingCount = response.body.length
-          console.log(response.body.length)
-        }, (response) => {
+    async count () {
+      if (this.currentPattern.label) {
+        try {
+          const response = await this.$http.get('transactions', { query: { pattern: this.currentPattern.label } })
+          this.matchingCount = response.data.length
+        } catch (error) {
           // @TODO : add error handling
-          console.error(response)
-        })
+          console.error(error)
+        }
       }
     },
     addShareLine (share) {
       if (!share) {
         share = { user: null, share: 100 - this.sharesSum }
       }
-      this.pattern.shares.push(share)
+      this.currentPattern.shares.push(share)
     },
     removeShareLine (index) {
-      this.pattern.shares.splice(index, 1)
+      this.currentPattern.shares.splice(index, 1)
     },
   },
 }

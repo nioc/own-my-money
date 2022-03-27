@@ -3,7 +3,7 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: this.$t('labels.home'), isActive: true},
+          {link: '/', icon: 'fas fa-home', text: $t('labels.home'), isActive: true},
         ]"
       />
     </div>
@@ -79,19 +79,18 @@
       </div>
       <div class="container box">
         <h1 class="title">{{ $tc('objects.transaction', 2) }}</h1>
-        <transactions :url="url" :display-account="true" />
+        <transactions url="transactions" :display-account="true" />
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import Config from './../services/Config'
-import Breadcrumb from '@/components/Breadcrumb'
-import Transactions from '@/components/Transactions'
-import TransactionsDistributionChart from '@/components/TransactionsDistributionChart'
-import TransactionsHistoryChart from '@/components/TransactionsHistoryChart'
-import Bus from '@/services/Bus'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+import Transactions from '@/components/Transactions.vue'
+import TransactionsDistributionChart from '@/components/TransactionsDistributionChart.vue'
+import TransactionsHistoryChart from '@/components/TransactionsHistoryChart.vue'
+
 export default {
   name: 'Home',
   components: {
@@ -107,27 +106,28 @@ export default {
     return {
       categorySelected: { key: null },
       subcategorySelected: { key: null },
-      url: Config.API_URL + 'transactions{/id}',
       date: {
         timeUnit: '',
         duration: 'P3M',
-        periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
+        periodStart: this.$dayjs(today).subtract(this.$dayjs.duration('P3M')).toDate(),
         periodEnd: today,
       },
     }
   },
   mounted () {
-    Bus.$on('category-selected', (category) => {
+    this.$bus.on('category-selected', (category) => {
       if (!this.categorySelected.key || this.categorySelected.key !== category.key) {
         // clear previous subcategory pies
         this.categorySelected.key = null
+        // clear previous subcategory history
+        this.subcategorySelected.key = null
         this.$nextTick(function () {
           // set category after next DOM update cycle
           this.categorySelected = category
         })
       }
     })
-    Bus.$on('subcategory-selected', (subcategory) => {
+    this.$bus.on('subcategory-selected', (subcategory) => {
       if (!this.subcategorySelected.key || this.subcategorySelected.key !== subcategory.key) {
         // clear previous subcategory history
         this.subcategorySelected.key = null
@@ -137,7 +137,16 @@ export default {
         })
       }
     })
-    Bus.$on('transactions-date-filtered', (search) => {
+    this.$bus.on('transactions-date-filtered', this.handleTransactionsDateFilteredHome)
+  },
+  beforeUnmount () {
+    // remove events listener
+    this.$bus.off('category-selected')
+    this.$bus.off('subcategory-selected')
+    this.$bus.off('transactions-date-filtered', this.handleTransactionsDateFilteredHome)
+  },
+  methods: {
+    handleTransactionsDateFilteredHome (search) {
       if ((this.date.periodStart.getTime() !== search.periodStart.getTime()) || (this.date.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.date.timeUnit !== search.timeUnit)) {
         this.date.periodStart = search.periodStart
         this.date.periodEnd = search.periodEnd
@@ -148,12 +157,7 @@ export default {
           this.date.duration = search.duration
         }
       }
-    })
-  },
-  beforeDestroy () {
-    // remove events listener
-    Bus.$off('category-selected')
-    Bus.$off('transactions-date-filtered')
+    },
   },
 }
 </script>

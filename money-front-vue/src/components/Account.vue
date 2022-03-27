@@ -3,8 +3,8 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
-          {link: '/accounts', icon: 'fa-table', text: this.$tc('objects.account', 2)},
+          {link: '/', icon: 'fas fa-home', text: $t('labels.home')},
+          {link: '/accounts', icon: 'fas fa-table', text: $tc('objects.account', 2)},
           {link: '/accounts', text: accountTitle, isActive: true},
         ]"
       />
@@ -12,9 +12,9 @@
     <div class="hero-body">
       <div class="container box">
         <h1 class="title container">{{ $tc('objects.account', 1) }} {{ accountTitle }}</h1>
-        <b-tabs type="is-boxed" :animated="false">
+        <o-tabs type="boxed" :animated="false">
 
-          <b-tab-item :label="$tc('objects.transaction', 2)" icon="file-text-o" class="has-half-margin-mobile">
+          <o-tab-item :label="$tc('objects.transaction', 2)" icon="th-list" class="has-half-margin-mobile">
             <div v-if="isLoaded" class="columns no-padding-parent-mobile is-multiline">
               <div class="column no-padding-mobile is-full">
                 <transactions-history-chart
@@ -29,23 +29,23 @@
 
             <div v-if="account.isOwned" class="field is-grouped">
               <p class="control">
-                <b-field class="file">
-                  <b-upload v-model="upload.file" :disabled="(!isOnline || upload.isUploading)" @input="uploadDataset">
-                    <a class="button is-primary" :disabled="(!isOnline || upload.isUploading)">
-                      <b-icon icon="upload" />
+                <o-field class="file">
+                  <o-upload v-model="upload.file" :disabled="(!isOnline || upload.isUploading)" @input="uploadDataset">
+                    <a class="button is-primary">
+                      <o-icon icon="upload" />
                       <span>{{ $t('actions.uploadOfxJson') }}</span>
                     </a>
-                  </b-upload>
+                  </o-upload>
                   <span v-if="upload.file" class="file-name">
                     {{ upload.file.name }} ({{ $tc('objects.byte', upload.file.size) }})
                   </span>
-                </b-field>
+                </o-field>
               </p>
               <div class="control">
                 <div class="select">
                   <select v-model="upload.map" name="parent">
                     <option value="">-- JSON Map --</option>
-                    <option v-for="map in maps" :key="map.code" :value="map.code">{{ map.label }}</option>
+                    <option v-for="map in store.maps" :key="map.code" :value="map.code">{{ map.label }}</option>
                   </select>
                 </div>
               </div>
@@ -59,51 +59,51 @@
                 </div>
               </div>
             </div>
-          </b-tab-item>
+          </o-tab-item>
 
-          <b-tab-item v-if="isLoaded" :label="$t('labels.breakdown')" icon="balance-scale" class="has-half-margin-mobile">
+          <o-tab-item v-if="isLoaded" :label="$t('labels.breakdown')" icon="balance-scale" class="has-half-margin-mobile">
             <account-dispatch :id="account.id" :duration="account.duration" />
-          </b-tab-item>
+          </o-tab-item>
 
-          <b-tab-item v-if="account.isOwned" :label="$t('actions.edit')" icon="pencil">
+          <o-tab-item v-if="account.isOwned" :label="$t('actions.edit')" icon="pencil-alt">
             <form novalidate class="section is-max-width-form" @submit.prevent="validateUpdateBeforeSubmit">
-              <div class="field is-horizontal">
+              <div class="field is-horizontal is-required">
                 <div class="field-label is-normal">
                   <label class="label">{{ $t('fieldnames.bankIdentifier') }}</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
                     <div class="control">
-                      <input v-model="updatedAccount.bankId" v-validate="'required|alpha_num'" type="text" class="input" name="bankIdentifier" :placeholder="$t('fieldnames.bankIdentifier')" :class="{'is-danger': errors.has('bankIdentifier')}">
-                      <span v-show="errors.has('bankIdentifier')" class="help is-danger">{{ errors.first('bankIdentifier') }}</span>
+                      <input v-model="updatedAccount.bankId" type="text" class="input" name="bankIdentifier" :placeholder="$t('fieldnames.bankIdentifier')" :class="{'is-danger': errors.bankIdentifier}">
+                      <span v-if="errors.bankIdentifier" class="help is-danger">{{ errors.bankIdentifier.message }}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="field is-horizontal">
+              <div class="field is-horizontal is-required">
                 <div class="field-label is-normal">
                   <label class="label">{{ $t('fieldnames.branchIdentifier') }}</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
                     <p class="control">
-                      <input v-model="updatedAccount.branchId" v-validate="'required|alpha_num'" type="text" class="input" name="branchIdentifier" :placeholder="$t('fieldnames.branchIdentifier')" :class="{'is-danger': errors.has('branchIdentifier')}">
-                      <span v-show="errors.has('branchIdentifier')" class="help is-danger">{{ errors.first('branchIdentifier') }}</span>
+                      <input v-model="updatedAccount.branchId" type="text" class="input" name="branchIdentifier" :placeholder="$t('fieldnames.branchIdentifier')" :class="{'is-danger': errors.branchIdentifier}">
+                      <span v-if="errors.branchIdentifier" class="help is-danger">{{ errors.branchIdentifier.message }}</span>
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div class="field is-horizontal">
+              <div class="field is-horizontal is-required">
                 <div class="field-label is-normal">
                   <label class="label">{{ $t('fieldnames.accountIdentifier') }}</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
                     <div class="control">
-                      <input v-model="updatedAccount.accountId" v-validate="'required|alpha_num'" type="text" class="input" name="accountIdentifier" :placeholder="$t('fieldnames.accountIdentifier')" :class="{'is-danger': errors.has('accountIdentifier')}">
-                      <p v-show="errors.has('accountIdentifier')" class="help is-danger">{{ errors.first('accountIdentifier') }}</p>
+                      <input v-model="updatedAccount.accountId" type="text" class="input" name="accountIdentifier" :placeholder="$t('fieldnames.accountIdentifier')" :class="{'is-danger': errors.accountIdentifier}">
+                      <p v-if="errors.accountIdentifier" class="help is-danger">{{ errors.accountIdentifier.message }}</p>
                     </div>
                   </div>
                 </div>
@@ -116,8 +116,8 @@
                 <div class="field-body">
                   <div class="field">
                     <div class="control">
-                      <input v-model="updatedAccount.label" v-validate="'max:30'" type="text" class="input" name="label" :placeholder="$t('fieldnames.label')" :class="{'is-danger': errors.has('label')}">
-                      <p v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</p>
+                      <input v-model="updatedAccount.label" type="text" class="input" name="label" :placeholder="$t('fieldnames.label')" :class="{'is-danger': errors.label}">
+                      <p v-if="errors.label" class="help is-danger">{{ errors.label.message }}</p>
                     </div>
                   </div>
                 </div>
@@ -151,18 +151,18 @@
                 <div class="field-body">
                   <div class="field">
                     <div class="control">
-                      <b-field class="file">
+                      <o-field class="file">
                         <img v-if="account.iconUrl" :src="account.iconUrl" class="icon-account-admin">
-                        <b-upload v-model="icon.file" :disabled="(!isOnline || icon.isUploading)" accept="image/*" @input="uploadIcon">
-                          <a class="button" :disabled="(!isOnline || icon.isUploading)">
-                            <b-icon icon="upload" />
+                        <o-upload v-model="icon.file" :disabled="(!isOnline || icon.isUploading)" accept="image/*" @input="uploadIcon">
+                          <a class="button">
+                            <o-icon icon="upload" />
                             <span>{{ $t('actions.uploadIcon') }}</span>
                           </a>
-                        </b-upload>
+                        </o-upload>
                         <span v-if="icon.file" class="file-name">
                           {{ icon.file.name }} ({{ $tc('objects.byte', icon.file.size) }})
                         </span>
-                      </b-field>
+                      </o-field>
                     </div>
                     <div class="field is-horizontal">
                       <div class="field-body">
@@ -177,15 +177,15 @@
                 </div>
               </div>
 
-              <div class="field is-horizontal">
+              <div class="field is-horizontal is-required">
                 <div class="field-label is-normal">
                   <label class="label">{{ $t('fieldnames.balance') }}</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
                     <div class="control">
-                      <input v-model="updatedAccount.balance" v-validate="'required|decimal:2'" type="number" step="0.01" class="input" name="balance" :placeholder="$t('fieldnames.balance')" :class="{'is-danger': errors.has('balance')}">
-                      <p v-show="errors.has('balance')" class="help is-danger">{{ errors.first('balance') }}</p>
+                      <input v-model="updatedAccount.balance" type="number" step="0.01" class="input" name="balance" :placeholder="$t('fieldnames.balance')" :class="{'is-danger': errors.balance}">
+                      <p v-if="errors.balance" class="help is-danger">{{ errors.balance.message }}</p>
                     </div>
                   </div>
                 </div>
@@ -195,43 +195,46 @@
                 <div class="field-label is-normal" />
                 <div class="field-body">
                   <div class="field">
-                    <button type="button" class="button" role="button" :disabled="!isOnline" @click="modalHolders.isActive = true"><i class="fa fa-users fa-mr" />{{ $t('actions.manageHolders') }}</button>
+                    <button type="button" class="button" role="button" :disabled="!isOnline" @click="modalHolders.isActive = true"><span class="icon"><i class="fas fa-users" /></span><span>{{ $t('actions.manageHolders') }}</span></button>
                   </div>
                 </div>
               </div>
-              <b-modal :active.sync="modalHolders.isActive" has-modal-card scroll="keep">
-                <account-holders :account-id="account.id" />
-              </b-modal>
+              <o-modal v-model:active="modalHolders.isActive" has-modal-card scroll="keep" :destroy-on-hide="true">
+                <account-holders :account-id="account.id" @close="modalHolders.isActive = false" />
+              </o-modal>
 
               <div class="field is-horizontal">
                 <div class="field-label is-normal" />
                 <div class="field-body">
                   <div class="field">
                     <div class="buttons">
-                      <button type="submit" class="button is-primary" role="button" :disabled="!isOnline"><i class="fa fa-save fa-mr" />{{ $t('actions.save') }}</button>
-                      <button type="button" class="button is-danger" role="button" :disabled="!isOnline" @click="deleteAccount"><i class="fa fa-trash fa-mr" />{{ $t('actions.delete') }}</button>
+                      <button type="submit" class="button is-primary" role="button" :disabled="!isOnline"><span class="icon"><i class="fas fa-save" /></span><span>{{ $t('actions.save') }}</span></button>
+                      <button type="button" class="button is-danger" role="button" :disabled="!isOnline" @click="deleteAccount"><span class="icon"><i class="fas fa-trash-alt" /></span><span>{{ $t('actions.delete') }}</span></button>
                     </div>
                   </div>
                 </div>
               </div>
             </form>
-            <b-loading :is-full-page="false" :active="isLoading" />
-          </b-tab-item>
+            <o-loading :full-page="false" :active="isLoading" />
+          </o-tab-item>
 
-        </b-tabs>
+        </o-tabs>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import Config from './../services/Config'
-import Bus from './../services/Bus'
-import Breadcrumb from '@/components/Breadcrumb'
-import Transactions from '@/components/Transactions'
-import AccountHolders from '@/components/Holders'
-import TransactionsHistoryChart from '@/components/TransactionsHistoryChart'
-import AccountDispatch from '@/components/AccountDispatch'
+import Config from '@/services/Config'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+import Transactions from '@/components/Transactions.vue'
+import AccountHolders from '@/components/Holders.vue'
+import TransactionsHistoryChart from '@/components/TransactionsHistoryChart.vue'
+import AccountDispatch from '@/components/AccountDispatch.vue'
+import Modal from '@/components/Modal.vue'
+import { useValidator } from '@/services/Validator'
+import { useStore } from '@/store'
+
 export default {
   name: 'Account',
   components: {
@@ -240,6 +243,11 @@ export default {
     Transactions,
     AccountHolders,
     AccountDispatch,
+  },
+  setup() {
+    const { errors, validationRules, validateForm } = useValidator()
+    const store = useStore()
+    return { errors, validationRules, validateForm, store }
   },
   data () {
     const today = new Date()
@@ -272,8 +280,6 @@ export default {
       modalHolders: {
         isActive: false,
       },
-      // maps
-      maps: [],
       // upload dataset
       upload: {
         file: null,
@@ -285,111 +291,91 @@ export default {
         timeUnit: '',
         currentDate: today,
         duration: 'P3M',
-        periodStart: this.$moment(today).subtract(this.$moment.duration('P3M')).toDate(),
+        periodStart: this.$dayjs(today).subtract(this.$dayjs.duration('P3M')).toDate(),
         periodEnd: today,
       },
-      // resources
-      url: Config.API_URL + 'accounts/' + parseInt(this.$route.params.id) + '/transactions{/id}',
-      rAccounts: this.$resource(Config.API_URL + 'accounts{/id}'),
-      rAccountIcons: this.$resource(Config.API_URL + 'accounts/' + parseInt(this.$route.params.id) + '/icons'),
-      rMaps: this.$resource(Config.API_URL + 'maps'),
-      rDatasets: this.$resource(Config.API_URL + 'accounts/' + parseInt(this.$route.params.id) + '/dataset'),
+      url: 'accounts/' + parseInt(this.$route.params.id) + '/transactions',
     }
   },
   computed: {
     isOnline () {
-      return this.$store.state.isOnline
+      return this.$store.isOnline
     },
     accountTitle () {
       return this.account.label ? this.account.label : this.account.bankId + ' ' + this.account.branchId + ' ' + this.account.accountId
     },
   },
+  created () {
+    this.validationRules = {
+      bankIdentifier: 'required|alpha_num',
+      branchIdentifier: 'required|alpha_num',
+      accountIdentifier: 'required|alpha_num',
+      label: 'max:30',
+      balance: 'required|decimal:2',
+    }
+  },
   mounted () {
     this.get()
-    this.getMaps()
-    Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.date.periodStart.getTime() !== search.periodStart.getTime()) || (this.date.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.date.timeUnit !== search.timeUnit)) {
-        this.date.periodStart = search.periodStart
-        this.date.periodEnd = search.periodEnd
-        if (search.timeUnit) {
-          this.date.timeUnit = search.timeUnit
-        }
-        if (search.duration) {
-          this.date.duration = search.duration
-        }
-      }
-    })
+    this.$bus.on('transactions-date-filtered', this.handleTransactionsDateFilteredAccount)
   },
-  beforeDestroy () {
+  beforeUnmount () {
     // remove events listener
-    Bus.$off('transactions-date-filtered')
+    this.$bus.off('transactions-date-filtered', this.handleTransactionsDateFilteredAccount)
   },
   methods: {
     // get account informations
-    get () {
+    async get () {
       this.isLoading = true
-      this.rAccounts.get({ id: this.account.id }).then((response) => {
-        this.account.bankId = response.body.bankId
-        this.account.branchId = response.body.branchId
-        this.account.accountId = response.body.accountId
-        this.account.balance = response.body.balance
-        this.account.label = response.body.label
-        this.account.duration = response.body.duration
-        if (response.body.iconUrl) {
-          this.account.iconUrl = Config.API_URL + response.body.iconUrl
+      try {
+        const response = await this.$http.get(`accounts/${this.account.id}`)
+        this.account.bankId = response.data.bankId
+        this.account.branchId = response.data.branchId
+        this.account.accountId = response.data.accountId
+        this.account.balance = response.data.balance
+        this.account.label = response.data.label
+        this.account.duration = response.data.duration
+        if (response.data.iconUrl) {
+          this.account.iconUrl = Config.API_URL + response.data.iconUrl
         }
-        this.account.isOwned = response.body.isOwned
+        this.account.isOwned = response.data.isOwned
         this.updatedAccount = JSON.parse(JSON.stringify(this.account))
         delete (this.updatedAccount.transactions)
         this.date.duration = this.account.duration
-        this.date.periodStart = this.$moment(this.date.currentDate).subtract(this.$moment.duration(this.account.duration)).toDate()
+        this.date.periodStart = this.$dayjs(this.date.currentDate).subtract(this.$dayjs.duration(this.account.duration)).toDate()
         this.isLoaded = true
-      }, (response) => {
-        if (response.status === 403 || response.status === 404) {
+      } catch (error) {
+        if (error.response && error.response.status === 403 || error.response.status === 404) {
           // user does not can access this account, return to home
           this.$router.replace({ name: 'home' })
           return
         }
         // @TODO : add error handling
-        console.error(response)
-      }).finally(function () {
-        // remove loading overlay when API replies
-        this.isLoading = false
-      })
+        console.error(error)
+      }
+      this.isLoading = false
     },
-    validateUpdateBeforeSubmit () {
-      // call the async validator
-      this.$validator.validateAll().then((result) => {
-        if (result) {
-          this.isLoading = true
-          // if validation is ok, call accounts API
-          this.updatedAccount.balance = parseFloat(this.updatedAccount.balance)
-          this.rAccounts.update({ id: this.account.id }, this.updatedAccount)
-            .then((response) => {
-              // this.getAccounts()
-              this.account.bankId = response.body.bankId
-              this.account.branchId = response.body.branchId
-              this.account.accountId = response.body.accountId
-              this.account.balance = response.body.balance
-              this.account.label = response.body.label
-            }, (response) => {
-              if (response.body.message) {
-                this.error = response.body.message
-                return
-              }
-              this.error = response.status + ' - ' + response.statusText
-            })
-            .finally(function () {
-              // remove loading overlay when API replies
-              this.isLoading = false
-            })
-        }
-      })
+    async validateUpdateBeforeSubmit (submitEvent) {
+      this.error = null
+      if (!this.validateForm(submitEvent)) {
+        return
+      }
+      this.isLoading = true
+      try {
+        const response = await this.$http.put(`accounts/${this.account.id}`, this.updatedAccount)
+        this.account.bankId = response.data.bankId
+        this.account.branchId = response.data.branchId
+        this.account.accountId = response.data.accountId
+        this.account.balance = response.data.balance
+        this.account.label = response.data.label
+      } catch (error) {
+        this.error = error.message 
+      }
+      this.isLoading = false
     },
-    uploadIcon () {
+    async uploadIcon (event) {
       this.icon.result = ''
       // get file
-      const file = this.icon.file
+      const file = event.target.files[0]
       var data = new FormData()
       data.append('Content-Type', file.type || 'application/octet-stream')
       data.append('file', file)
@@ -398,81 +384,64 @@ export default {
         this.icon.result = this.$t('labels.fileTooBig')
         return
       }
-      const params = {}
       // prepare context
       this.icon.isUploading = true
       this.isLoading = true
       this.account.iconUrl = null
-      // call API
-      this.rAccountIcons.save(params, data)
-        .then((response) => {
-          this.icon.file = null
-          if (response.body.iconUrl) {
-            this.account.iconUrl = Config.API_URL + response.body.iconUrl + '?' + this.$moment()
-          }
-          if (response.body.message) {
-            this.icon.result = response.body.message
-          }
-        }, (response) => {
-        // upload failed, inform user
-          if (response.body.message) {
-            this.icon.result = response.body.message
-            return
-          }
-          this.icon.result = response.status + ' - ' + response.statusText
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.icon.isUploading = false
-          this.isLoading = false
-        })
+      try {
+        const response = await this.$http.post(`accounts/${parseInt(this.$route.params.id)}/icons`, data)
+        this.icon.file = null
+        if (response.data.iconUrl) {
+          this.account.iconUrl = Config.API_URL + response.data.iconUrl + '?' + this.$dayjs()
+        }
+        if (response.data.message) {
+          this.icon.result = response.data.message
+        }
+      } catch (error) {
+        this.icon.result = error.message
+      }
+      this.icon.isUploading = false
+      this.isLoading = false
     },
-    deleteAccount () {
-      this.$buefy.dialog.confirm({
-        message: this.$t('labels.deleteAccountMsg'),
-        title: this.$t('labels.deleteAccount'),
-        type: 'is-danger',
-        hasIcon: true,
-        icon: 'trash',
-        confirmText: this.$t('actions.deleteAccount'),
-        cancelText: this.$t('actions.cancel'),
-        focusOn: 'cancel',
-        onConfirm: () => {
-          this.isLoading = true
-          this.rAccounts.delete({ id: this.account.id })
-            .then((response) => {
-              this.$router.replace({ name: 'accounts' })
-            }, (response) => {
-              // @TODO : add error handling
-              console.error(response)
-            })
-            .finally(function () {
-              // remove loading overlay when API replies
-              this.isLoading = false
-            })
-        },
-      })
-    },
-    // get dataset maps
-    getMaps () {
-      // try to get maps from local storage
-      if (localStorage.getItem('maps')) {
-        this.maps = JSON.parse(localStorage.getItem('maps'))
+    async deleteAccount () {
+      if (!await new Promise((resolve) =>
+        this.$oruga.modal.open({
+          rootClass: 'dialog',
+          trapFocus: true,
+          component: Modal,
+          onCancel: () => resolve(false),
+          props: {
+            message: this.$t('labels.deleteAccountMsg'),
+            title: this.$t('labels.deleteAccount'),
+            type: 'is-danger',
+            hasIcon: true,
+            iconClass: 'fas fa-trash-alt fa-2x',
+            hasCancelButton: true,
+            confirmText: this.$t('actions.deleteAccount'),
+            cancelText: this.$t('actions.cancel'),
+            onConfirm: resolve,
+            onCancel: () => {
+              resolve(false)
+            },
+          },
+        }))) {
         return
       }
-      this.rMaps.get().then((response) => {
-        this.maps = response.body
-        // put maps in local storage for future usage
-        localStorage.setItem('maps', JSON.stringify(this.maps))
-      }, (response) => {
+      this.isLoading = true
+      try {
+        await this.$http.delete(`accounts/${this.account.id}`)
+        this.$router.replace({ name: 'accounts' })
+      } catch (error) {
+            
         // @TODO : add error handling
-        console.error(response)
-      })
+        console.error(error)
+      }
+      this.isLoading = false
     },
-    uploadDataset () {
+    async uploadDataset (event) {
       this.upload.result = ''
       // get file
-      const file = this.upload.file
+      const file = event.target.files[0]
       var data = new FormData()
       data.append('Content-Type', file.type || 'application/octet-stream')
       data.append('file', file)
@@ -492,31 +461,34 @@ export default {
       // prepare context
       this.upload.isUploading = true
       this.isLoading = true
-      // call API
-      this.rDatasets.save(params, data)
-        .then((response) => {
-          if (response.body.message) {
-            this.upload.result = response.body.message
-          }
-          if (response.body.accounts && response.body.insertTime) {
-            response.body.accounts.forEach(account => {
-              sessionStorage.setItem('accounts:' + account + ':transactions:lastFetch', response.body.insertTime)
-            })
-          }
-          Bus.$emit('transactions-updated', {})
-        }, (response) => {
-        // upload failed, inform user
-          if (response.body.message) {
-            this.upload.result = response.body.message
-            return
-          }
-          this.upload.result = response.status + ' - ' + response.statusText
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.upload.isUploading = false
-          this.isLoading = false
-        })
+      try {
+        const response = await this.$http.post(`accounts/${parseInt(this.$route.params.id)}/dataset`, data, { params })
+        if (response.data.message) {
+          this.upload.result = response.data.message
+        }
+        if (response.data.accounts && response.data.insertTime) {
+          response.data.accounts.forEach(account => {
+            sessionStorage.setItem('accounts:' + account + ':transactions:lastFetch', response.data.insertTime)
+          })
+        }
+        this.$bus.emit('transactions-updated', {})
+      } catch (error) {
+        this.upload.result = error.message
+      }
+      this.upload.isUploading = false
+      this.isLoading = false
+    },
+    handleTransactionsDateFilteredAccount (search) {
+      if ((this.date.periodStart.getTime() !== search.periodStart.getTime()) || (this.date.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.date.timeUnit !== search.timeUnit)) {
+        this.date.periodStart = search.periodStart
+        this.date.periodEnd = search.periodEnd
+        if (search.timeUnit) {
+          this.date.timeUnit = search.timeUnit
+        }
+        if (search.duration) {
+          this.date.duration = search.duration
+        }
+      }
     },
   },
 }

@@ -1,12 +1,11 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Accounts from '@/components/Accounts'
-import Account from '@/components/Account'
-import Login from '@/components/Login'
-import Home from '@/components/Home'
-Vue.use(Router)
+import { createRouter, createWebHashHistory } from 'vue-router'
+import Accounts from '@/components/Accounts.vue'
+import Account from '@/components/Account.vue'
+import Login from '@/components/Login.vue'
+import Home from '@/components/Home.vue'
 
-export default new Router({
+export default new createRouter({
+  history: createWebHashHistory(),
   routes: [
     {
       path: '/',
@@ -19,7 +18,7 @@ export default new Router({
     {
       path: '/setup',
       name: 'setup',
-      component: () => import(/* webpackChunkName: "user-settings" */ '@/components/Setup'),
+      component: () => import('@/components/Setup.vue'),
       meta: {
         title: 'Setup server',
       },
@@ -27,7 +26,7 @@ export default new Router({
     {
       path: '/about',
       name: 'about',
-      component: () => import(/* webpackChunkName: "user-settings" */ '@/components/About'),
+      component: () => import('@/components/About.vue'),
       meta: {
         title: 'About',
       },
@@ -60,7 +59,7 @@ export default new Router({
     {
       path: '/profile',
       name: 'profile',
-      component: () => import(/* webpackChunkName: "user-settings" */ '@/components/Profile'),
+      component: () => import('@/components/Profile.vue'),
       meta: {
         title: 'Profile',
       },
@@ -68,7 +67,7 @@ export default new Router({
     {
       path: '/patterns',
       name: 'patterns',
-      component: () => import(/* webpackChunkName: "user-settings" */ '@/components/Patterns'),
+      component: () => import('@/components/Patterns.vue'),
       meta: {
         title: 'Patterns',
       },
@@ -76,7 +75,7 @@ export default new Router({
     {
       path: '/users',
       name: 'users',
-      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Users'),
+      component: () => import('@/components/Users.vue'),
       meta: {
         title: 'Manage users',
       },
@@ -84,7 +83,7 @@ export default new Router({
     {
       path: '/maps',
       name: 'maps',
-      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Maps'),
+      component: () => import('@/components/Maps.vue'),
       meta: {
         title: 'Edit maps',
       },
@@ -92,7 +91,7 @@ export default new Router({
     {
       path: '/maps/new',
       name: 'newMap',
-      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Map'),
+      component: () => import('@/components/Map.vue'),
       props: { isNew: true },
       meta: {
         transitionName: 'slide',
@@ -102,7 +101,7 @@ export default new Router({
     {
       path: '/maps/:code',
       name: 'map',
-      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Map'),
+      component: () => import('@/components/Map.vue'),
       props: { isNew: false },
       meta: {
         transitionName: 'slide',
@@ -112,7 +111,7 @@ export default new Router({
     {
       path: '/categories',
       name: 'categories',
-      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Categories'),
+      component: () => import('@/components/Categories.vue'),
       meta: {
         title: 'Edit categories and subcategories',
       },
@@ -120,7 +119,7 @@ export default new Router({
     {
       path: '/categories/:id',
       name: 'category',
-      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Category'),
+      component: () => import('@/components/Category.vue'),
       props: { isCategory: true },
       meta: {
         transitionName: 'slide',
@@ -130,7 +129,7 @@ export default new Router({
     {
       path: '/categories/:pid/subcategories/:id',
       name: 'subcategory',
-      component: () => import(/* webpackChunkName: "system-settings" */ '@/components/Category'),
+      component: () => import('@/components/Category.vue'),
       props: { isCategory: false },
       meta: {
         transitionName: 'slide',

@@ -3,30 +3,30 @@
     <!-- dates filter -->
     <div class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
-        <b-datepicker v-model="search.periodStart" placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" />
+        <o-datepicker v-model="search.periodStart" placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" lists-class="field has-addons" />
       </div>
       <div class="control">
-        <b-datepicker v-model="search.periodEnd" placeholder="End date" icon="calendar" editable :max-date="search.currentDate" />
+        <o-datepicker v-model="search.periodEnd" placeholder="End date" icon="calendar" editable :max-date="search.currentDate" lists-class="field has-addons" />
       </div>
       <div class="control">
-        <button class="button" :class="{'is-loading': isLoading}" :disabled="isLoading" @click="requestData"><span class="icon"><i class="fa fa-refresh" /></span><span>{{ $t('actions.refresh') }}</span></button>
+        <button class="button" :class="{'is-loading': isLoading}" :disabled="isLoading" @click="requestData"><span class="icon"><i class="fas fa-sync-alt" /></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
     <!-- dispatch table -->
-    <b-table v-if="!isLoading" :data="accountDispatchs" :striped="true" :hoverable="true" default-sort-direction="desc" detailed custom-detail-row :mobile-cards="false">
+    <o-table v-if="!isLoading" :data="accountDispatchs" :striped="true" :hoverable="true" default-sort-direction="desc" detailed custom-detail-row :mobile-cards="false">
       <!-- categories / users as main slot -->
-      <b-table-column v-slot="props" field="id" :label="$tc('objects.category', 1)" sortable>
+      <o-table-column v-slot="props" field="id" :label="$tc('objects.category', 1)" sortable>
         <span v-if="props.row.id">{{ categoriesAndSubcategoriesLookup[props.row.id].label }}</span><span v-else>{{ $t('labels.uncategorizedTransaction') }}</span>
-      </b-table-column>
-      <b-table-column v-for="user in displayedUsers" :key="user" v-slot="props" :field="user.toString()" :label="getHolderName(user, $t('labels.NonAssigned'))" sortable numeric>
+      </o-table-column>
+      <o-table-column v-for="user in displayedUsers" :key="user" v-slot="props" :field="user.toString()" :label="getHolderName(user, $t('labels.NonAssigned'))" sortable numeric position="right">
         <span :class="[getUserShare(user, props.row) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getUserShare(user, props.row), 'currency') }}</span>
-      </b-table-column>
-      <b-table-column v-slot="props" field="total" :label="$t('labels.total')" sortable numeric>
+      </o-table-column>
+      <o-table-column v-slot="props" field="total" :label="$t('labels.total')" sortable numeric position="right">
         <span :class="[getTotalShare(props.row) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getTotalShare(props.row), 'currency') }}</span>
-      </b-table-column>
+      </o-table-column>
       <!-- subcategories as details slot -->
       <template #detail="props">
-        <tr v-for="subcategory in props.row.subcategories" :key="subcategory.id">
+        <tr v-for="subcategory in props.row.subcategories" :key="subcategory.id" class="is-size-7 has-text-weight-light">
           <td />
           <td class="px-5"><span v-if="subcategory.id">{{ categoriesAndSubcategoriesLookup[subcategory.id].label }}</span><span v-else>{{ $t('labels.uncategorizedTransaction') }}</span></td>
           <td v-for="user in displayedUsers" :key="user" class="has-text-right"><span :class="[getUserShare(user, subcategory) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getUserShare(user, subcategory), 'currency') }}</span></td>
@@ -36,14 +36,14 @@
       <!-- total by user as footer slot -->
       <template v-if="accountDispatchs.length" #footer>
         <th />
-        <th class="is-hidden-mobile">
-          <div class="th-wrap">Total</div>
+        <th>
+          <div>Total</div>
         </th>
-        <th v-for="user in displayedUsers" :key="user" class="is-hidden-mobile">
-          <div class="th-wrap is-numeric" :class="[getUserSum(user) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getUserSum(user), 'currency') }}</div>
+        <th v-for="user in displayedUsers" :key="user" class="has-text-right">
+          <div :class="[getUserSum(user) < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getUserSum(user), 'currency') }}</div>
         </th>
-        <th class="is-hidden-mobile">
-          <div class="th-wrap is-numeric" :class="[getTotalSum() < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getTotalSum(), 'currency') }}</div>
+        <th class="has-text-right">
+          <div :class="[getTotalSum() < 0 ? 'has-text-danger' : 'has-text-primary']">{{ $n(getTotalSum(), 'currency') }}</div>
         </th>
       </template>
       <!-- no data -->
@@ -54,18 +54,41 @@
           </div>
         </section>
       </template>
-    </b-table>
+    </o-table>
   </div>
 </template>
 
 <script>
-import Config from '@/services/Config'
-import CategoriesFactory from '@/services/Categories'
-import HoldersFactory from '@/services/Holders'
+import { useStore } from '@/store'
+import { mapState } from 'pinia'
+
+// parsing function for categoies and subcategories
+function parseCategory (holders, rawCollection) {
+  const collection = []
+  rawCollection.forEach((rawItem) => {
+    // create category
+    const item = {
+      id: rawItem.id,
+    }
+    // set users shares
+    holders.forEach(holder => {
+      item[holder] = 0
+    })
+    rawItem.shares.forEach((share) => {
+      item[share.userId] = share.share
+    })
+    // set subcategories
+    if (Object.prototype.hasOwnProperty.call(rawItem, 'subcategories')) {
+      item.subcategories = parseCategory(holders, rawItem.subcategories)
+    }
+    collection.push(item)
+  })
+  return collection
+}
+
 export default {
   components: {
   },
-  mixins: [CategoriesFactory, HoldersFactory],
   props: {
     id: {
       type: Number,
@@ -85,81 +108,52 @@ export default {
       isLoaded: false,
       search: {
         currentDate: today,
-        periodStart: this.$moment(today).subtract(this.$moment.duration(this.duration)).toDate(),
+        periodStart: this.$dayjs(today).subtract(this.$dayjs.duration(this.duration)).toDate(),
         periodEnd: today,
       },
       accountDispatchs: [],
       displayedUsers: [],
       error: '',
-      // resources
-      rAccountCategories: this.$resource(Config.API_URL + 'accounts{/id}/categories'),
     }
   },
+  computed: {
+    ...mapState(useStore, ['categories', 'categoriesAndSubcategoriesLookup', 'holders', 'getHolderName']),
+  },
   mounted () {
-    this.getCategories()
-    this.getHolders()
-      .then(() => this.requestData())
+    this.requestData()
   },
   methods: {
-    requestData () {
+    async requestData () {
       this.isLoading = true
       const params = {
         id: this.id,
-        periodStart: this.$moment(this.search.periodStart).format('X'),
-        periodEnd: this.$moment(this.search.periodEnd).format('X'),
+        periodStart: this.$dayjs(this.search.periodStart).format('X'),
+        periodEnd: this.$dayjs(this.search.periodEnd).format('X'),
       }
-      this.rAccountCategories.query(params)
-        .then((response) => {
-          // set users
-          const displayedUsers = []
-          response.body.forEach((category) => {
-            category.shares.forEach((share) => {
-              displayedUsers.push(share.userId)
-            })
+      try {
+        const response = await this.$http.get(`accounts/${this.id}/categories`, params)
+        // set users
+        const displayedUsers = []
+        response.data.forEach((category) => {
+          category.shares.forEach((share) => {
+            displayedUsers.push(share.userId)
           })
-          this.displayedUsers = [...new Set(displayedUsers.sort())]
-          // parsing function for categoies and subcategories
-          function parseCategory (rawCollection) {
-            const collection = []
-            rawCollection.forEach((rawItem) => {
-              // create category
-              const item = {
-                id: rawItem.id,
-              }
-              // set users shares
-              displayedUsers.forEach(user => {
-                item[user] = 0
-              })
-              rawItem.shares.forEach((share) => {
-                item[share.userId] = share.share
-              })
-              // set subcategories
-              if (Object.prototype.hasOwnProperty.call(rawItem, 'subcategories')) {
-                item.subcategories = parseCategory(rawItem.subcategories)
-              }
-              collection.push(item)
-            })
-            return collection
-          }
-          // set categories
-          this.accountDispatchs = parseCategory(response.body)
-        }, (response) => {
-          if (response.status === 403 || response.status === 404) {
-            // user can not access this account, return to home
-            this.$router.replace({ name: 'home' })
-            return
-          }
-          // @TODO : add error handling
-          this.error = response.status + ' - ' + response.statusText
-          if (response.body.message) {
-            this.error = response.body.message
-          }
         })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.isLoading = false
-          this.isLoaded = true
-        })
+        this.displayedUsers = [...new Set(displayedUsers.sort())]
+        // set categories
+        this.accountDispatchs = parseCategory(displayedUsers, response.data)
+      } catch (error) {
+        if (error.response.status === 403 || error.response.status === 404) {
+          // user can not access this account, return to home
+          this.$router.replace({ name: 'home' })
+          return
+        }
+        // @TODO : add error handling
+        this.error = error.message
+      }
+      // remove loading overlay when API replies
+      this.isLoading = false
+      this.isLoaded = true
     },
     getUserShare (userId, shares) {
       return (shares[userId]) ? shares[userId] : 0

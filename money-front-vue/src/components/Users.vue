@@ -3,8 +3,8 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
-          {link: '/users', icon: 'fa-users', text: this.$tc('objects.user', 2), isActive: true},
+          {link: '/', icon: 'fas fa-home', text: $t('labels.home')},
+          {link: '/users', icon: 'fas fa-users', text: $tc('objects.user', 2), isActive: true},
         ]"
       />
     </div>
@@ -13,24 +13,24 @@
       <div class="container box">
         <h1 class="title container">{{ $tc('objects.user', 2) }}</h1>
 
-        <b-table :data="displayedUsers" :striped="true" :hoverable="true" class="table-container" @select="edit">
-          <b-table-column v-slot="props" :label="$t('fieldnames.login')">
+        <o-table :data="displayedUsers" :striped="true" :hoverable="true" root-class="table-container" td-class="is-clickable" @select="edit">
+          <o-table-column v-slot="props" :label="$t('fieldnames.login')">
             {{ props.row.login }}
-          </b-table-column>
-          <b-table-column v-slot="props" :label="$t('fieldnames.email')">
+          </o-table-column>
+          <o-table-column v-slot="props" :label="$t('fieldnames.email')">
             {{ props.row.mail }}
-          </b-table-column>
-          <b-table-column v-slot="props" :label="$t('fieldnames.admin')">
-            <b-switch v-model="props.row.isAdmin" disabled />
-          </b-table-column>
-          <b-table-column v-slot="props" :label="$t('fieldnames.status')">
-            <b-switch v-model="props.row.status" disabled />
-          </b-table-column>
-        </b-table>
+          </o-table-column>
+          <o-table-column v-slot="props" :label="$t('fieldnames.admin')">
+            <o-switch v-model="props.row.isAdmin" disabled />
+          </o-table-column>
+          <o-table-column v-slot="props" :label="$t('fieldnames.status')">
+            <o-switch v-model="props.row.status" disabled />
+          </o-table-column>
+        </o-table>
 
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" :disabled="!isOnline" @click="create"><i class="fa fa-user-plus fa-mr" />{{ $t('actions.addUser') }}</button>
+            <button class="button is-primary" role="button" :disabled="!isOnline" @click="create"><span class="icon"><i class="fas fa-user-plus" /></span><span>{{ $t('actions.addUser') }}</span></button>
           </p>
         </div>
         <div v-if="error" class="message is-danger">
@@ -39,11 +39,7 @@
           </div>
         </div>
 
-        <b-modal :active.sync="modalUser.isActive" has-modal-card scroll="keep" @close="get">
-          <user-form v-bind="modalUser" />
-        </b-modal>
-
-        <b-loading :is-full-page="false" :active.sync="isLoading" />
+        <o-loading :active="isLoading" :full-page="false" />
 
       </div>
     </div>
@@ -51,32 +47,24 @@
 </template>
 
 <script>
-import Config from './../services/Config'
-import Breadcrumb from '@/components/Breadcrumb'
-import UserForm from '@/components/UserForm'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+import UserForm from '@/components/UserForm.vue'
+
 export default {
   name: 'Users',
   components: {
     Breadcrumb,
-    UserForm,
   },
   data () {
     return {
       users: [],
       error: '',
       isLoading: false,
-      // modal
-      modalUser: {
-        isActive: false,
-        user: {},
-      },
-      // resources
-      rUsers: this.$resource(Config.API_URL + 'users{/id}'),
     }
   },
   computed: {
     isOnline () {
-      return this.$store.state.isOnline
+      return this.$store.isOnline
     },
     displayedUsers () {
       // return isAdmin boolean from user scope
@@ -90,33 +78,39 @@ export default {
     this.get()
   },
   methods: {
-    get () {
+    async get () {
       this.isLoading = true
-      this.rUsers.query()
-        .then((response) => {
-          this.users = response.body
-        }, (response) => {
-          if (response.body.message) {
-            this.error = response.body.message
-            return
-          }
-          this.error = response.status + ' - ' + response.statusText
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.isLoading = false
-        })
+      try {
+        const response = await this.$http.get('users')
+        this.users = response.data
+      } catch (error) {
+        this.error = error.message
+      }
+      this.isLoading = false
     },
     create () {
       // open modal user form in creation mode
-      this.modalUser.user = { scope: 'user', status: true }
-      this.modalUser.isActive = true
+      this.$oruga.modal.open({
+        component: UserForm,
+        trapFocus: true,
+        props: {
+          user: { scope: 'user', status: true },
+        },
+        onClose: () => this.get(),
+      })
     },
     edit (user) {
       // open modal user form in edition mode with requested user
-      this.modalUser.user = JSON.parse(JSON.stringify(user))
-      delete this.modalUser.user.isAdmin
-      this.modalUser.isActive = true
+      const modalUser = JSON.parse(JSON.stringify(user))
+      delete modalUser.isAdmin
+      this.$oruga.modal.open({
+        component: UserForm,
+        trapFocus: true,
+        props: {
+          user: modalUser,
+        },
+        onClose: () => this.get(),
+      })
     },
   },
 }

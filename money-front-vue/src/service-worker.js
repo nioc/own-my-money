@@ -1,30 +1,43 @@
-/* global workbox */
-workbox.precaching.precacheAndRoute([])
+import { skipWaiting } from 'workbox-core'
+import { precacheAndRoute, cleanupOutdatedCaches, createHandlerBoundToURL } from 'workbox-precaching'
+import { registerRoute, NavigationRoute } from 'workbox-routing'
+import { StaleWhileRevalidate, CacheFirst, NetworkFirst } from 'workbox-strategies'
 
-workbox.routing.registerRoute(
+
+addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') skipWaiting()
+})
+
+precacheAndRoute(self.__WB_MANIFEST)
+
+registerRoute(new NavigationRoute(createHandlerBoundToURL('index.html')))
+
+cleanupOutdatedCaches()
+
+registerRoute(
   /.*\.(?:css|js)$/,
-  workbox.strategies.staleWhileRevalidate({
+  new StaleWhileRevalidate({
     cacheName: 'css-cache',
   }),
 )
 
-workbox.routing.registerRoute(
+registerRoute(
   /.*\.(?:png|jpg|jpeg|svg|gif)$/,
-  workbox.strategies.cacheFirst({
+  new CacheFirst({
     cacheName: 'images-cache',
   }),
 )
 
-workbox.routing.registerRoute(
+registerRoute(
   /.*\.(?:woff|woff2|ttf|eot)$/,
-  workbox.strategies.cacheFirst({
+  new CacheFirst({
     cacheName: 'fonts-cache',
   }),
 )
 
-workbox.routing.registerRoute(
+registerRoute(
   /\/server\/api\//,
-  workbox.strategies.networkFirst({
+  new NetworkFirst({
     cacheName: 'api-cache',
   }),
 )

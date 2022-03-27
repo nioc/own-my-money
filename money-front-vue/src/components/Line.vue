@@ -1,10 +1,17 @@
+<template>
+  <div>
+    <canvas ref="canvas" :width="width" :height="height" />
+  </div>
+</template>
+
 <script>
-import { Bar, mixins } from 'vue-chartjs'
-const { reactiveProp } = mixins
+import { Chart, BarElement, LineElement, PointElement, BarController, LineController,  LinearScale, TimeScale, Tooltip } from 'chart.js'
+import 'chartjs-adapter-dayjs-3'
+
+Chart.register(BarElement, LineElement, PointElement, BarController, LineController,  LinearScale, TimeScale, Tooltip)
 
 export default {
-  extends: Bar,
-  mixins: [reactiveProp],
+  name: 'LineChart',
   props: {
     chartData: {
       type: Object,
@@ -15,78 +22,104 @@ export default {
       required: false,
       default: null,
     },
-    chartOptions: {
-      type: Object,
-      required: false,
-      default () {
-        return {
+    width: {
+      type: Number,
+      default: 400,
+    },
+    height: {
+      type: Number,
+      default: 400,
+    },
+  },
+  data () {
+    return {
+      chart: null,
+      isRendering: false,
+      chartOptions: {
+        plugins: {
           legend: {
             display: false,
           },
-          maintainAspectRatio: false,
-          spanGaps: false,
-          elements: {
-            line: {
-              tension: 0.000001,
-            },
-          },
-          plugins: {
-            filler: {
-              propagate: false,
-            },
-          },
-          tooltips: {
+          tooltip: {
             callbacks: {
             },
           },
-          scales: {
-            xAxes: [{
-              type: 'time',
-              stacked: true,
-              ticks: {
-                autoSkip: false,
-                maxRotation: 0,
-              },
-              gridLines: {
-                offsetGridLines: true,
-              },
-            }],
-            yAxes: [{
-              id: 'y-axis-1',
-              type: 'linear',
-              ticks: {
-              },
-            }],
+        },
+        maintainAspectRatio: false,
+        spanGaps: false,
+        elements: {
+          line: {
+            tension: 0.000001,
           },
-        }
+        },
+        scales: {
+          x: {
+            type: 'time',
+            stacked: true,
+            ticks: {
+              autoSkip: false,
+              maxRotation: 0,
+            },
+            grid: {
+              offset: true,
+            },
+          },
+          y: {
+            type: 'linear',
+            ticks: {
+            },
+          },
+        },
       },
-    },
+    }
   },
   watch: {
     chartData () {
-      this.renderChart(this.chartData, this.chartOptions)
+      this.render()
     },
   },
   mounted () {
     if (this.labelCallback !== null && typeof this.labelCallback === 'function') {
-      this.chartOptions.tooltips.callbacks = { label: this.labelCallback }
+      this.chartOptions.plugins.tooltip.callbacks = { label: this.labelCallback }
     }
     this.chartData.datasets.forEach((dataset) => {
-      if (dataset.yAxisID === 'y-axis-2' && this.chartOptions.scales.yAxes.length < 2) {
-        this.chartOptions.scales.yAxes.push({
-          id: 'y-axis-2',
+      if (dataset.yAxisID === 'y1' && !Object.prototype.hasOwnProperty.call(this.chartOptions.scales, 'y1')) {
+        this.chartOptions.scales.y1 = {
           type: 'linear',
           position: 'right',
-          ticks: {
-            beginAtZero: true,
-          },
-          gridLines: {
+          beginAtZero: true,
+          grid: {
             drawOnChartArea: false,
           },
-        })
+        }
       }
     })
-    this.renderChart(this.chartData, this.chartOptions)
+    this.render()
+  },
+  beforeUnmount () {
+    if (this.chart) {
+      this.chart.destroy()
+    }
+  },
+  methods: {
+    async render () {
+      if (this.isRendering) {
+        return
+      }
+      this.isRendering = true
+      const ctx = this.$refs.canvas.getContext('2d')
+      if (this.chart) {
+        await this.chart.destroy()
+      }
+      this.$nextTick(function () {
+        this.chart = new Chart(ctx, {
+          type: 'line',
+          data: this.chartData,
+          options: this.chartOptions,
+        })
+        this.isRendering = false
+      })
+    },
   },
 }
 </script>

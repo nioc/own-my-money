@@ -46,20 +46,18 @@ Pull requests are welcomed. See [Contributing](CONTRIBUTING.md).
 See also the list of [contributors](https://github.com/nioc/own-my-money/contributors) to this project.
 
 This project is powered by the following components:
-- [VueJS](https://vuejs.org/) (MIT)
+- [Vue.js](https://vuejs.org/) (MIT)
 - [Bulma](https://bulma.io/) (MIT)
-- [Buefy](https://buefy.github.io) (MIT)
-- [Font Awesome](https://github.com/FortAwesome/Font-Awesome/) (Font Awesome Free License)
-- [Vue-resource](https://github.com/pagekit/vue-resource) (MIT)
-- [VeeValidate](https://github.com/logaretm/vee-validate) (MIT)
-- [Vue-moment](https://github.com/brockpetrie/vue-moment) (MIT)
-- [Vue I18n](https://github.com/kazupon/vue-i18n) (MIT)
+- [Oruga UI](https://oruga.io/) (MIT)
+- [Font Awesome](https://fontawesome.com/) (Font Awesome Free License)
+- [Axios](https://axios-http.com/) (MIT)
+- [Day.js](https://day.js.org/) (MIT)
+- [Vue I18n](https://kazupon.github.io/vue-i18n/) (MIT)
+- [Pinia](https://pinia.vuejs.org/) (MIT)
 - [OFX Parser](https://github.com/asgrim/ofxparser) (MIT)
 - [UAParser.js](https://github.com/faisalman/ua-parser-js) (MIT)
 - [Chart.js](https://www.chartjs.org/) (MIT)
-- [vue-chartjs](https://vue-chartjs.org/) (MIT)
 - [Export From JSON](https://github.com/zheeeng/export-from-json) (MIT)
-- [fontAwesomePicker](https://github.com/laistomazz/font-awesome-picker) (MIT)
 - Favicon: [Piggy Bank by Musmellow from the Noun Project](https://thenounproject.com/term/piggy-bank/1616637) (licensed as Creative Commons CCBY)
 
 ## License

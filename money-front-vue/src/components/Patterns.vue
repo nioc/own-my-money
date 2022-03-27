@@ -4,8 +4,8 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
-          {link: '/patterns', icon: 'fa-magic', text: this.$tc('objects.pattern', 2), isActive: true},
+          {link: '/', icon: 'fas fa-home', text: $t('labels.home')},
+          {link: '/patterns', icon: 'fas fa-magic', text: $tc('objects.pattern', 2), isActive: true},
         ]"
       />
     </div>
@@ -22,30 +22,37 @@
           </div>
         </div>
 
-        <b-table :data="displayedPatterns" :striped="true" :hoverable="true" class="table-container" default-sort-direction="desc" @select="edit">
-          <b-table-column v-slot="props" field="label" :label="$t('fieldnames.label')" sortable>
+        <o-table :data="displayedPatterns" :striped="true" :hoverable="true" root-class="table-container" td-class="is-clickable" default-sort-direction="desc" @select="edit">
+          <o-table-column v-slot="props" field="label" :label="$t('fieldnames.label')" sortable>
             {{ props.row.label }}
-          </b-table-column>
-          <b-table-column v-slot="props" field="share" :label="$t('fieldnames.share')" sortable>
+          </o-table-column>
+          <o-table-column v-slot="props" field="share" :label="$t('fieldnames.share')" sortable>
             <span v-if="props.row.share !== 100" class="has-text-weight-light has-text-grey">{{ props.row.share }}%</span>
-          </b-table-column>
-          <b-table-column v-slot="props" field="category" :label="$tc('objects.category', 1)" sortable>
+          </o-table-column>
+          <o-table-column v-slot="props" field="category" :label="$tc('objects.category', 1)" sortable>
             <span v-if="props.row.category && categoriesAndSubcategoriesLookup[props.row.category]">{{ categoriesAndSubcategoriesLookup[props.row.category].label }}</span>
-          </b-table-column>
-          <b-table-column v-slot="props" field="subcategory" :label="$tc('objects.subcategory', 1)" sortable>
+          </o-table-column>
+          <o-table-column v-slot="props" field="subcategory" :label="$tc('objects.subcategory', 1)" sortable>
             <span v-if="props.row.subcategory && categoriesAndSubcategoriesLookup[props.row.subcategory]">{{ categoriesAndSubcategoriesLookup[props.row.subcategory].label }}</span>
-          </b-table-column>
-          <b-table-column v-slot="props" field="isRecurring" :label="$t('fieldnames.isRecurring')" sortable>
+          </o-table-column>
+          <o-table-column v-slot="props" field="isRecurring" :label="$t('fieldnames.isRecurring')" position="centered" sortable>
             <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']" />
-          </b-table-column>
-        </b-table>
+          </o-table-column>
+          <template #empty>
+            <section class="section">
+              <div class="content has-text-grey has-text-centered">
+                <p>{{ $t('labels.nothingToDisplay') }}</p>
+              </div>
+            </section>
+          </template>
+        </o-table>
 
         <div class="field is-grouped">
           <p class="control">
-            <button class="button is-primary" role="button" :disabled="!isOnline" @click="create"><span class="icon"><i class="fa fa-plus" /></span><span>{{ $t('actions.addPattern') }}</span></button>
+            <button class="button is-primary" role="button" :disabled="!isOnline" @click="create"><span class="icon"><i class="fas fa-plus-square" /></span><span>{{ $t('actions.addPattern') }}</span></button>
           </p>
           <p class="control">
-            <button class="button is-primary" role="button" :disabled="!isOnline" @click="suggest"><span class="icon"><i class="fa fa-cogs" /></span><span>{{ $t('actions.suggestPatterns') }}</span></button>
+            <button class="button is-primary" role="button" :disabled="!isOnline" @click="suggest"><span class="icon"><i class="fas fa-cogs" /></span><span>{{ $t('actions.suggestPatterns') }}</span></button>
           </p>
         </div>
 
@@ -55,47 +62,54 @@
           </div>
         </div>
 
-        <b-table :data="suggestedPatterns" :striped="true" :hoverable="true" class="table-container" @select="createSuggested">
-          <b-table-column v-slot="props" :label="$t('fieldnames.label')">
+        <o-table :data="suggestedPatterns" :striped="true" :hoverable="true" root-class="table-container" td-class="is-clickable" default-sort="count" default-sort-direction="desc" @select="createSuggested">
+          <o-table-column v-slot="props" field="label" :label="$t('fieldnames.label')" sortable>
             {{ props.row.label }}
-          </b-table-column>
-          <b-table-column v-slot="props" :label="$tc('objects.category', 1)">
+          </o-table-column>
+          <o-table-column v-slot="props" field="category" :label="$tc('objects.category', 1)" sortable>
             <span v-if="props.row.category && categoriesAndSubcategoriesLookup[props.row.category]">{{ categoriesAndSubcategoriesLookup[props.row.category].label }}</span>
-          </b-table-column>
-          <b-table-column v-slot="props" :label="$tc('objects.subcategory', 1)">
+          </o-table-column>
+          <o-table-column v-slot="props" field="subcategory" :label="$tc('objects.subcategory', 1)" sortable>
             <span v-if="props.row.subcategory && categoriesAndSubcategoriesLookup[props.row.subcategory]">{{ categoriesAndSubcategoriesLookup[props.row.subcategory].label }}</span>
-          </b-table-column>
-          <b-table-column v-slot="props" :label="$tc('fieldnames.isRecurring', 1)">
+          </o-table-column>
+          <o-table-column v-slot="props" field="isRecurring" :label="$tc('fieldnames.isRecurring', 1)" position="centered" sortable>
             <i class="fa fa-fw" :class="[props.row.isRecurring ? 'fa-toggle-on' : 'fa-toggle-off']" />
-          </b-table-column>
-          <b-table-column v-slot="props" :label="$tc('objects.occurence', 2)">
+          </o-table-column>
+          <o-table-column v-slot="props" field="count" :label="$tc('objects.occurence', 2)" position="right" sortable>
             {{ props.row.count }}
-          </b-table-column>
-        </b-table>
+          </o-table-column>
+          <template #empty>
+            <section class="section">
+              <div class="content has-text-grey has-text-centered">
+                <p>{{ $t('labels.nothingToDisplay') }}</p>
+              </div>
+            </section>
+          </template>
+        </o-table>
 
-        <b-loading :is-full-page="false" :active.sync="isLoading" />
+        <o-loading :active="isLoading" :full-page="false" />
       </div>
     </div>
 
-    <b-modal :active.sync="modalPattern.isActive" has-modal-card scroll="keep">
-      <transaction-pattern :pattern="modalPattern.pattern" :r-patterns="rPatterns" />
-    </b-modal>
+    <o-modal v-model:active="modalPattern.isActive" has-modal-card scroll="keep">
+      <transaction-pattern :pattern="modalPattern.pattern" @close="closePatternModal" @pattern-updated="update" @pattern-created="add" @pattern-deleted="remove" />
+    </o-modal>
 
   </section>
 </template>
 
 <script>
-import Config from './../services/Config'
-import Breadcrumb from '@/components/Breadcrumb'
-import TransactionPattern from '@/components/Pattern'
-import CategoriesFactory from './../services/Categories'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+import TransactionPattern from '@/components/Pattern.vue'
+import { useStore } from '@/store'
+import { mapState } from 'pinia'
+
 export default {
   name: 'Patterns',
   components: {
     TransactionPattern,
     Breadcrumb,
   },
-  mixins: [CategoriesFactory],
   data () {
     return {
       patterns: [],
@@ -108,14 +122,11 @@ export default {
         isActive: false,
         pattern: {},
       },
-      // resources
-      rPatterns: this.$resource(Config.API_URL + 'patterns{/id}'),
-      rTransactionsPatterns: this.$resource(Config.API_URL + 'transactions/patterns'),
     }
   },
   computed: {
     isOnline () {
-      return this.$store.state.isOnline
+      return this.$store.isOnline
     },
     displayedPatterns () {
       if (!this.search) {
@@ -124,32 +135,24 @@ export default {
       const search = this.search.toLowerCase()
       return this.patterns.filter((pattern) => pattern.label.toLowerCase().indexOf(search) > -1)
     },
+    ...mapState(useStore, ['categories', 'categoriesAndSubcategoriesLookup']),
   },
   mounted () {
     this.get()
-    this.getCategories()
   },
   methods: {
-    get () {
+    async get () {
       this.isLoading = true
-      this.rPatterns.query()
-        .then((response) => {
-          this.patterns = response.body
-        }, (response) => {
-          if (response.body.message) {
-            this.error = response.body.message
-            return
-          }
-          this.error = response.status + ' - ' + response.statusText
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.isLoading = false
-        })
+      try {
+        const response = await this.$http.get('patterns')
+        this.patterns = response.data
+      } catch (error) {
+        this.error = error.message
+      }
+      this.isLoading = false
     },
     create () {
       const pattern = { label: '', category: '', subcategory: '', isRecurring: false, share: 100, shares: [] }
-      this.patterns.push(pattern)
       this.modalPattern.pattern = pattern
       this.modalPattern.isActive = true
     },
@@ -157,30 +160,43 @@ export default {
       this.modalPattern.pattern = pattern
       this.modalPattern.isActive = true
     },
-    suggest () {
+    add (pattern) {
+      this.patterns.push(pattern)
+    },
+    update (pattern) {
+      const index = this.patterns.findIndex(_pattern => _pattern.id === pattern.id)
+      if (index !== -1) {
+        this.patterns[index] = pattern
+      }
+    },
+    remove (patternId) {
+      const index = this.patterns.findIndex((_pattern) => _pattern.id === patternId)
+      this.patterns.splice(index, 1)
+    },
+    async suggest () {
       this.isLoading = true
       this.error = ''
-      this.rTransactionsPatterns.query()
-        .then((response) => {
-          this.suggestedPatterns = response.body
-        }, (response) => {
-          if (response.body.message) {
-            this.error = response.body.message
-            return
-          }
-          this.error = response.status + ' - ' + response.statusText
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.isLoading = false
-        })
+      try {
+        const response = await this.$http.get('transactions/patterns')
+        this.suggestedPatterns = response.data
+      } catch (error) {
+        this.error = error.message
+      }
+      this.isLoading = false
     },
     createSuggested (suggestedPattern) {
-      const pattern = JSON.parse(JSON.stringify(suggestedPattern))
-      pattern.share = 100
-      pattern.shares = []
-      this.patterns.push(pattern)
-      this.edit(pattern)
+      this.edit({
+        label: suggestedPattern.label,
+        category: suggestedPattern.category,
+        subcategory: suggestedPattern.subcategory,
+        isRecurring: suggestedPattern.isRecurring,
+        share: suggestedPattern.share || 100,
+        shares: suggestedPattern.share || [],
+      })
+    },
+    closePatternModal () {
+      this.modalPattern.isActive = false
+      this.modalPattern.pattern = {}
     },
   },
 }

@@ -15,7 +15,7 @@ export default {
     }
   },
   created () {
-    this.$router.beforeEach((to, from, next) => {
+    this.$router.afterEach((to, from) => {
       // get transition from meta
       let transitionName =
         to.meta.transitionName ||
@@ -30,7 +30,6 @@ export default {
       // set transition
       this.transitionEnterActiveClass = `${transitionName}-enter-active`
       this.transitionName = transitionName
-      next()
     })
   },
 }

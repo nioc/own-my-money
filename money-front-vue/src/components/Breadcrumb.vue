@@ -5,7 +5,7 @@
         <li v-for="item in items" :key="item.text" :class="{'is-active': item.isActive}">
           <router-link :to="item.link">
             <span v-if="item.icon" class="icon is-small">
-              <i class="fa" :class="item.icon" aria-hidden="true" />
+              <i :class="item.icon" aria-hidden="true" />
             </span>
             <span :class="{'is-hidden-mobile': item.icon}">{{ item.text }}</span>
           </router-link>
@@ -17,6 +17,7 @@
 
 <script>
 export default {
+  name: 'Breadcrumb',
   props: {
     items: {
       type: Array,

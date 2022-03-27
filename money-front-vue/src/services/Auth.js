@@ -1,6 +1,4 @@
-import Vue from 'vue'
-import Bus from './../services/Bus.js'
-import Config from './../services/Config.js'
+import { http, setHeader } from '@/services/Http'
 
 export default {
 
@@ -13,36 +11,23 @@ export default {
   },
 
   // send a request to the login URL and save the returned JWT
-  login (context, creds, redirect) {
-    context.$http.post(Config.API_URL + 'users/tokens', creds)
-      .then((response) => {
-        // store token
-        this.handleToken(response.body)
-        // send event for updating UI
-        Bus.$emit('user-logged', this.user)
-        // redirect to the requested route
-        if (redirect) {
-          context.$router.replace(redirect)
-          return
-        }
-        // redirect to home
-        context.$router.replace({ name: 'home' })
-      }, (response) => {
-        context.isLoading = false
-        if (response.body.message) {
-          context.error = response.body.message
-          return
-        }
-        context.error = response.status + ' - ' + response.statusText
-      })
+  async login (creds) {
+    const response = await http.post('users/tokens', creds)
+    // store token
+    this.handleToken(response.data)
+    return this.user
   },
 
   // remove the token
   logout () {
+    // clear storage
     localStorage.clear()
     sessionStorage.clear()
+    // clear authentication status
     this.user.authenticated = false
-    delete Vue.http.headers.common.Authorization
+    // delete authorization header
+    setHeader('Authorization', null)
+    // clear user
     this.user = {}
     return this.user
   },
@@ -66,7 +51,9 @@ export default {
       this.user.language = payload.language
       const scope = {}
       if (payload.scope) {
-        payload.scope.split(' ').forEach(function (role) { scope[role] = true })
+        payload.scope
+          .split(' ')
+          .forEach((role) => scope[role] = true)
       }
       this.user.scope = scope
       this.user.exp = payload.exp
@@ -95,7 +82,7 @@ export default {
       localStorage.setItem('user', JSON.stringify(payload))
       // populate this User
       this.populate(payload)
-      Vue.http.headers.common.Authorization = this.getAuthHeader()
+      setHeader('Authorization', this.getAuthHeader())
       return true
     } catch (err) {
       console.error(err)

@@ -3,8 +3,8 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
-          {link: '/maps', icon: 'fa-random', text: this.$tc('objects.transactionMapping', 2), isActive: true},
+          {link: '/', icon: 'fas fa-home', text: $t('labels.home')},
+          {link: '/maps', icon: 'fas fa-random', text: $tc('objects.transactionMapping', 2), isActive: true},
         ]"
       />
     </div>
@@ -13,31 +13,32 @@
         <h1 class="title container">{{ $tc('objects.transactionMapping', 2) }}</h1>
         <p class="subtitle has-text-grey">{{ $t('labels.mapsLabel') }}</p>
         <ul class="menu-list">
-          <li v-for="map in maps" :key="map.code">
+          <li v-for="map in store.maps" :key="map.code">
             <router-link :to="{name: 'map', params: {code: map.code}}">{{ map.label }}</router-link>
           </li>
-          <li>
-            <router-link :to="{name: 'newMap'}" class="has-text-grey-light"><i class="fa fa-fw fa-plus-square-o" />{{ $t('actions.addMap') }}</router-link>
-          </li>
         </ul>
-        <b-loading :is-full-page="false" :active.sync="isLoading" />
+        <router-link :to="{name: 'newMap'}" class="button is-primary mt-3"><span class="icon"><i class="fas fa-plus-square" /></span><span>{{ $t('actions.addMap') }}</span></router-link>
+        <o-loading :active="isLoading" :full-page="false" />
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import Config from './../services/Config'
-import Breadcrumb from '@/components/Breadcrumb'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+import { useStore } from '@/store'
+
 export default {
   name: 'Mappings',
   components: {
     Breadcrumb,
   },
+  setup() {
+    const store = useStore()
+    return { store }
+  },
   data () {
     return {
-      rMaps: this.$resource(Config.API_URL + 'maps{/id}'),
-      maps: [],
       isLoading: false,
     }
   },
@@ -45,21 +46,10 @@ export default {
     this.get()
   },
   methods: {
-    get () {
+    async get () {
       this.isLoading = true
-      this.rMaps.query({})
-        .then((response) => {
-          this.maps = response.body
-          // put maps in local storage for future usage
-          localStorage.setItem('maps', JSON.stringify(this.maps))
-        }, (response) => {
-        // @TODO : add error handling
-          console.error(response)
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.isLoading = false
-        })
+      await this.store.loadMaps()
+      this.isLoading = false
     },
   },
 }

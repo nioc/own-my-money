@@ -1,6 +1,6 @@
 @charset "utf-8";
 
-@import "~bulma/sass/utilities/initial-variables";
+@import "/node_modules/bulma/sass/utilities/initial-variables";
 
 $primary: #42b983;
 $message-body-padding: 0.75em 1.25em;
@@ -27,7 +27,7 @@ $card-header-shadow: 0;
 $body-background-color: $white-ter;
 $input-shadow: none;
 
-@import "~bulma/bulma.sass";
+@import "/node_modules/bulma/bulma.sass";
 
 .hero .tabs ul {
   border-bottom-color: $tabs-border-bottom-color;
@@ -74,7 +74,8 @@ $input-shadow: none;
   padding: 0;
 }
 
-@import "~buefy/src/scss/buefy";
+@import "/node_modules/bulma/bulma";
+@import '/node_modules/@oruga-ui/theme-bulma/dist/scss/bulma';
 
 td.icon-account, .icon-account {
   padding: 0 0 0 12px;
@@ -85,15 +86,8 @@ td.icon-account, .icon-account {
   }
 }
 
-td.icon-transactions-account-col {
-  min-width: 48px;
-}
-
-.icon-transactions-account-col img {
-  vertical-align: middle;
-}
-.icon-transactions-account-col > span> span {
-  margin: 0 0 0 8px;
+.transaction-account-icon {
+  min-width: 24px;
 }
 
 .icon-account-admin {
@@ -104,9 +98,21 @@ td.icon-transactions-account-col {
   border-style: solid;
 }
 
+.has-no-wrap {
+  white-space: nowrap;
+}
+
 .transaction-label {
+  display: inline-block;
+  overflow-x: clip;
   text-overflow: ellipsis;
-  word-break: break-all;
+  max-width: 15rem;
+  @include desktop {
+    max-width: 30rem;
+  }
+  @include mobile {
+    max-width: 10rem;
+  }
 }
 
 .chart-header {
@@ -131,4 +137,26 @@ td.icon-transactions-account-col {
 
 .is-center {
   margin: auto;
+}
+
+th.is-required::after,
+.is-required .label::after {
+  content: " *";
+  color: $danger;
+}
+
+.toast-notification {
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%), 0 0 6px rgb(0 0 0 / 4%);
+  border-radius: 2em;
+  padding: 0.75em 1.5em;
+  pointer-events: auto;
+}
+
+// @TODO: remove this hack (cf. https://github.com/oruga-ui/theme-bulma/issues/54)
+.datepicker .pagination-list {
+  flex-wrap: nowrap;
+  .select {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }

@@ -2,33 +2,35 @@
   <div v-if="isLoaded" class="box" style="height: 100%;">
     <header class="title chart-header">
       <h2 class="title is-marginless">{{ title }}</h2>
-      <a v-if="isClosable" class="delete is-large" :title="this.$t('actions.close')" @click="isLoaded = false" />
+      <a v-if="isClosable" class="delete is-large" :title="$t('actions.close')" @click="isLoaded = false" />
     </header>
     <div v-if="isIndependent" class="field is-grouped is-grouped-multiline is-block-mobile">
       <div class="control">
-        <b-datepicker v-model="search.periodStart" placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" />
+        <o-datepicker v-model="search.periodStart" placeholder="Start date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" lists-class="field has-addons" />
       </div>
       <div class="control">
-        <b-datepicker v-model="search.periodEnd" placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" />
+        <o-datepicker v-model="search.periodEnd" placeholder="End date" icon="calendar" editable :max-date="search.currentDate" required :disabled="isLoading" lists-class="field has-addons" />
       </div>
       <div class="control">
-        <button class="button" :class="{'is-loading': isLoading}" :disabled="isLoading" @click="applyFilter"><span class="icon"><i class="fa fa-refresh" /></span><span>{{ $t('actions.refresh') }}</span></button>
+        <button class="button" :class="{'is-loading': isLoading}" :disabled="isLoading" @click="applyFilter"><span class="icon"><i class="fas fa-sync-alt" /></span><span>{{ $t('actions.refresh') }}</span></button>
       </div>
     </div>
-    <doughnut :chart-data="chartData" :options="options" />
+    <doughnut v-if="chartData.labels.length > 0" :chart-data="chartData" :options="options" />
+    <div v-else class="content has-text-grey has-text-centered pt-6">
+      <p>{{ $t('labels.nothingToDisplay') }}</p>
+    </div>
   </div>
 </template>
 
 <script>
-import Config from './../services/Config'
-import Bus from '@/services/Bus'
-import Doughnut from '@/components/Doughnut'
-import CategoriesFactory from './../services/Categories'
+import Doughnut from '@/components/Doughnut.vue'
+import { useStore } from '@/store'
+import { mapState } from 'pinia'
+
 export default {
   components: {
     Doughnut,
   },
-  mixins: [CategoriesFactory],
   props: {
     title: {
       type: String,
@@ -71,39 +73,36 @@ export default {
       },
     }
   },
+  computed: {
+    ...mapState(useStore, ['categoriesAndSubcategoriesLookup']),
+  },
   mounted () {
-    Bus.$on('transactions-date-filtered', (search) => {
-      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.isRecurringOnly !== search.isRecurringOnly)) {
-        this.search.periodStart = search.periodStart
-        this.search.periodEnd = search.periodEnd
-        if (search.isRecurringOnly !== undefined) {
-          this.search.isRecurringOnly = search.isRecurringOnly
-        }
-        this.requestData()
-      }
-    })
-    this.getCategories(true)
+    this.$bus.on('transactions-date-filtered', this.handleTransactionsDateFilteredDistribution)
     if (this.date) {
       this.search.periodStart = this.date.periodStart
       this.search.periodEnd = this.date.periodEnd
     }
     this.requestData()
   },
+  beforeUnmount () {
+    this.$bus.off('transactions-date-filtered', this.handleTransactionsDateFilteredDistribution)
+  },
   methods: {
     applyFilter () {
-      Bus.$emit('transactions-date-filtered', this.search)
+      this.$bus.emit('transactions-date-filtered', this.search)
       this.requestData()
     },
-    requestData () {
+    async requestData () {
       this.isLoading = true
       const options = {
         params: {
           isRecurringOnly: this.search.isRecurringOnly,
-          periodStart: this.$moment(this.search.periodStart).format('X'),
-          periodEnd: this.$moment(this.search.periodEnd).format('X'),
+          periodStart: this.$dayjs(this.search.periodStart).format('X'),
+          periodEnd: this.$dayjs(this.search.periodEnd).format('X'),
         },
       }
-      this.$http.get(Config.API_URL + this.chartEndpoint, options).then((response) => {
+      try {
+        const response = await this.$http.get(this.chartEndpoint, options)
         const values = response.data.values
         let colors = ['#42b983', '#292f36', '#4ecdc4', '#0b3954', '#ff6663', '#7d7c84', '#7180ac', '#2b4570', '#c84630', '#81a684', '#466060', '#c9cba3', '#e26d5c', '#2a4747', '#157a6e', '#ee6c4d']
         const count = values.length
@@ -122,34 +121,34 @@ export default {
           }
         }
         let onClick = null
+        const vm = this
         if (response.data.key === 'categories') {
-          onClick = function (evt) {
-            const index = this.chart.getElementsAtEvent(evt)[0]
-            if (index) {
-              const key = values[index._index].key
+          onClick = function (evt, elements, chart) {
+            if (elements.length > 0) {
+              const key = values[elements[0].index].key
               if (key) {
                 // send event for parent update (may be displaying subcategories distribution)
-                Bus.$emit('category-selected', { key: key, label: this.chart.data.labels[index._index].replace(/[^ -~]+ /g, '') })
+                const label = chart.config.data.labels[elements[0].index].toString().replace(/[^ -~]+ /g, '')
+                vm.$bus.emit('category-selected', { key, label })
               }
             }
           }
         } else if (response.data.key === 'subcategories') {
-          onClick = function (evt) {
-            const index = this.chart.getElementsAtEvent(evt)[0]
-            if (index) {
-              const key = values[index._index].key
+          onClick = function (evt, elements, chart) {
+            if (elements.length > 0) {
+              const key = values[elements[0].index].key
               if (key) {
                 // send event for parent update (may be displaying subcategories transaction history)
-                Bus.$emit('subcategory-selected', { key: key, label: this.chart.data.labels[index._index] })
+                const label = chart.config.data.labels[elements[0].index].toString()
+                vm.$bus.emit('subcategory-selected', { key, label })
               }
             }
           }
         }
-        const vm = this
-        const labelCallback = function (tooltipItem, data) {
-          const sum = data.datasets[tooltipItem.datasetIndex].data.reduce((a, b) => a + b, 0)
-          const value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
-          const label = data.labels[tooltipItem.index].replace(/[^ -~]+ /g, '')
+        const labelCallback = function (context) {
+          const sum = context.dataset.data.reduce((a, b) => a + b, 0)
+          const value = context.raw
+          const label = context.label.replace(/[^ -~]+ /g, '')
           return label + ': ' + vm.$n(value, 'currency') + ' (' + Math.round(100 * value / sum) + '%)'
         }
         this.chartData = {
@@ -191,25 +190,32 @@ export default {
           },
           responsive: true,
           maintainAspectRatio: false,
-          tooltips: {
-            callbacks: {
-              label: labelCallback,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: labelCallback,
+              },
             },
           },
-          onClick: onClick,
+          onClick,
         }
-        this.search.periodStart = this.$moment(response.data.periodStart).toDate()
-        this.search.periodEnd = this.$moment(response.data.periodEnd).toDate()
-        this.isLoading = false
+        this.search.periodStart = this.$dayjs(response.data.periodStart).toDate()
+        this.search.periodEnd = this.$dayjs(response.data.periodEnd).toDate()
         this.isLoaded = true
-      }, (response) => {
-        this.isLoading = false
-        if (response.body.message) {
-          console.log(response.body.message)
-          return
+      } catch (error) {
+        console.log(error)
+      }
+      this.isLoading = false
+    },
+    handleTransactionsDateFilteredDistribution (search) {
+      if ((this.search.periodStart.getTime() !== search.periodStart.getTime()) || (this.search.periodEnd.getTime() !== search.periodEnd.getTime()) || (this.search.isRecurringOnly !== search.isRecurringOnly)) {
+        this.search.periodStart = search.periodStart
+        this.search.periodEnd = search.periodEnd
+        if (search.isRecurringOnly !== undefined) {
+          this.search.isRecurringOnly = search.isRecurringOnly
         }
-        console.log(response.status + ' - ' + response.statusText)
-      })
+        this.requestData()
+      }
     },
   },
 }

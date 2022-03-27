@@ -1,85 +1,105 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import App from './App'
-import router from './router'
-import './registerServiceWorker'
-import Auth from './services/Auth'
-import VueI18n from 'vue-i18n'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import { http, setHeader, addResponseInterceptor } from '@/services/Http'
+import App from '@/App.vue'
+import router from '@/router'
+import Auth from '@/services/Auth'
+import { createI18n } from 'vue-i18n'
 import messages from '@/lang/messages'
-import dateTimeFormats from '@/lang/dateTimeFormats'
+import datetimeFormats from '@/lang/dateTimeFormats'
 import numberFormats from '@/lang/numberFormats'
-import VueMoment from 'vue-moment'
-import 'moment/locale/fr'
-import validationMessagesEn from 'vee-validate/dist/locale/en'
-import validationMessagesFr from 'vee-validate/dist/locale/fr'
-import VueResource from 'vue-resource'
-import VeeValidate from 'vee-validate'
-import Bus from './services/Bus.js'
-import Buefy from 'buefy'
-import 'font-awesome/css/font-awesome.min.css'
+import dayjs from '@/services/Datetime'
+import { useStore } from '@/store'
+import { configValidator } from '@/services/Validator'
+import mitt from 'mitt'
+import { Tabs, Field, Config, Loading, Switch, Modal, Table, Icon, Upload, Datepicker, Collapse, Slider, Input, Notification, Tooltip } from '@oruga-ui/oruga-next'
+import { bulmaConfig } from '@oruga-ui/theme-bulma'
+import '@oruga-ui/oruga-next/dist/oruga.css'
+import '@fortawesome/fontawesome-free/css/fontawesome.css'
+import '@fortawesome/fontawesome-free/css/regular.css'
+import '@fortawesome/fontawesome-free/css/solid.css'
+import '@fortawesome/fontawesome-free/css/brands.css'
 import './assets/styles.scss'
-import 'bulma-o-steps/bulma-steps.min.css'
-const moment = require('moment')
 
-Vue.config.productionTip = false
-Vue.use(Vuex)
-Vue.use(VueI18n)
-Vue.use(VueResource)
+const app = createApp(App)
 
-const store = new Vuex.Store({
-  state: {
-    isOnline: null,
-  },
-  mutations: {
-    setConnectivity (state, isOnline) {
-      state.isOnline = isOnline
-    },
-  },
-})
+// global bus events et http client
+const bus = mitt()
+app.config.globalProperties.$bus = bus
+app.config.globalProperties.$http = http
 
-let locale = navigator.language
-if (Auth.getProfile() && Auth.user.language) {
-  locale = Auth.user.language
+// store
+app.use(createPinia())
+const store = useStore()
+app.config.globalProperties.$store = store
+
+// try to get user
+const user = Auth.getProfile()
+if (user) {
+  store.setUser(user)
 }
 
-const i18n = new VueI18n({
+// set locale / i18n
+let locale = navigator.language.substring(0,2)
+if (!['en', 'fr'].includes(locale)) {
+  locale = 'en'
+}
+if (user && user.language) {
+  locale = user.language
+}
+
+const i18n = createI18n({
+  legacy: true,
   fallbackLocale: 'en',
   locale: locale,
   messages: messages,
-  dateTimeFormats,
+  datetimeFormats,
   numberFormats,
 })
-Vue.http.headers.common['Accept-Language'] = locale
+app.use(i18n)
+setHeader('Accept-Language', locale)
 document.querySelector('html').setAttribute('lang', locale)
 
-Vue.use(VeeValidate, {
-  i18nRootKey: 'validations',
+// fields validation
+configValidator({
+  locale,
   i18n,
-  dictionary: {
-    en: { messages: validationMessagesEn.messages, attributes: messages.en.fieldnames },
-    fr: { messages: validationMessagesFr.messages, attributes: messages.fr.fieldnames },
-  },
 })
 
-Vue.use(VueMoment, {
-  moment,
-})
+// datetime
+dayjs.locale(locale)
+app.config.globalProperties.$dayjs = dayjs
+const localeData = dayjs.localeData()
 
-const localeData = Vue.moment.localeData()
-Vue.use(Buefy, {
-  defaultIconPack: 'fa',
-  defaultFirstDayOfWeek: localeData.firstDayOfWeek(),
-  defaultMonthNames: localeData.months(),
-  defaultDayNames: localeData.weekdaysMin(),
-  defaultDateFormatter: (date) => Vue.moment(date, 'L').format('L'),
-})
+// UI elements
+app.use(Tabs)
+  .use(Field)
+  .use(Loading)
+  .use(Switch)
+  .use(Modal)
+  .use(Table)
+  .use(Icon)
+  .use(Upload)
+  .use(Datepicker)
+  .use(Collapse)
+  .use(Slider)
+  .use(Input)
+  .use(Notification)
+  .use(Tooltip)
+  .use(Config, {
+    ...bulmaConfig,
+    iconPack: 'fas',
+    locale,
+    datepicker: {
+      ...bulmaConfig.datepicker,
+      firstDayOfWeek: localeData.firstDayOfWeek(),
+      monthNames: localeData.months(),
+      dayNames: localeData.weekdaysMin(),
+    },
+  })
 
-// set header at init
-delete Vue.http.headers.common.Authorization
-const authHeader = Auth.getAuthHeader()
-if (authHeader) {
-  Vue.http.headers.common.Authorization = authHeader
-}
+// set authorization header at init
+setHeader('Authorization', Auth.getAuthHeader())
 
 // check auth before changing page
 router.beforeEach((to, from, next) => {
@@ -88,7 +108,7 @@ router.beforeEach((to, from, next) => {
   if (!Auth.user.authenticated && to.name !== 'login' && to.name !== 'setup') {
     // user not authenticated, redirect to login page
     Auth.logout()
-    Bus.$emit('user-logged', {})
+    store.reset()
     next('/login?redirect=' + to.fullPath)
     return
   }
@@ -111,21 +131,26 @@ router.beforeEach((to, from, next) => {
 })
 
 // add http interceptor to redirect user on login page if a 401 occurs during API call
-Vue.http.interceptors.push((request, next) => {
-  next((response) => {
-    if (response.status === 401 && router.currentRoute.fullPath.search(/^\/login/) === -1) {
-      // redirect only if page is not already login page (multiples 401 in same time)
-      Auth.logout()
-      Bus.$emit('user-logged', {})
-      router.replace({ name: 'login', query: { redirect: router.currentRoute.fullPath } })
-    }
-    return response
-  })
-})
+addResponseInterceptor((response) => {
+  return response
+}, ((error) => {
+  if (error.response && error.response.data && error.response.data.message) {
+    error.message = error.response.data.message
+  }
+  if (error.response && error.response.status === 401 && router.currentRoute.value.fullPath.search(/^\/login/) === -1) {
+    // redirect only if page is not already login page (multiples 401 in same time)
+    Auth.logout()
+    store.reset()
+    router.replace({ name: 'login', query: { redirect: router.currentRoute.value.fullPath } })
+  }
+  return Promise.reject(error)
+}))
 
-new Vue({
-  router,
-  i18n,
-  store,
-  render: (h) => h(App),
-}).$mount('#money')
+if (user.authenticated) {
+  store.loadCategories()
+  store.loadHolders()
+  store.loadMaps()
+}
+
+app.use(router)
+app.mount('#body')

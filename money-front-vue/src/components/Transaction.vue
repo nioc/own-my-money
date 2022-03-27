@@ -8,35 +8,35 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.memo') }}</label>
           <div class="control">
-            <input v-model="localTransaction.memo" v-validate="'max:255'" class="input" type="text" name="memo" :placeholder="$t('fieldnames.memo')" :class="{'is-danger': errors.has('memo')}">
-            <span v-show="errors.has('memo')" class="help is-danger">{{ errors.first('memo') }}</span>
+            <input v-model="localTransaction.memo" class="input" type="text" name="memo" :placeholder="$t('fieldnames.memo')" :class="{'is-danger': errors.memo}">
+            <span v-if="errors.memo" class="help is-danger">{{ errors.memo.message }}</span>
           </div>
         </div>
-        <div class="field">
+        <div class="field is-required">
           <label class="label">{{ $t('fieldnames.label') }}</label>
           <div class="control">
-            <input v-model="localTransaction.name" v-validate="'required|max:200'" class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" :class="{'is-danger': errors.has('label')}">
-            <span v-show="errors.has('label')" class="help is-danger">{{ errors.first('label') }}</span>
+            <input v-model="localTransaction.name" class="input" type="text" name="label" :placeholder="$t('fieldnames.label')" :class="{'is-danger': errors.label}">
+            <span v-if="errors.label" class="help is-danger">{{ errors.label.message }}</span>
           </div>
         </div>
-        <div class="field">
+        <div class="field is-required">
           <label class="label">{{ $t('fieldnames.amount') }}</label>
           <div class="control">
-            <input v-model="localTransaction.amount" v-validate="'required|decimal:2'" class="input" type="number" name="amount" :placeholder="$t('fieldnames.amount')" :class="{'is-danger': errors.has('amount')}">
-            <span v-show="errors.has('amount')" class="help is-danger">{{ errors.first('amount') }}</span>
+            <input v-model="localTransaction.amount" class="input" type="number" name="amount" :placeholder="$t('fieldnames.amount')" :class="{'is-danger': errors.amount}">
+            <span v-if="errors.amount" class="help is-danger">{{ errors.amount.message }}</span>
           </div>
         </div>
-        <div class="field">
+        <div class="field is-required">
           <label class="label">{{ $t('fieldnames.date') }}</label>
           <div class="control">
-            <b-datepicker v-model="dateUser" :placeholder="$t('fieldnames.date')" icon="calendar" :readonly="false" :max-date="currentDate" />
+            <o-datepicker v-model="dateUser" :placeholder="$t('fieldnames.date')" icon="calendar" :readonly="false" :max-date="currentDate" lists-class="field has-addons" />
           </div>
         </div>
         <div class="field">
           <label class="label">{{ $t('fieldnames.note') }}</label>
           <div class="control">
-            <input v-model="localTransaction.note" v-validate="'max:50'" class="input" type="text" name="note" :placeholder="$t('fieldnames.note')" :class="{'is-danger': errors.has('note')}">
-            <span v-show="errors.has('note')" class="help is-danger">{{ errors.first('note') }}</span>
+            <input v-model="localTransaction.note" class="input" type="text" name="note" :placeholder="$t('fieldnames.note')" :class="{'is-danger': errors.note}">
+            <span v-if="errors.note" class="help is-danger">{{ errors.note.message }}</span>
           </div>
         </div>
         <div class="field">
@@ -45,7 +45,7 @@
             <div class="select">
               <select v-model="localTransaction.category" name="parent">
                 <option value="">-- {{ $tc('objects.category', 1) }} --</option>
-                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.label }}</option>
+                <option v-for="category in activeCategories" :key="category.id" :value="category.id">{{ category.label }}</option>
               </select>
             </div>
           </div>
@@ -64,7 +64,9 @@
         <div class="field">
           <label class="label">{{ $t('fieldnames.isRecurring') }}</label>
           <div class="control">
-            <b-switch v-model="localTransaction.isRecurring">{{ localTransaction.isRecurring ? $t('labels.isRecurring') : $t('labels.isNotRecurring') }}</b-switch>
+            <o-switch v-model="localTransaction.isRecurring">
+              {{ localTransaction.isRecurring ? $t('labels.isRecurring') : $t('labels.isNotRecurring') }}
+            </o-switch>
           </div>
         </div>
         <div class="field">
@@ -74,7 +76,7 @@
               <input v-model.number="sharePercent" class="input" name="dispatch" disabled>
             </div>
             <div class="control">
-              <button class="button" type="button" :disabled="!isOnline" @click="getTransactionDispatch"><i class="fa fa-pencil fa-fw fa-mr" />{{ $t('actions.update') }}</button>
+              <button class="button" type="button" :disabled="!isOnline" @click="getTransactionDispatch"><span class="icon"><i class="fas fa-pencil-alt" /></span><span>{{ $t('actions.update') }}</span></button>
             </div>
           </div>
           <div class="control">
@@ -98,24 +100,24 @@
                     </div>
                   </td>
                   <td class="dispatch-slider">
-                    <b-field grouped>
-                      <b-field expanded>
-                        <b-slider v-model="share.share" :custom-formatter="val => val + '%'" />
-                      </b-field>
-                      <b-field>
-                        <b-input v-model.number="share.share" type="number" min="0" max="100" />
-                      </b-field>
-                    </b-field>
+                    <o-field grouped>
+                      <o-field expanded root-class="is-expanded">
+                        <o-slider v-model="share.share" :custom-formatter="val => val + '%'" />
+                      </o-field>
+                      <o-field>
+                        <o-input v-model.number="share.share" type="number" min="0" max="100" />
+                      </o-field>
+                    </o-field>
                   </td>
                   <td>
-                    <button class="button is-light" type="button" @click="removeShareLine(index)"><i class="fa fa-trash fa-fw fa-mr" /></button>
+                    <button class="button is-light" type="button" @click="removeShareLine(index)"><span class="icon"><i class="fas fa-trash-alt" /></span></button>
                   </td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td colspan="3">
-                    <button class="button is-light" type="button" @click="addShareLine()"><i class="fa fa-plus-square fa-fw fa-mr" />{{ $t('actions.add') }}</button>
+                    <button class="button is-light" type="button" @click="addShareLine()"><span class="icon"><i class="fas fa-plus-square" /></span><span>{{ $t('actions.add') }}</span></button>
                   </td>
                 </tr>
               </tfoot>
@@ -129,29 +131,38 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-primary" :disabled="!isOnline"><i aria-hidden="true" class="fa fa-save fa-fw fa-mr" />{{ $t('actions.save') }}</button>
-        <button class="button" type="button" @click="$parent.close()"><i aria-hidden="true" class="fa fa-ban fa-fw fa-mr" />{{ $t('actions.cancel') }}</button>
+        <button class="button is-primary" :disabled="!isOnline"><span class="icon" aria-hidden="true"><i class="fas fa-save" /></span><span>{{ $t('actions.save') }}</span></button>
+        <button class="button" type="button" @click="$emit('close')"><span class="icon" aria-hidden="true"><i class="fas fa-ban" /></span><span>{{ $t('actions.cancel') }}</span></button>
       </footer>
-      <b-loading :is-full-page="false" :active.sync="isLoading" />
+      <o-loading :active="isLoading" :full-page="false" />
     </div>
   </form>
 </template>
 
 <script>
-import CategoriesFactory from '@/services/Categories'
-import HoldersFactory from '@/services/Holders'
+import { useValidator } from '@/services/Validator'
+import { useStore } from '@/store'
+import { mapState } from 'pinia'
 import Auth from '@/services/Auth'
+
 export default {
-  mixins: [CategoriesFactory, HoldersFactory],
   props: {
-    rTransactions: {
-      type: Object,
+    url: {
+      type: String,
       required: true,
     },
     transaction: {
       type: Object,
       required: true,
     },
+  },
+  emits: [
+    'close',
+    'updated',
+  ],
+  setup() {
+    const { errors, validationRules, validateForm } = useValidator()
+    return { errors, validationRules, validateForm }
   },
   data () {
     return {
@@ -163,15 +174,12 @@ export default {
     }
   },
   computed: {
-    isOnline () {
-      return this.$store.state.isOnline
-    },
     dateUser: {
       get () {
-        return this.$moment(this.localTransaction.dateUser).toDate()
+        return this.$dayjs(this.localTransaction.dateUser).toDate()
       },
       set (newValue) {
-        this.localTransaction.dateUser = this.$moment(newValue).format()
+        this.localTransaction.dateUser = this.$dayjs(newValue).format()
       },
     },
     sharePercent () {
@@ -180,6 +188,7 @@ export default {
     sharesSum () {
       return this.localTransaction.shares.filter(share => share.user !== null).reduce((acc, item) => acc + item.share, 0)
     },
+    ...mapState(useStore, ['isOnline', 'activeCategories', 'categoriesAndSubcategoriesLookup', 'holders', 'holderId']),
   },
   watch: {
     'localTransaction.category' () {
@@ -187,81 +196,80 @@ export default {
       this.localTransaction.subcategory = ''
     },
   },
-  mounted () {
-    this.getCategories(false)
+  created () {
+    this.validationRules = {
+      memo: 'max:255',
+      label: 'required|max:200',
+      amount: 'required|decimal:2',
+      note: 'max:50',
+    }
   },
   methods: {
-    validateBeforeSubmit () {
+    async validateBeforeSubmit (submitEvent) {
       this.error = ''
-      // call the async validator
-      this.$validator.validateAll().then((result) => {
-        if (this.localTransaction.shares && this.localTransaction.shares.length > 0) {
-          // calcul shares sum
-          if (this.sharesSum !== 100) {
-            this.error = this.$t('labels.invalidDispatch')
-            result = false
-          }
-          // check duplicates
-          const sharesByUser = this.localTransaction.shares.reduce(function (acc, item) {
-            if (typeof acc[item.user] === 'undefined') {
-              acc[item.user] = 0
-            }
-            acc[item.user]++
-            return acc
-          }, [])
-          if (sharesByUser.some(share => share > 1)) {
-            this.error = this.$t('labels.duplicatesShares')
-            result = false
-          }
+      if (!this.validateForm(submitEvent)) {
+        return
+      }
+      let result = true
+      if (this.localTransaction.shares && this.localTransaction.shares.length > 0) {
+        // calcul shares sum
+        if (this.sharesSum !== 100) {
+          this.error = this.$t('labels.invalidDispatch')
+          result = false
         }
-        if (result) {
-          // if validation is ok, call accounts API
-          this.isLoading = true
-          this.localTransaction.amount = parseFloat(this.localTransaction.amount)
-          this.rTransactions.update({ id: this.localTransaction.id }, this.localTransaction)
-            .then((response) => {
-              // update transaction for rendering
-              this.localTransaction = response.body
-              this.transaction.memo = this.localTransaction.memo
-              this.transaction.name = this.localTransaction.name
-              this.transaction.amount = this.localTransaction.amount
-              this.transaction.dateUser = this.localTransaction.dateUser
-              this.transaction.note = this.localTransaction.note
-              this.transaction.category = this.localTransaction.category
-              this.transaction.subcategory = this.localTransaction.subcategory
-              this.transaction.isRecurring = this.localTransaction.isRecurring
-              this.transaction.share = this.localTransaction.share
-              // close
-              this.$parent.close()
-            }, (response) => {
-              // remove loading overlay when API replies
-              this.isLoading = false
-              if (response.body.message) {
-                this.error = response.body.message
-                return
-              }
-              this.error = response.status + ' - ' + response.statusText
-            })
+        // check duplicates
+        const sharesByUser = this.localTransaction.shares.reduce(function (acc, item) {
+          if (typeof acc[item.user] === 'undefined') {
+            acc[item.user] = 0
+          }
+          acc[item.user]++
+          return acc
+        }, [])
+        if (sharesByUser.some(share => share > 1)) {
+          this.error = this.$t('labels.duplicatesShares')
+          result = false
         }
-      })
+      }
+      if (result) {
+        // if validation is ok, call accounts API
+        this.isLoading = true
+        this.localTransaction.amount = parseFloat(this.localTransaction.amount)
+        try {
+          const response = await this.$http.put(`${this.url}/${this.localTransaction.id}`, this.localTransaction)
+          // update transaction for rendering
+          this.localTransaction = response.data
+          const transactionUpdated = {
+            id: this.localTransaction.id,
+            memo: this.localTransaction.memo,
+            name: this.localTransaction.name,
+            amount: this.localTransaction.amount,
+            dateUser: this.localTransaction.dateUser,
+            note: this.localTransaction.note,
+            category: this.localTransaction.category,
+            subcategory: this.localTransaction.subcategory,
+            isRecurring: this.localTransaction.isRecurring,
+            share: this.localTransaction.share,
+          }
+          // close
+          this.$emit('updated', transactionUpdated)
+          this.$emit('close')
+        } catch (error) {
+          this.error = error.message
+        }
+        this.isLoading = false
+      }
     },
-    getTransactionDispatch () {
-      this.$set(this.localTransaction, 'shares', [])
-      this.rTransactions.get({ id: this.localTransaction.id })
-        .then(response => {
-          this.localTransaction.shares = response.body.shares
-          this.getCurrentHolderId().then((holderId) => {
-            if (this.localTransaction.shares.length === 0) {
-              this.addShareLine({ user: holderId, share: 100 })
-            }
-          })
-        }, (response) => {
-          if (response.body.message) {
-            this.error = response.body.message
-            return
-          }
-          this.error = response.status + ' - ' + response.statusText
-        })
+    async getTransactionDispatch () {
+      this.localTransaction.shares = []
+      try {
+        const response = await this.$http.get(`${this.url}/${this.localTransaction.id}`)
+        this.localTransaction.shares = response.data.shares
+        if (this.localTransaction.shares.length === 0) {
+          this.addShareLine({ user: this.holderId, share: 100 })
+        }
+      } catch (error) {
+        this.error = error.message
+      }
     },
     addShareLine (share) {
       if (!share) {

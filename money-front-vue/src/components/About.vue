@@ -3,8 +3,8 @@
     <div class="hero-head">
       <breadcrumb
         :items="[
-          {link: '/', icon: 'fa-home', text: this.$t('labels.home')},
-          {link: '/about', icon: 'fa-info-circle', text: this.$t('labels.about'), isActive: true},
+          {link: '/', icon: 'fas fa-home', text: $t('labels.home')},
+          {link: '/about', icon: 'fas fa-info-circle', text: $t('labels.about'), isActive: true},
         ]"
       />
     </div>
@@ -24,7 +24,7 @@
         </div>
         <div v-if="isLoaded" class="content field is-grouped is-grouped-multiline">
           <div class="control">
-            <div class="tags has-addons"><span class="tag is-dark">Installed version</span><span class="tag" :class="[isUpToDate ? 'is-success': 'is-danger']">{{ version.installed }}</span></div>
+            <div class="tags has-addons" :title="`Version Git: ${gitVersion}`"><span class="tag is-dark">Installed version</span><span class="tag" :class="[isUpToDate ? 'is-success': 'is-danger']">{{ version.installed }}</span></div>
           </div>
           <div v-if="!isUpToDate" class="control">
             <div class="tags has-addons"><span class="tag is-dark">Latest version</span><span class="tag is-info">{{ version.latest }}</span></div>
@@ -37,7 +37,7 @@
           <div v-if="!version.isContainerized">
             <button class="button is-primary" :class="{'is-loading': isUpdating}" :disabled="!isOnline || isUpdating" @click="update"><span class="icon"><i class="fa fa-wrench" /></span><span>{{ $t('actions.updateTo') }} {{ version.latest }}</span></button>
             <!-- eslint-disable-next-line vue/require-v-for-key-->
-            <pre v-if="updateLogs" class="section content"><span v-for="updateLog in updateLogs" class="is-block">{{ updateLog.timestamp | moment("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
+            <pre v-if="updateLogs" class="section content"><span v-for="updateLog in updateLogs" class="is-block">{{ $dayjs(updateLog.timestamp).format("HH:mm:ss") }}   {{ updateLog.message }}</span></pre>
           </div>
           <!-- eslint-disable-next-line vue/no-v-html -->
           <div v-else class="notification is-danger is-light" v-html="$t('labels.containerUpdateText')" />
@@ -50,9 +50,9 @@
 </template>
 
 <script>
-import Config from './../services/Config'
 import Auth from '@/services/Auth'
-import Breadcrumb from '@/components/Breadcrumb'
+import Breadcrumb from '@/components/Breadcrumb.vue'
+
 export default {
   name: 'About',
   components: {
@@ -72,14 +72,13 @@ export default {
       isUpdating: false,
       releaseChannel: null,
       releaseChannelLoaded: false,
-      // resources
-      rSettings: this.$resource(Config.API_URL + 'settings{/key}'),
-      rVersions: this.$resource(Config.API_URL + 'setup/versions/latest'),
+      // eslint-disable-next-line no-undef
+      gitVersion: GITVERSION,
     }
   },
   computed: {
     isOnline () {
-      return this.$store.state.isOnline
+      return this.$store.isOnline
     },
   },
   mounted () {
@@ -87,73 +86,59 @@ export default {
     this.getSetting('releaseChannel')
   },
   methods: {
-    get () {
-      this.rVersions.query()
-        .then((response) => {
-          this.version = response.body
-          if (this.version.installed !== this.version.latest) {
-            this.isUpToDate = false
-          }
-        }, (response) => {
-          if (response.body.message) {
-            console.log(response.body.message)
-            return
-          }
-          console.log(response.status + ' - ' + response.statusText)
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.isLoaded = true
-        })
+    async get () {
+      try {
+        const response = await this.$http.get('setup/versions/latest')
+        this.version = response.data
+        if (this.version.installed !== this.version.latest) {
+          this.isUpToDate = false
+        }
+      } catch (error) {
+        console.log(error)
+      }
+      this.isLoaded = true
     },
-    getSetting (key) {
+    async getSetting (key) {
       if (this.user.scope.admin) {
-        this.rSettings.get({ key: key })
-          .then((response) => {
-            switch (key) {
-              case 'releaseChannel':
-                this.releaseChannelLoaded = true
-                this.releaseChannel = response.body.value
-                break
-            }
-          }, (response) => {
-            console.error(response)
-          })
+        try {
+          const response = await this.$http.get(`settings/${key}`)
+          switch (key) {
+          case 'releaseChannel':
+            this.releaseChannelLoaded = true
+            this.releaseChannel = response.data.value
+            break
+          }
+        } catch (error) {
+          console.error(error)
+        }
       }
     },
-    setSetting (key, value) {
+    async setSetting (key, value) {
       if (this.user.scope.admin) {
-        this.rSettings.update({ key: key }, { key: key, value: value })
-          .then((response) => {
-            switch (key) {
-              case 'releaseChannel':
-                this.releaseChannel = response.body.value
-                this.get()
-                break
-            }
-          }, (response) => {
-            console.error(response)
-          })
+        try {
+          const response = await this.$http.put(`settings/${key}`, { key, value })
+          switch (key) {
+          case 'releaseChannel':
+            this.releaseChannel = response.data.value
+            this.get()
+            break
+          }
+        } catch (error) {
+          console.error(error)
+        }
       }
     },
-    update () {
+    async update() {
       this.updateLogs = ''
       this.isUpdating = true
-      this.rVersions.save()
-        .then((response) => {
-          this.updateLogs = response.body
-          this.get()
-        }, (response) => {
-          if (response.body.message) {
-            this.updateLogs = response.body.message
-            return
-          }
-          console.log(response.status + ' - ' + response.statusText)
-        })
-        .finally(function () {
-          // remove loading overlay when API replies
-          this.isUpdating = false
-        })
+      try {
+        const response = await this.$http.post('setup/versions/latest')
+        this.updateLogs = response.data
+        await this.get()
+      } catch (error) {
+        this.updateLogs = error.message
+      }
+      this.isUpdating = false
     },
   },
 }
