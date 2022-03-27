@@ -89,6 +89,8 @@ class Account
         $query->bindValue(':lastUpdate', $this->lastUpdate, PDO::PARAM_INT);
         if ($query->execute()) {
             $this->id = $connection->lastInsertId();
+            //add default holder
+            $this->setHolder($this->user, false, $error);
             //returns insertion was successfully processed
             return true;
         }
