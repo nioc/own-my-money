@@ -12,7 +12,7 @@ import dayjs from '@/services/Datetime'
 import { useStore } from '@/store'
 import { configValidator } from '@/services/Validator'
 import mitt from 'mitt'
-import { Tabs, Field, Config, Loading, Switch, Modal, Table, Icon, Upload, Datepicker, Collapse, Slider, Input, Notification, Tooltip } from '@oruga-ui/oruga-next'
+import { Tabs, Field, Config, Loading, Switch, Modal, Table, Icon, Upload, Datepicker, Collapse, Slider, Input, Notification, Tooltip, Steps } from '@oruga-ui/oruga-next'
 import { bulmaConfig } from '@oruga-ui/theme-bulma'
 import '@oruga-ui/oruga-next/dist/oruga.css'
 import '@fortawesome/fontawesome-free/css/fontawesome.css'
@@ -86,6 +86,7 @@ app.use(Tabs)
   .use(Input)
   .use(Notification)
   .use(Tooltip)
+  .use(Steps)
   .use(Config, {
     ...bulmaConfig,
     iconPack: 'fas',
