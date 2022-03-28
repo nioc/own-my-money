@@ -3,7 +3,7 @@ set -e
 
 echo -n "update gui javascript with environment variables... "
 
-cd /var/www/own-my-money/front/js/ &&
+cd /var/www/own-my-money/front/assets/ &&
 find . -name "*" -type f -exec sed -i "s|http://localhost|$OMM_BASE_URI|g" {} \;
 
 echo "done"

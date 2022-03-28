@@ -8,9 +8,11 @@
 !docker/docker-entrypoint.sh
 !money-front-vue
 !server
+!.git/
 
 # Exclude specific files/folders
-.git
+.git/config
+server/configuration/local.ini
 money-front-vue/dist
 money-front-vue/node_modules
 **/.php_cs.cache

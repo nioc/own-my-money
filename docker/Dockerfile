@@ -7,12 +7,14 @@
 FROM node:lts-alpine as build-stage
 
 # Install app dependencies
+RUN apk add git
 WORKDIR /app
 COPY money-front-vue/package*.json ./
 RUN npm install
 
 # Copy src files (exluding files defined in .dockerignore)
 COPY money-front-vue/. .
+COPY .git/. .
 
 # Build VueJS app
 RUN npm run build
