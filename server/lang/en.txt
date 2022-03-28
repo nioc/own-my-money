@@ -118,7 +118,7 @@ en {
     noReleaseFound { "No release was found" }
     releaseIs { "Release is {0}" }
     noDownloadUrl { "No download url was found" }
-    folderNotWritable { "Folder '{0}' is not writable, you should run: chown {1} {0} -R" }
+    folderNotWritable { "Folder {0} is not writable, you should run: chown {1}:{1} {0} -R" }
     downloadArchive { "Download archive..." }
     archiveNotWritable { "Unable to write archive at {0}/{1}" }
     noUpdateContainer { "Application is running in container, update docker image" }

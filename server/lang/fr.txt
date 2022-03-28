@@ -118,7 +118,7 @@ fr {
     noReleaseFound { "Aucune version publiée" }
     releaseIs { "La dernière version publiée est {0}" }
     noDownloadUrl { "Url de téléchargement introuvable" }
-    folderNotWritable { "Le dossier '{0}' n'est pas accessible en écriture, vous devriez lancer la commande suivante : chown {1} {0} -R" }
+    folderNotWritable { "Le dossier {0} n'est pas accessible en écriture, vous devriez lancer la commande suivante : chown {1}:{1} {0} -R" }
     downloadArchive { "Téléchargement de l'archive..." }
     archiveNotWritable { "Impossible d'écrire l'archive à l'emplacement {0}/{1}" }
     noUpdateContainer { "L'application s'execute dans un conteneur, mettez à jour l'image docker" }
