@@ -46,7 +46,7 @@
     "prettier": "^2.6.1",
     "rollup-plugin-visualizer": "^5.6.0",
     "sass": "^1.49.7",
-    "vite": "^2.7.13",
+    "vite": "^2.9.13",
     "vite-plugin-git-revision": "^0.1.9",
     "vite-plugin-pwa": "^0.11.13"
   }
