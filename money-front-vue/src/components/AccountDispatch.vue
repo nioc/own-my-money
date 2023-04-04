@@ -126,12 +126,11 @@ export default {
     async requestData () {
       this.isLoading = true
       const params = {
-        id: this.id,
         periodStart: this.$dayjs(this.search.periodStart).format('X'),
         periodEnd: this.$dayjs(this.search.periodEnd).format('X'),
       }
       try {
-        const response = await this.$http.get(`accounts/${this.id}/categories`, params)
+        const response = await this.$http.get(`accounts/${this.id}/categories`, { params })
         // set users
         const displayedUsers = []
         response.data.forEach((category) => {
