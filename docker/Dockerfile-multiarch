@@ -4,7 +4,7 @@
 # Start image (see the wiki for environment variables): `docker run -d -p 80:80 --rm --name own-my-money-1 nioc/own-my-money:latest`
 
 # Production stage
-FROM php:7.4-apache
+FROM php:8.2-apache
 
 # Install PHP modules
 RUN apt-get update && \

@@ -14,14 +14,14 @@ RUN npm install
 
 # Copy src files (exluding files defined in .dockerignore)
 COPY money-front-vue/. .
-COPY .git/. .
+COPY .git/. .git/
 
 # Build VueJS app
 RUN npm run build
 
 
 # Production stage
-FROM php:7.4-apache as production-stage
+FROM php:8.2-apache as production-stage
 
 # Install PHP modules
 RUN apt-get update && \

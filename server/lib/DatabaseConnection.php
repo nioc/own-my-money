@@ -25,6 +25,6 @@ class DatabaseConnection extends PDO
             //return to the main thread
             return;
         }
-        parent::__construct('mysql:host='.$configuration->get('dbHost').';port='.'3306'.';dbname='.$configuration->get('dbName'), $configuration->get('dbUser'), $configuration->get('dbPwd'), array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+        parent::__construct('mysql:host='.$configuration->get('dbHost').';port='.'3306'.';dbname='.$configuration->get('dbName'), $configuration->get('dbUser'), $configuration->get('dbPwd'), array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8', PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT ));
     }
 }

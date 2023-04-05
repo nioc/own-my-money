@@ -185,14 +185,15 @@ export default {
         }
         this.chartData.labels = labels
         this.options = {
-          legend: {
-            display: true,
-          },
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
+            legend: {
+              display: true,
+            },
             tooltip: {
               callbacks: {
+                title: () => '',
                 label: labelCallback,
               },
             },

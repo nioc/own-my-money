@@ -72,8 +72,7 @@ export default {
       isUpdating: false,
       releaseChannel: null,
       releaseChannelLoaded: false,
-      // eslint-disable-next-line no-undef
-      gitVersion: GITVERSION,
+      gitVersion: import.meta.env.VITE_GIT_VERSION,
     }
   },
   computed: {
