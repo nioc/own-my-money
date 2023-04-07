@@ -40,7 +40,10 @@ export default {
           parser.setUA(connection.userAgent)
           const userAgent = parser.getResult()
           connection.browser = `${userAgent.browser.name} ${userAgent.browser.major}`
-          connection.os = `${userAgent.os.name} ${userAgent.os.version}`
+          connection.os = userAgent.os.name
+          if (userAgent.os.version) {
+            connection.os += ` ${userAgent.os.version}`
+          }
           if (userAgent.device.model !== undefined) {
             connection.device = userAgent.device.model
           }
