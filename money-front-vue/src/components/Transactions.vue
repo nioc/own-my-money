@@ -27,6 +27,7 @@
             <div class="select">
               <select v-model="search.category" name="parent">
                 <option value="">-- {{ $tc('objects.category', 1) }} --</option>
+                <option :value="null">{{ $t('labels.uncategorizedTransaction') }}</option>
                 <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.label }}</option>
               </select>
             </div>
@@ -35,6 +36,7 @@
             <div class="select">
               <select v-model="search.subcategory" name="parent">
                 <option value="">-- {{ $tc('objects.subcategory', 1) }} --</option>
+                <option :value="null">{{ $t('labels.uncategorizedTransaction') }}</option>
                 <option v-for="subcategory in categoriesAndSubcategoriesLookup[search.category].sub" :key="subcategory.id" :value="subcategory.id">{{ subcategory.label }}</option>
               </select>
             </div>
@@ -290,8 +292,8 @@ export default {
         return (transaction.note + transaction.fullname).toLowerCase().indexOf(query.toLowerCase()) > -1 &
         new Date(Date.parse(transaction.datePosted)) >= periodStart &
         new Date(Date.parse(transaction.datePosted)) <= periodEnd &
-        (!category || transaction.category === category) &
-        (!subcategory || transaction.subcategory === subcategory)
+        (category === '' || transaction.category === category) &
+        (subcategory === '' || transaction.subcategory === subcategory)
       })
     },
     transactionsCheckedSum () {
