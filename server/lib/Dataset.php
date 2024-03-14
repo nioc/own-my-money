@@ -96,6 +96,80 @@ class Dataset
     }
 
     /**
+     * Parse account transactions from QIF file
+     *
+     * @param int $accountId Account identifier
+     *
+     * @return array Transactions
+     */
+    public function parseTransactionsFromQif($accountId)
+    {
+        $configuration = new Configuration();
+        $dateFormat = $configuration->get('qifDateFormat');
+        $qif = file_get_contents($this->filepath);
+        $lines = explode(PHP_EOL, $qif);
+        $transactions = [];
+        $transaction = new Transaction();
+        foreach ($lines as $line) {
+            $field = substr($line, 0, 1);
+            $value = trim(substr($line, 1));
+            switch ($field) {
+                case '!':
+                    // Type, not used
+                    break;
+                case 'D':
+                    // Date, parse using system configuration
+                    if ($dateTime = DateTime::createFromFormat($dateFormat, $value)) {
+                        $transaction->datePosted = $dateTime->getTimestamp();
+                        $transaction->dateUser = $dateTime->getTimestamp();
+                    }
+                    break;
+                case 'T':
+                    // Amount, remove comma and get float
+                    $transaction->amount = floatval(str_replace(",", "", $value));
+                    break;
+                case 'C':
+                    // Status, not used
+                    break;
+                case 'N':
+                    // Numero (check or reference number), not used
+                    break;
+                case 'P':
+                    // Payee, use it as label
+                    $transaction->name = $value;
+                    break;
+                case 'M':
+                case 'E':
+                    // Memo
+                    $transaction->memo = $value;
+                    break;
+                case 'A':
+                    // Address, not used
+                    break;
+                case 'L':
+                case 'S':
+                    // Category, not used
+                    break;
+                case 'O':
+                    // Commission, not used
+                    break;
+                case "^":
+                    // End of entry
+                    if ($transaction->datePosted !== null && $transaction->amount !== null) {
+                        // generate a pseudo fitid
+                        $transaction->fitid = 'omm'.time().count($transactions);
+                        $transaction->aid = $accountId;
+                        $transaction->type = ($transaction->amount > 0) ? 'CREDIT' : 'DEBIT';
+                        array_push($transactions, $transaction);
+                    }
+                    $transaction = new Transaction();
+                    break;
+            }
+        }
+        return $transactions;
+    }
+
+    /**
      * Parse account transactions from JSON file
      *
      * @param int $accountId Account identifier

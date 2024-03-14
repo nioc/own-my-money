@@ -26,8 +26,8 @@ switch ($api->method) {
         $allowedExtensions = array('.ofx');
         if ($api->checkParameterExists('aid', $accountId)) {
             $accountId = intval($accountId);
-            //allow json files for dataset account
-            array_push($allowedExtensions, '.json');
+            //allow json and qif files for dataset account
+            array_push($allowedExtensions, '.json', '.qif');
             //check provided account exists
             $account = new Account($accountId);
             if (!$account->get()) {
@@ -114,6 +114,31 @@ switch ($api->method) {
                 //process account transactions
                 if (!$transactions = $dataset->parseTransactionsFromJson($accountId, $mapCode)) {
                     $api->output(500, $api->getMessage('jsonProcessError'));
+                    //something gone wrong :(
+                    return;
+                }
+                $sum = 0;
+                foreach ($transactions as $transaction) {
+                    $result['processed']++;
+                    $transaction->applyPatterns($api->requesterId);
+                    if ($transaction->insert()) {
+                        $sum += $transaction->amount;
+                        $result['inserted']++;
+                    }
+                }
+                //update timestamp and balance
+                $account = new Account($accountId);
+                if ($account->get()) {
+                    $account->balance += $sum;
+                    $account->update();
+                }
+                array_push($result['accountsList'], $accountId);
+                break;
+            case '.qif':
+                $dataset = new Dataset($file['tmp_name']);
+                //process account transactions
+                if (!$transactions = $dataset->parseTransactionsFromQif($accountId)) {
+                    $api->output(500, $api->getMessage('qifProcessError'));
                     //something gone wrong :(
                     return;
                 }

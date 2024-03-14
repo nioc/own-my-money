@@ -46,6 +46,7 @@ en {
     fileUploadError { "Error during file upload" }
     ofxProcessError { "Error during OFX process" }
     jsonProcessError { "Error during JSON process" }
+    qifProcessError { "Error during QIF process" }
     mapCodeMustBeProvided { "Map code must be provided in query string for JSON dataset" }
     fileExtensionNotImplemented { "File extension « {0} » is not implemented" }
     accountsTransactionsProcessed { "{0, plural, =0{0 account} =1{1 account} other{# accounts}} created ({1} from file), {2, plural, =0{0 transaction} =1{1 transaction} other{# transactions}} created ({3} from file)" }

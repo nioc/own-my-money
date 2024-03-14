@@ -46,6 +46,7 @@ fr {
     fileUploadError { "Erreur lors de l'envoi du fichier" }
     ofxProcessError { "Erreur lors du traitement du fichier OFX" }
     jsonProcessError { "Erreur lors du traitement du fichier JSON" }
+    qifProcessError { "Erreur lors du traitement du fichier QIF" }
     mapCodeMustBeProvided { "Le code de correspondance doit être fourni dans la chaine de recherche pour un fichier JSON" }
     fileExtensionNotImplemented { "L'extension du fichier « {0} » n'est pas pris en charge" }
     accountsTransactionsProcessed { "{0, plural, =0{0 compte créé} =1{1 compte créé} other{# comptes créés}} ({1} dans le fichier), {2, plural, =0{0 transaction créée} =1{1 transaction créée} other{# transactions créées}} ({3} dans le fichier)" }
