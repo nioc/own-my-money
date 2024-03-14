@@ -118,7 +118,7 @@ class Account
         $query->bindValue(':accountId', $this->accountId, PDO::PARAM_STR);
         $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':duration', $this->duration, PDO::PARAM_STR);
-        $query->bindValue(':balance', $this->balance, PDO::PARAM_INT);
+        $query->bindValue(':balance', $this->balance, PDO::PARAM_STR);
         $query->bindValue(':isActive', $this->isActive, PDO::PARAM_BOOL);
         if ($query->execute()) {
             //returns update was successfully processed
