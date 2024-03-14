@@ -13,6 +13,7 @@
             <option value="P3M">{{ $tc('objects.lastMonth', 3) }}</option>
             <option value="P6M">{{ $tc('objects.lastMonth', 6) }}</option>
             <option value="P1Y">{{ $tc('objects.lastYear', 1) }}</option>
+            <option value="P2Y">{{ $tc('objects.lastYear', 2) }}</option>
           </select>
         </div>
       </div>
