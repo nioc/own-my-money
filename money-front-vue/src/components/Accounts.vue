@@ -16,20 +16,22 @@
             {{ error }}
           </div>
         </div>
-        <div v-if="accounts.length" class="table-container">
+        <div v-if="displayedAccounts.length" class="table-container">
           <table class="table is-striped is-hoverable is-fullwidth">
             <thead>
               <tr>
                 <th />
                 <th>{{ $tc('objects.account', 1) }}</th>
+                <th v-if="hasInactiveAccountsDisplayed">{{ $t('fieldnames.isActive') }}</th>
                 <th>{{ $t('fieldnames.balance') }}</th>
                 <th>{{ $t('fieldnames.updated') }}</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="account in accounts" :key="account.id">
+              <tr v-for="account in displayedAccounts" :key="account.id">
                 <td class="icon-account"><img v-if="account.iconUrl" :src="account.iconUrl" height="24" width="24"></td>
-                <td><router-link :to="{name: 'account', params: {id: account.id}}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link><span v-if="!account.isOwned" class="tag is-danger is-light">{{ $t('labels.readOnly') }}</span></td>
+                <td><router-link :to="{name: 'account', params: {id: account.id}}" :class="{'is-italic': !account.isActive}">{{ account.bankId }} {{ account.branchId }} {{ account.accountId }}<span v-if="account.label"> ({{ account.label }})</span></router-link><span v-if="!account.isOwned" class="tag is-danger is-light">{{ $t('labels.readOnly') }}</span></td>
+                <td v-if="hasInactiveAccountsDisplayed"><o-switch v-model="account.isActive" size="small" disabled /></td>
                 <td><span v-if="account.balance">{{ $n(account.balance, 'currency') }}</span></td>
                 <td v-if="account.lastUpdate">{{ $dayjs(account.lastUpdate).fromNow() }}</td><td v-else />
               </tr>
@@ -37,7 +39,7 @@
           </table>
         </div>
         <div v-else>
-          <p>{{ $t('labels.noAccount') }}</p>
+          <p class="mb-5">{{ $t('labels.noAccount') }}</p>
         </div>
         <div class="field is-grouped">
           <p class="control">
@@ -55,6 +57,9 @@
                 {{ upload.file.name }} ({{ $tc('objects.byte', upload.file.size) }})
               </span>
             </o-field>
+          </p>
+          <p class="control">
+            <o-switch v-model="hasInactiveAccountsDisplayed" root-class="mt-2">{{ $t('actions.displayInactiveAccounts') }}</o-switch>
           </p>
         </div>
         <div class="field is-horizontal">
@@ -98,11 +103,18 @@ export default {
         isUploading: false,
         result: '',
       },
+      hasInactiveAccountsDisplayed: false,
     }
   },
   computed: {
     isOnline () {
       return this.$store.isOnline
+    },
+    displayedAccounts () {
+      if (this.hasInactiveAccountsDisplayed) {
+        return this.accounts
+      }
+      return this.accounts.filter(account => account.isActive)
     },
   },
   mounted () {
@@ -113,7 +125,20 @@ export default {
       this.isLoading = true
       try {
         const response = await this.$http.get('accounts')
-        this.accounts = response.data
+        this.accounts = response.data.sort((a, b) => {
+          if (a.bankId > b.bankId) {
+            return 1
+          }
+          if (a.bankId < b.bankId) {
+            return -1
+          }
+          if (a.accountId > b.accountId) {
+            return 1
+          }
+          if (a.accountId < b.accountId) {
+            return -1
+          }
+        })
         this.accounts.map((account) => {
           account.iconUrl = account.iconUrl ? Config.API_URL + account.iconUrl : null
           return account

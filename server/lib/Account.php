@@ -50,6 +50,10 @@ class Account
      */
     public $balance;
     /**
+     * @var boolean Account is still active
+     */
+    public $isActive;
+    /**
      * @var string Timestamp representing the last update
      */
     public $lastUpdate;
@@ -107,7 +111,7 @@ class Account
     {
         require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/DatabaseConnection.php';
         $connection = new DatabaseConnection();
-        $query = $connection->prepare('UPDATE `account` SET `bankId`=:bankId, `branchId`=:branchId, `accountId`=:accountId, `label`=:label, `duration`=:duration, `balance`=:balance, `lastUpdate`=UNIX_TIMESTAMP() WHERE `id`=:id;');
+        $query = $connection->prepare('UPDATE `account` SET `bankId`=:bankId, `branchId`=:branchId, `accountId`=:accountId, `label`=:label, `duration`=:duration, `balance`=:balance, `isActive`=:isActive, `lastUpdate`=UNIX_TIMESTAMP() WHERE `id`=:id;');
         $query->bindValue(':id', $this->id, PDO::PARAM_INT);
         $query->bindValue(':bankId', $this->bankId, PDO::PARAM_STR);
         $query->bindValue(':branchId', $this->branchId, PDO::PARAM_STR);
@@ -115,6 +119,7 @@ class Account
         $query->bindValue(':label', $this->label, PDO::PARAM_STR);
         $query->bindValue(':duration', $this->duration, PDO::PARAM_STR);
         $query->bindValue(':balance', $this->balance, PDO::PARAM_INT);
+        $query->bindValue(':isActive', $this->isActive, PDO::PARAM_BOOL);
         if ($query->execute()) {
             //returns update was successfully processed
             return true;
@@ -752,7 +757,7 @@ class Account
             $account->balance = (float) $account->balance;
         }
         if (isset($account->lastUpdate)) {
-            $account->lastUpdate= date('c', $account->lastUpdate);
+            $account->lastUpdate = date('c', $account->lastUpdate);
         }
         if ($this->hasIcon) {
             $account->iconUrl = "accounts/$this->id/icons";
@@ -760,6 +765,7 @@ class Account
         if (property_exists($this, 'isOwned')) {
             $account->isOwned = (bool) $this->isOwned;
         }
+        $account->isActive = (bool) $account->isActive;
         unset($account->hasIcon);
         unset($account->transactions);
         //return structured account

@@ -165,13 +165,13 @@ class Step
             case '0.10.0':
             case '0.10.1':
             case '0.10.2':
-                $hasDatabaseAlter = true;
-                break;
             case '0.11.0':
             case '0.11.1':
             case '0.11.2':
             case '0.12.0':
             case '0.12.1':
+            case '0.12.2':
+                $hasDatabaseAlter = true;
                 break;
             default:
                 return $lang->getMessage('unknownInstalledVersion');
@@ -484,6 +484,15 @@ class Step
                     case '0.10.1':
                     case '0.10.2':
                         $sql = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/server/configuration/alter-database-0.11.0.sql');
+                        $connection->exec($sql);
+                        // no break
+                    case '0.11.0':
+                    case '0.11.1':
+                    case '0.11.2':
+                    case '0.12.0':
+                    case '0.12.1':
+                    case '0.12.2':
+                        $sql = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/server/configuration/alter-database-0.13.0.sql');
                         $connection->exec($sql);
 
                         //cumulative scripts, break will be shared

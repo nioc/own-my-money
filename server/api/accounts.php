@@ -115,6 +115,9 @@ switch ($api->method) {
         if ($api->checkParameterExists('balance', $balance)) {
             $account->balance = $balance;
         }
+        if ($api->checkParameterExists('isActive', $isActive)) {
+            $account->isActive = $isActive;
+        }
         if ($account->update()) {
             $api->output(200, $account->structureData());
             return;

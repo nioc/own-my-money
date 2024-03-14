@@ -192,6 +192,19 @@
               </div>
 
               <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                  <label class="label">{{ $t('fieldnames.isActive') }}</label>
+                </div>
+                <div class="field-body">
+                  <div class="field">
+                    <div class="control">
+                      <o-switch v-model="updatedAccount.isActive" root-class="mt-1" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field is-horizontal">
                 <div class="field-label is-normal" />
                 <div class="field-body">
                   <div class="field">
@@ -266,6 +279,7 @@ export default {
         iconUrl: null,
         transactions: [],
         isOwned: null,
+        isActive: true,
       },
       icon: {
         file: null,
@@ -338,6 +352,7 @@ export default {
           this.account.iconUrl = Config.API_URL + response.data.iconUrl
         }
         this.account.isOwned = response.data.isOwned
+        this.account.isActive = response.data.isActive
         this.updatedAccount = JSON.parse(JSON.stringify(this.account))
         delete (this.updatedAccount.transactions)
         this.date.duration = this.account.duration
