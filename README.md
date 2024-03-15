@@ -11,7 +11,7 @@ Own my money is a simple way to stay on top of your banking from any web browser
 ## Key features
 - self-hosted manager for personal finances,
 - secured multi-user accounts,
-- data input from OFX or JSON file from you bank,
+- data input from OFX, QIF or JSON file from you bank,
 - transactions classification (manual and automatic using data mining),
 - budget repartition analysis,
 - joint accounts,

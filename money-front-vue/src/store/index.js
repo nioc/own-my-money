@@ -36,8 +36,9 @@ export const useStore = defineStore('main', {
       return state.categories
         .filter(category => category.status)
         .map(category => {
-          delete category.status
-          return category
+          const activeCategory = { ...category }
+          delete activeCategory.status
+          return activeCategory
         })
     },
   },
