@@ -58,7 +58,7 @@ switch ($api->method) {
                     $isRecurringOnly = filter_var($isRecurringOnly, FILTER_VALIDATE_BOOLEAN);
                 }
                 //request transactions history
-                if ($api->checkParameterExists('aid', $aid)) {
+                if ($api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
                     //specific account
                     $account = new Account($aid);
                     if (!$account->get()) {

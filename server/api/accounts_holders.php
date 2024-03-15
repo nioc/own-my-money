@@ -19,7 +19,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('aid', $aid)) {
+        if (!$api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
             $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the account id was not provided
             return;
@@ -47,7 +47,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('aid', $aid)) {
+        if (!$api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
             $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the account id was not provided
             return;
@@ -83,7 +83,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('aid', $aid)) {
+        if (!$api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
             $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the account id was not provided
             return;
@@ -125,7 +125,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('aid', $aid)) {
+        if (!$api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
             $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the account id was not provided
             return;

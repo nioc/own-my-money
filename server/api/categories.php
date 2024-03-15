@@ -19,7 +19,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('id', $id)) {
+        if (!$api->checkParameterExists('id', $id, Api::PARAM_INTEGER)) {
             //query all categories
             $category = new Category();
             $api->checkParameterExists('status', $status);
@@ -75,7 +75,7 @@ switch ($api->method) {
            //indicate the requester is not allowed to update a category
            return;
        }
-       if (!$api->checkParameterExists('id', $id)) {
+       if (!$api->checkParameterExists('id', $id, Api::PARAM_INTEGER)) {
            $api->output(400, $api->getMessage('categoryIsNotValid') . 'id');
            //indicate the requester is not allowed to update a category
            return;

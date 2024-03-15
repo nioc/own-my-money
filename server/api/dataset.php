@@ -24,7 +24,7 @@ switch ($api->method) {
         $file = $_FILES['file'];
         // check extension
         $allowedExtensions = array('.ofx');
-        if ($api->checkParameterExists('aid', $accountId)) {
+        if ($api->checkParameterExists('aid', $accountId, Api::PARAM_INTEGER)) {
             $accountId = intval($accountId);
             //allow json and qif files for dataset account
             array_push($allowedExtensions, '.json', '.qif');

@@ -20,7 +20,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('id', $id)) {
+        if (!$api->checkParameterExists('id', $id, Api::PARAM_INTEGER)) {
             //query all user's account
             $user = new User($api->requesterId);
             $accounts = array();
@@ -130,7 +130,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('id', $id)) {
+        if (!$api->checkParameterExists('id', $id, Api::PARAM_INTEGER)) {
             $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the request is not valid
             return;

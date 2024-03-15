@@ -18,7 +18,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('aid', $id)) {
+        if (!$api->checkParameterExists('aid', $id, Api::PARAM_INTEGER)) {
             $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the account id was not found in query
             return;

@@ -9,6 +9,9 @@
  */
 class Api
 {
+    const PARAM_STRING = 0;
+    const PARAM_INTEGER = 1;
+    const PARAM_FLOAT = 2;
     /**
      * @var string HTTP verb used to call API
      */
@@ -90,18 +93,40 @@ class Api
      * @param string $parameter The searched parameter
      * @param string $value     The returned value of the parameter
      */
-    public function checkParameterExists($parameter, &$value)
+    public function checkParameterExists($parameter, &$value, $type = self::PARAM_STRING)
     {
         $value = null;
         if (array_key_exists($parameter, $this->query)) {
             //parameter found in the query string
-            $value = $this->query[$parameter];
+            switch ($type) {
+                case self::PARAM_FLOAT:
+                    $value = floatval($this->query[$parameter]);
+                    break;
+                case self::PARAM_INTEGER:
+                    $value = intval($this->query[$parameter]);
+                    break;
+                case self::PARAM_STRING:
+                default:
+                    $value = $this->query[$parameter];
+                    break;
+            }
             //returns requested parameter has been found in the query string
             return true;
         }
         //try in the body request, if it exists
         if (array_key_exists('body', $this->query) && $this->query['body'] && property_exists($this->query['body'], $parameter)) {
-            $value = $this->query['body']->$parameter;
+            switch ($type) {
+                case 'float':
+                    $value = floatval($this->query['body']->$parameter);
+                    break;
+                case 'integer':
+                    $value = intval($this->query['body']->$parameter);
+                    break;
+                case 'string':
+                default:
+                    $value = $this->query['body']->$parameter;
+                    break;
+            }
             //returns requested parameter has been found in the body
             return true;
         }

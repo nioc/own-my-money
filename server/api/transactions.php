@@ -20,7 +20,7 @@ switch ($api->method) {
         }
         $api->checkParameterExists('periodStart', $periodStart);
         $api->checkParameterExists('periodEnd', $periodEnd);
-        if (!$api->checkParameterExists('aid', $aid)) {
+        if (!$api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
             $user = new User($api->requesterId);
             if ($api->checkParameterExists('id', $id) && $id !== '') {
@@ -112,7 +112,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        $api->checkParameterExists('aid', $aid);
+        $api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER);
         if (!$api->checkParameterExists('id', $id) || $id === '') {
             $api->output(400, $api->getMessage('transactionIdMustBeProvided'));
             //Transaction was not provided, return an error

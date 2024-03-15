@@ -15,7 +15,7 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
 $api = new Api('json', ['GET', 'POST']);
 switch ($api->method) {
     case 'GET':
-        if (!$api->checkParameterExists('aid', $aid)) {
+        if (!$api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
             header('HTTP/1.0 404 Not Found');
             //indicate the request is not valid
             return;
@@ -43,7 +43,7 @@ switch ($api->method) {
             //User not authentified/authorized
             return;
         }
-        if (!$api->checkParameterExists('aid', $aid)) {
+        if (!$api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
             $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the request is not valid
             return;
@@ -60,7 +60,7 @@ switch ($api->method) {
             return;
         }
         //account icon creation
-        if (!$api->checkParameterExists('aid', $aid)) {
+        if (!$api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
             $api->output(400, $api->getMessage('accountIdMustBeProvided'));
             //indicate the request is not valid
             return;
