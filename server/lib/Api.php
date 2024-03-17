@@ -103,7 +103,7 @@ class Api
                     $value = floatval($this->query[$parameter]);
                     break;
                 case self::PARAM_INTEGER:
-                    $value = intval($this->query[$parameter]);
+                    $value = intval($this->query[$parameter], 10);
                     break;
                 case self::PARAM_STRING:
                 default:
@@ -116,13 +116,13 @@ class Api
         //try in the body request, if it exists
         if (array_key_exists('body', $this->query) && $this->query['body'] && property_exists($this->query['body'], $parameter)) {
             switch ($type) {
-                case 'float':
+                case self::PARAM_FLOAT:
                     $value = floatval($this->query['body']->$parameter);
                     break;
-                case 'integer':
-                    $value = intval($this->query['body']->$parameter);
+                case self::PARAM_INTEGER:
+                    $value = intval($this->query['body']->$parameter, 10);
                     break;
-                case 'string':
+                case self::PARAM_STRING:
                 default:
                     $value = $this->query['body']->$parameter;
                     break;

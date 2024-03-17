@@ -158,6 +158,9 @@ class Transaction
         $query->bindValue(':user', $userId, PDO::PARAM_INT);
         $query->setFetchMode(PDO::FETCH_INTO, $this);
         if ($query->execute() && $query->fetch()) {
+            $this->id = intval($this->id);
+            $this->aid = intval($this->aid);
+            $this->isRecurring = intval($this->isRecurring);
             //get shares dispatch
             $this->getShares();
             //returns the transaction object was successfully fetched

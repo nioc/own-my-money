@@ -143,6 +143,7 @@ class Account
         if ($query->execute() && $query->fetch()) {
             $this->id = intval($this->id);
             $this->user = intval($this->user);
+            $this->isActive = intval($this->isActive);
             //returns the account object was successfully fetched
             return true;
         }
@@ -176,6 +177,7 @@ class Account
         if ($query->execute() && $query->fetch()) {
             $this->id = intval($this->id);
             $this->user = intval($this->user);
+            $this->isActive = intval($this->isActive);
             //returns the account object was successfully fetched
             return true;
         }

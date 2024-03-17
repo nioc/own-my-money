@@ -23,7 +23,7 @@ switch ($api->method) {
         if (!$api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER)) {
             require_once $_SERVER['DOCUMENT_ROOT'].'/server/lib/User.php';
             $user = new User($api->requesterId);
-            if ($api->checkParameterExists('id', $id) && $id !== '') {
+            if ($api->checkParameterExists('id', $id, Api::PARAM_INTEGER) && $id !== 0) {
                 //request for a specific user transaction
                 $transaction = new Transaction($id);
                 if (!$transaction->get($api->requesterId)) {
@@ -72,7 +72,7 @@ switch ($api->method) {
             //indicate the requester is not the account owner and is not allowed to query it
             return;
         }
-        if ($api->checkParameterExists('id', $id) && $id !== '') {
+        if ($api->checkParameterExists('id', $id, Api::PARAM_INTEGER) && $id !== 0) {
             //request for a specific transaction
             $transaction = new Transaction($id);
             if (!$transaction->get($api->requesterId)) {
@@ -113,7 +113,7 @@ switch ($api->method) {
             return;
         }
         $api->checkParameterExists('aid', $aid, Api::PARAM_INTEGER);
-        if (!$api->checkParameterExists('id', $id) || $id === '') {
+        if (!$api->checkParameterExists('id', $id, Api::PARAM_INTEGER) || $id === 0) {
             $api->output(400, $api->getMessage('transactionIdMustBeProvided'));
             //Transaction was not provided, return an error
             return;

@@ -36,9 +36,9 @@ switch ($api->method) {
             //return actives users
             return;
         }
-        if ($api->checkParameterExists('id', $id) && $id !== '') {
+        if ($api->checkParameterExists('id', $id, Api::PARAM_INTEGER) && $id !== 0) {
             //request a specific user
-            if ($api->requesterId !== intval($id) && !$api->checkScope('admin')) {
+            if ($api->requesterId !== $id && !$api->checkScope('admin')) {
                 $api->output(403, $api->getMessage('adminScopeRequired'));
                 //indicate the requester is not the user and is not allowed to update it
                 return;
@@ -117,12 +117,11 @@ switch ($api->method) {
             return;
         }
         $postedUser = new User();
-        if (!$api->checkParameterExists('id', $postedUser->id) || $postedUser->id == '') {
+        if (!$api->checkParameterExists('id', $postedUser->id, Api::PARAM_INTEGER) || $postedUser->id === 0) {
             $api->output(400, $api->getMessage('putMethodMustBeCalledOnASpecificResource'));
             //indicate the request is not valid, id must be provided in query path
             return;
         }
-        $postedUser->id = intval($postedUser->id);
         if ($postedUser->id !== $api->requesterId && !$api->checkScope('admin')) {
             $api->output(403, $api->getMessage('userCanBeUpdatedByHimselfOnly'));
             //indicate the requester is not the user and is not allowed to update it
