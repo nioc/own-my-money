@@ -106,6 +106,7 @@ class Dataset
     {
         $configuration = new Configuration();
         $dateFormat = $configuration->get('qifDateFormat');
+        $uniqueFitId = $configuration->get('qifUniqueFitId');
         $qif = file_get_contents($this->filepath);
         $lines = explode(PHP_EOL, $qif);
         $transactions = [];
@@ -120,6 +121,7 @@ class Dataset
                 case 'D':
                     // Date, parse using system configuration
                     if ($dateTime = DateTime::createFromFormat($dateFormat, $value)) {
+                        $dateTime->setTime(12, 0, 0, 0);
                         $transaction->datePosted = $dateTime->getTimestamp();
                         $transaction->dateUser = $dateTime->getTimestamp();
                     }
@@ -157,7 +159,10 @@ class Dataset
                     // End of entry
                     if ($transaction->datePosted !== null && $transaction->amount !== null) {
                         // generate a pseudo fitid
-                        $transaction->fitid = 'omm'.time().count($transactions);
+                        $transaction->fitid = "omm-$accountId-".hash('md5', $transaction->datePosted.$transaction->amount.$transaction->name.$transaction->memo);
+                        if ($uniqueFitId === '1') {
+                            $transaction->fitid .= '-'.time().'-'.count($transactions);
+                        }
                         $transaction->aid = $accountId;
                         $transaction->type = ($transaction->amount > 0) ? 'CREDIT' : 'DEBIT';
                         array_push($transactions, $transaction);
