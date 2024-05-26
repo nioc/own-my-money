@@ -31,9 +31,9 @@
               <p class="control">
                 <o-field class="file">
                   <o-upload v-model="upload.file" :disabled="(!isOnline || upload.isUploading)" @input="uploadDataset">
-                    <a class="button is-primary">
+                    <a class="button is-primary" :title="$t('actions.uploadOfxQifJson')">
                       <o-icon icon="upload" />
-                      <span>{{ $t('actions.uploadOfxQifJson') }}</span>
+                      <span>{{ $t('actions.upload') }}</span>
                     </a>
                   </o-upload>
                   <span v-if="upload.file" class="file-name">
